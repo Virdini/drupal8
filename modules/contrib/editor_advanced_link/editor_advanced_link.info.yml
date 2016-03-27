@@ -1,0 +1,11 @@
+name: 'Advanced Link'
+description: 'Add a title and a target fields on editor''s link dialog if the filter allows it.'
+type: module
+# core: 8.x
+# version: VERSION
+
+# Information added by Drupal.org packaging script on 2015-11-19
+version: '8.x-1.0'
+core: '8.x'
+project: 'editor_advanced_link'
+datestamp: 1447943763

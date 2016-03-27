@@ -1,0 +1,97 @@
+<?php
+
+/**
+ * @file
+ * Advanced Link module.
+ */
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Add a title and a target fields on EditorLinkDialog if the filter allows it.
+ * Note: the editor_file module declares that its EditorFileDialog form uses
+ *   'editor_link_dialog' as base_form_id. In this case, the function above is
+ *   going to be called as an implementation of hook_form_BASE_FORM_ID_alter().
+ */
+function editor_advanced_link_form_editor_link_dialog_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $filter_format = $form_state->getBuildInfo()['args'][0];
+  $restrictions = $filter_format->getHtmlRestrictions();
+  $user_input = $form_state->getUserInput();
+
+  $form['attributes']['href']['#weight'] = 0;
+
+  $form['attributes']['title'] = [
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#description' => t('Populates the title attribute of the link, usually shown as a small tooltip on hover.'),
+    '#default_value' => !empty($user_input['editor_object']['title']) ? $user_input['editor_object']['title'] : '',
+    '#maxlength' => 512,
+    '#weight' => 1,
+    '#access' => $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || $restrictions['allowed']['a']['title'] === TRUE,
+  ];
+
+  $form['advanced'] = [
+    '#type' => 'details',
+    '#title' => t('Advanced'),
+    '#access' => FALSE,
+    '#weight' => 2,
+  ];
+
+  $form['attributes']['class'] = [
+    '#type' => 'textfield',
+    '#title' => t('CSS classes'),
+    '#description' => t('List of CSS classes to add to the link, separated by a space.'),
+    '#default_value' => !empty($user_input['editor_object']['class']) ? $user_input['editor_object']['class'] : '',
+    '#maxlength' => 512,
+    '#access' => $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || $restrictions['allowed']['a']['class'] === TRUE,
+    '#group' => 'advanced',
+  ];
+
+  $form['attributes']['id'] = [
+    '#type' => 'textfield',
+    '#title' => t('ID'),
+    '#description' => t('This ID have to be unique. Be careful of the already used IDs in your pages.'),
+    '#default_value' => !empty($user_input['editor_object']['id']) ? $user_input['editor_object']['id'] : '',
+    '#maxlength' => 512,
+    '#access' => $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || $restrictions['allowed']['a']['id'] === TRUE,
+    '#group' => 'advanced',
+  ];
+
+  $form['attributes']['target'] = [
+    '#title' => t('Open in new window'),
+    '#type' => 'checkbox',
+    '#default_value' => !empty($user_input['editor_object']['target']) ? $user_input['editor_object']['target'] : FALSE,
+    '#return_value' => '_blank',
+    '#element_validate' => ['_editor_advanced_link_target_validate'],
+    '#access' => $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || $restrictions['allowed']['a']['target'] === TRUE,
+    '#group' => 'advanced',
+  ];
+
+  $form['attributes']['rel'] = [
+    '#type' => 'textfield',
+    '#title' => t('Relation (rel)'),
+    '#description' => t('Content of the "rel" attribute. Often used by JS galleries.'),
+    '#default_value' => !empty($user_input['editor_object']['rel']) ? $user_input['editor_object']['rel'] : '',
+    '#maxlength' => 512,
+    '#access' => $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || $restrictions['allowed']['a']['rel'] === TRUE,
+    '#group' => 'advanced',
+  ];
+
+  foreach ($form['attributes'] as $element) {
+    if ($element['#group'] == 'advanced' && $element['#access'] == TRUE) {
+      $form['advanced']['#access'] = TRUE;
+      break;
+    }
+  }
+}
+
+/**
+ * "target" element validator.
+ *
+ * Clears the value if empty to avoid target="0" to be added to the link.
+ */
+function _editor_advanced_link_target_validate($element, FormStateInterface $form_state, $form) {
+  $attributes = $form_state->getValue('attributes');
+  $form_state->setValue('attributes', array_filter($attributes));
+}
