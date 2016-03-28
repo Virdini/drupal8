@@ -1,0 +1,8 @@
+name: Virdini Current
+type: theme
+base theme: vcore
+description: 'Virdini theme for current project.'
+alt text: 'Virdini theme for current project.'
+package: Virdini
+# version: VERSION
+core: 8.x

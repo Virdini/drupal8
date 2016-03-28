@@ -1,0 +1,8 @@
+name: Virdini Admin
+type: theme
+base theme: seven
+description: 'Virdini administration theme for Drupal 8 based on Seven.'
+alt text: 'Virdini administration theme for Drupal 8'
+package: Virdini
+# version: VERSION
+core: 8.x

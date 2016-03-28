@@ -1,0 +1,22 @@
+name: Virdini Core
+type: theme
+description: 'Virdini core theme for Drupal 8.'
+alt text: 'Virdini core theme for Drupal 8.'
+package: Virdini
+# version: VERSION
+core: 8.x
+hidden: true
+
+libraries:
+  - core/normalize
+
+regions:
+  header: 'Header'
+  pre_content: 'Pre-content'
+  breadcrumb: 'Breadcrumb'
+  highlighted: 'Highlighted'
+  help: 'Help'
+  content: 'Content'
+  page_top: 'Page top'
+  page_bottom: 'Page bottom'
+  footer: 'Footer'
