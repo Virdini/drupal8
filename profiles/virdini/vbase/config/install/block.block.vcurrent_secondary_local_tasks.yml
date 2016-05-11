@@ -5,8 +5,8 @@ dependencies:
     - vcurrent
 id: vcurrent_secondary_local_tasks
 theme: vcurrent
-region: pre_content
-weight: -3
+region: header
+weight: -2
 provider: null
 plugin: local_tasks_block
 settings:

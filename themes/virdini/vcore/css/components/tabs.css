@@ -17,12 +17,8 @@
   z-index: 10;
   right: 0;
 }
-
-/* Span the full width of the viewport */
-.content-header .is-horizontal .tabs:before,
-.content-header .is-collapse-enabled .tabs:before {
-  left: -2.5em;
-  right: -2.5em;
+.block-local-tasks-block {
+  overflow: hidden;
 }
 
 /**
@@ -49,6 +45,16 @@
 [dir="rtl"] .tabs__tab {
   padding-left: 2em;
   padding-right: 1em;
+}
+.tabs a {
+  display: block;
+  padding: 0.2em 1em;
+  text-decoration: none;
+}
+ul.tabs {
+  list-style: outside none none;
+  margin: 0 0 0.5em;
+  padding: 0;
 }
 .tabs__tab:hover,
 .tabs__tab:focus {
@@ -81,6 +87,7 @@ li.tabs__tab a {
   clear: both;
   margin: 16px 0 0;
   margin: 1rem 0 0;
+  padding-left: 2em;
 }
 .tabs.primary .tabs__tab.is-active {
   z-index: 15;
@@ -109,10 +116,10 @@ li.tabs__tab a {
 /* Only add the arrow if there's space */
 @media screen and (min-width:18.75em) { /* 300px */
   .tabs.primary a {
-    background: url(../../../../misc/icons/0074bd/chevron-right.svg) 99% center no-repeat;
+    background: url(../../../../../core/misc/icons/0074bd/chevron-right.svg) 99% center no-repeat;
   }
   [dir="rtl"] .tabs.primary a {
-    background: url(../../../../misc/icons/0074bd/chevron-left.svg) 1% center no-repeat;
+    background: url(../../../../../core/misc/icons/0074bd/chevron-left.svg) 1% center no-repeat;
   }
   .tabs.primary .tabs__tab.is-active a {
     background-image: none;
@@ -136,8 +143,6 @@ li.tabs__tab a {
   padding-left: 4px;
   border-left: 0; /* LTR */
   border-radius: 0 4px 0 0; /* LTR */
-  font-family: Arial, sans-serif;
-  font-size: 1.25em;
   letter-spacing: 0.1em;
   text-align: center;
   outline: 0;
@@ -155,8 +160,7 @@ li.tabs__tab a {
 }
 .tabs.is-open {
   max-height: 999em;
-  padding-bottom:16px;
-  padding-bottom: 1rem;
+  padding-left: 0;
 }
 .is-collapse-enabled .tabs__tab.is-active {
   position: absolute;
@@ -191,7 +195,7 @@ li.tabs__tab a {
   width: auto;
   margin: 0 0 -1px;
   text-align: center;
-  border-bottom-color: #a6a6a6;
+  border-bottom-width: 0;
 }
 [dir="rtl"] .is-horizontal .tabs__tab {
   float: right;

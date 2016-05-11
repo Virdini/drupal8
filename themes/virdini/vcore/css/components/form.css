@@ -96,7 +96,7 @@ label.option {
   background-color: #fcf4f2;
 }
 .form-required:after {
-  background-image: url("../../../../../core/misc/icons/ee0000/required.svg");
+  background-image: url(../../../../../core/misc/icons/ee0000/required.svg);
   background-repeat: no-repeat;
   background-size: 6px 6px;
   content: "";

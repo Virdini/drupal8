@@ -6,7 +6,7 @@ dependencies:
 id: vcurrent_primary_local_tasks
 theme: vcurrent
 region: header
-weight: -2
+weight: -3
 provider: null
 plugin: local_tasks_block
 settings:
@@ -15,5 +15,5 @@ settings:
   provider: core
   label_display: '0'
   primary: true
-  secondary: true
+  secondary: false
 visibility: {  }
