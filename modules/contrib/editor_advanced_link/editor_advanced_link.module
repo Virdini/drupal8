@@ -15,9 +15,35 @@ use Drupal\Core\Form\FormStateInterface;
  *   going to be called as an implementation of hook_form_BASE_FORM_ID_alter().
  */
 function editor_advanced_link_form_editor_link_dialog_alter(&$form, FormStateInterface $form_state, $form_id) {
+  /** @var \Drupal\filter\FilterFormatInterface $filter_format */
   $filter_format = $form_state->getBuildInfo()['args'][0];
   $restrictions = $filter_format->getHtmlRestrictions();
   $user_input = $form_state->getUserInput();
+
+  /**
+   * Helper to retrieve form fields' default values.
+   *
+   * @param string $attribute_name
+   * @param string $fallback
+   * @return mixed
+   *   The existing value or the fallback.
+   */
+  $get_default_value = function($attribute_name, $fallback = '') use ($user_input) {
+    return !empty($user_input['editor_object'][$attribute_name]) ? $user_input['editor_object'][$attribute_name] : $fallback;
+  };
+
+  /**
+   * Helper to set the status of a form field according to the status of the
+   * filter about the attribute it is defining.
+   *
+   * @param string $attribute_name
+   * @return bool
+   *   TRUE if the filter is disabled or if the entire "a" tag is allowed or if
+   *   the given attribute is allowed for the "a" tag.
+   */
+  $is_accessible = function($attribute_name) use ($restrictions) {
+    return $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || !empty($restrictions['allowed']['a'][$attribute_name]);
+  };
 
   $form['attributes']['href']['#weight'] = 0;
 
@@ -25,10 +51,10 @@ function editor_advanced_link_form_editor_link_dialog_alter(&$form, FormStateInt
     '#type' => 'textfield',
     '#title' => t('Title'),
     '#description' => t('Populates the title attribute of the link, usually shown as a small tooltip on hover.'),
-    '#default_value' => !empty($user_input['editor_object']['title']) ? $user_input['editor_object']['title'] : '',
+    '#default_value' => $get_default_value('title'),
     '#maxlength' => 512,
     '#weight' => 1,
-    '#access' => $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || $restrictions['allowed']['a']['title'] === TRUE,
+    '#access' => $is_accessible('title'),
   ];
 
   $form['advanced'] = [
@@ -41,45 +67,46 @@ function editor_advanced_link_form_editor_link_dialog_alter(&$form, FormStateInt
   $form['attributes']['class'] = [
     '#type' => 'textfield',
     '#title' => t('CSS classes'),
-    '#description' => t('List of CSS classes to add to the link, separated by a space.'),
-    '#default_value' => !empty($user_input['editor_object']['class']) ? $user_input['editor_object']['class'] : '',
+    '#description' => t('List of CSS classes to add to the link, separated by spaces.'),
+    '#default_value' => $get_default_value('class'),
     '#maxlength' => 512,
-    '#access' => $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || $restrictions['allowed']['a']['class'] === TRUE,
+    '#access' => $is_accessible('class'),
     '#group' => 'advanced',
   ];
 
   $form['attributes']['id'] = [
     '#type' => 'textfield',
     '#title' => t('ID'),
-    '#description' => t('This ID have to be unique. Be careful of the already used IDs in your pages.'),
-    '#default_value' => !empty($user_input['editor_object']['id']) ? $user_input['editor_object']['id'] : '',
+    '#description' => t('Allows linking to this content using a <a href="https://en.wikipedia.org/wiki/Fragment_identifier">URL fragment</a>). Must be unique.'),
+    '#default_value' => $get_default_value('id'),
     '#maxlength' => 512,
-    '#access' => $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || $restrictions['allowed']['a']['id'] === TRUE,
+    '#access' => $is_accessible('id'),
     '#group' => 'advanced',
   ];
 
   $form['attributes']['target'] = [
     '#title' => t('Open in new window'),
     '#type' => 'checkbox',
-    '#default_value' => !empty($user_input['editor_object']['target']) ? $user_input['editor_object']['target'] : FALSE,
+    '#default_value' => $get_default_value('target', FALSE),
     '#return_value' => '_blank',
     '#element_validate' => ['_editor_advanced_link_target_validate'],
-    '#access' => $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || $restrictions['allowed']['a']['target'] === TRUE,
+    '#access' => $is_accessible('target'),
     '#group' => 'advanced',
   ];
 
   $form['attributes']['rel'] = [
     '#type' => 'textfield',
     '#title' => t('Relation (rel)'),
-    '#description' => t('Content of the "rel" attribute. Often used by JS galleries.'),
-    '#default_value' => !empty($user_input['editor_object']['rel']) ? $user_input['editor_object']['rel'] : '',
+    '#description' => t('Often used by JS galleries.'),
+    '#default_value' => $get_default_value('rel'),
     '#maxlength' => 512,
-    '#access' => $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || $restrictions['allowed']['a']['rel'] === TRUE,
+    '#access' => $is_accessible('rel'),
     '#group' => 'advanced',
   ];
 
+  // Show the advanced group if at least one of its fields is accessible.
   foreach ($form['attributes'] as $element) {
-    if ($element['#group'] == 'advanced' && $element['#access'] == TRUE) {
+    if (!empty($element['#group']) && $element['#group'] === 'advanced' && (!isset($element['#access']) || $element['#access'] === TRUE)) {
       $form['advanced']['#access'] = TRUE;
       break;
     }
