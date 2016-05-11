@@ -1,0 +1,49 @@
+name: Virdini Base
+type: profile
+description: 'Install with commonly used features pre-configured by Virdini.'
+version: 8.x-1.0.0
+core: 8.x
+distribution:
+  name: Virdini
+dependencies:
+  - node
+  - block
+  - breakpoint
+  - ckeditor
+  - config
+  - contextual
+  - menu_link_content
+  - datetime
+  - quickedit
+  - editor
+  - image
+  - menu_ui
+  - options
+  - path
+  - page_cache
+  - dynamic_page_cache
+  - taxonomy
+  - dblog
+  - shortcut
+  - toolbar
+  - field_ui
+  - file
+  - views
+  - views_ui
+  - automated_cron
+  - google_analytics
+  - token
+  - editor_advanced_link
+  - editor_file
+  - linkit
+  - admin_toolbar
+  - admin_toolbar_tools
+  - metatag
+  - ckeditor_videodetector
+  - ckeditor_font
+  - ctools
+  - pathauto
+  - simple_sitemap
+themes:
+  - vadmin
+  - vcurrent

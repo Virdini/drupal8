@@ -1,0 +1,39 @@
+vbase.adjustment:
+  path: '/virdini-adjustment'
+  defaults:
+    _controller: '\Drupal\vbase\Controller\VBaseAdjustment::virdini'
+    _title: 'Virdini Design Adjustment Page'
+  requirements:
+    _access: 'TRUE'
+
+vbase.adjustment_tab_1:
+  path: '/virdini-adjustment/tab_1'
+  defaults:
+    _controller: '\Drupal\vbase\Controller\VBaseAdjustment::virdini'
+    _title: 'Virdini Design Adjustment Page'
+  requirements:
+    _access: 'TRUE'
+
+vbase.adjustment_tab_1_1:
+  path: '/virdini-adjustment/tab_1/1'
+  defaults:
+    _controller: '\Drupal\vbase\Controller\VBaseAdjustment::virdini'
+    _title: 'Virdini Design Adjustment Page'
+  requirements:
+    _access: 'TRUE'
+
+vbase.adjustment_tab_1_2:
+  path: '/virdini-adjustment/tab_1/2'
+  defaults:
+    _controller: '\Drupal\vbase\Controller\VBaseAdjustment::virdini'
+    _title: 'Virdini Design Adjustment Page'
+  requirements:
+    _access: 'TRUE'
+
+vbase.adjustment_tab_1_3:
+  path: '/virdini-adjustment/tab_1/3'
+  defaults:
+    _controller: '\Drupal\vbase\Controller\VBaseAdjustment::virdini'
+    _title: 'Virdini Design Adjustment Page'
+  requirements:
+    _access: 'TRUE'

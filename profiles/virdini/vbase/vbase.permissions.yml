@@ -1,0 +1,4 @@
+vbase site settings:
+  title: 'Administer Main Site Settings'
+  description: ''
+  restrict access: true

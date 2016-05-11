@@ -9,10 +9,29 @@ hidden: true
 
 libraries:
   - core/normalize
+  - vcore/global-styling
+
+libraries-override:
+  core/drupal.vertical-tabs:
+    css:
+      component:
+        misc/vertical-tabs.css: false
+  core/jquery.ui:
+    css:
+      theme:
+        assets/vendor/jquery.ui/themes/base/theme.css: false
+  core/jquery.ui.dialog:
+    css:
+      component:
+        assets/vendor/jquery.ui/themes/base/dialog.css: false
+
+libraries-extend:
+  core/drupal.vertical-tabs:
+    - vcore/vertical-tabs
 
 regions:
   header: 'Header'
-  pre_content: 'Pre-content'
+  precontent: 'Pre-content'
   breadcrumb: 'Breadcrumb'
   highlighted: 'Highlighted'
   help: 'Help'

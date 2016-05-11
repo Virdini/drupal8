@@ -1,0 +1,36 @@
+vcore.min320:
+  label: min320
+  mediaQuery: ''
+  weight: 0
+  multipliers:
+    - 1x
+vcore.min480:
+  label: min480
+  mediaQuery: 'all and (min-width: 480px)'
+  weight: 1
+  multipliers:
+    - 1x
+vcore.min760:
+  label: min760
+  mediaQuery: 'all and (min-width: 760px)'
+  weight: 2
+  multipliers:
+    - 1x
+vcore.min960:
+  label: min960
+  mediaQuery: 'all and (min-width: 960px)'
+  weight: 3
+  multipliers:
+    - 1x
+vcore.min1300:
+  label: min1300
+  mediaQuery: 'all and (min-width: 1300px)'
+  weight: 4
+  multipliers:
+    - 1x
+vcore.min1620:
+  label: min1620
+  mediaQuery: 'all and (min-width: 1620px)'
+  weight: 5
+  multipliers:
+    - 1x

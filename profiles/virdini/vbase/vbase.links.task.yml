@@ -1,0 +1,25 @@
+vbase.adjustment_tab:
+  title: 'Default tab'
+  route_name: vbase.adjustment
+  base_route: vbase.adjustment
+  weight: -1
+  
+vbase.adjustment_tab_1:
+  title: 'Tab 1'
+  route_name: vbase.adjustment_tab_1
+  base_route: vbase.adjustment
+
+vbase.adjustment_tab_1_1:
+  title: 'Sub Tab 1'
+  route_name: vbase.adjustment_tab_1_1
+  parent_id: vbase.adjustment_tab
+
+vbase.adjustment_tab_1_2:
+  title: 'Sub Tab 2'
+  route_name: vbase.adjustment_tab_1_2
+  parent_id: vbase.adjustment_tab
+
+vbase.adjustment_tab_1_3:
+  title: 'Sub Tab 3'
+  route_name: vbase.adjustment_tab_1_3
+  parent_id: vbase.adjustment_tab

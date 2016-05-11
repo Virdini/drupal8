@@ -1,0 +1,84 @@
+uuid: e167df75-a531-492c-8300-fad673a18f3c
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.full_html
+  module:
+    - ckeditor
+    - editor_file
+third_party_settings:
+  editor_file:
+    status: true
+    scheme: public
+    directory: inline-files
+    extensions: 'txt pdf doc docx xls xlsx zip rar'
+format: full_html
+editor: ckeditor
+settings:
+  toolbar:
+    rows:
+      -
+        -
+          name: Formatting
+          items:
+            - Bold
+            - Italic
+            - Underline
+            - Strike
+            - '-'
+            - JustifyLeft
+            - JustifyCenter
+            - JustifyRight
+            - JustifyBlock
+            - '-'
+            - Indent
+            - Outdent
+            - '-'
+            - RemoveFormat
+            - '-'
+        -
+          name: Links
+          items:
+            - DrupalLink
+            - DrupalUnlink
+            - Linkit
+        -
+          name: Lists
+          items:
+            - BulletedList
+            - NumberedList
+        -
+          name: Media
+          items:
+            - Table
+            - Blockquote
+            - DrupalImage
+            - VideoDetector
+            - DrupalFile
+        -
+          name: Style
+          items:
+            - Format
+            - FontSize
+        -
+          name: Tools
+          items:
+            - PasteText
+            - PasteFromWord
+            - ShowBlocks
+            - Source
+            - Maximize
+  plugins:
+    stylescombo:
+      styles: ''
+    linkit:
+      linkit_profile: default
+image_upload:
+  status: true
+  scheme: public
+  directory: inline-images
+  max_size: 10MB
+  max_dimensions:
+    width: null
+    height: null
