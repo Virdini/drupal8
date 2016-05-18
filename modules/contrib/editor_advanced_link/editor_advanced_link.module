@@ -89,7 +89,7 @@ function editor_advanced_link_form_editor_link_dialog_alter(&$form, FormStateInt
     '#type' => 'checkbox',
     '#default_value' => $get_default_value('target', FALSE),
     '#return_value' => '_blank',
-    '#element_validate' => ['_editor_advanced_link_target_validate'],
+    '#element_validate' => ['_editor_advanced_link_attribute_validate'],
     '#access' => $is_accessible('target'),
     '#group' => 'advanced',
   ];
@@ -114,11 +114,15 @@ function editor_advanced_link_form_editor_link_dialog_alter(&$form, FormStateInt
 }
 
 /**
- * "target" element validator.
+ * Attribute element validator.
  *
- * Clears the value if empty to avoid target="0" to be added to the link.
+ * Converts any empty value to an empty string to make sure the attribute is
+ * removed.
+ * @see core/modules/ckeditor/js/plugins/drupallink/plugin.js:saveCallback()
  */
-function _editor_advanced_link_target_validate($element, FormStateInterface $form_state, $form) {
-  $attributes = $form_state->getValue('attributes');
-  $form_state->setValue('attributes', array_filter($attributes));
+function _editor_advanced_link_attribute_validate($element, FormStateInterface $form_state, $form) {
+  $target = $form_state->getValue($element['#parents']);
+  if (empty($target)) {
+    $form_state->setValue($element['#parents'], '');
+  }
 }

@@ -6,8 +6,8 @@ type: module
 dependencies:
   - editor
 
-# Information added by Drupal.org packaging script on 2016-04-08
-version: '8.x-1.1'
+# Information added by Drupal.org packaging script on 2016-05-17
+version: '8.x-1.2'
 core: '8.x'
 project: 'editor_advanced_link'
-datestamp: 1460112531
+datestamp: 1463494167
