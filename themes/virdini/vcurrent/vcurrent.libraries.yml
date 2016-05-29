@@ -1,0 +1,11 @@
+global-styling:
+  version: VERSION
+  css:
+    theme:
+      css/style.css: {}
+
+sticky-footer:
+  version: VERSION
+  css:
+    theme:
+      css/sticky-footer.css: {}

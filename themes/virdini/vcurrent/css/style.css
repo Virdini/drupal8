@@ -1,0 +1,11 @@
+.wrapper {
+  margin: 0 auto;
+}
+.wrapper-p {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.wrapper-m {
+  margin-left: 10px;
+  margin-right: 10px;
+}

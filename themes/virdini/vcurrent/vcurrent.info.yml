@@ -7,6 +7,10 @@ package: Virdini
 # version: VERSION
 core: 8.x
 
+libraries:
+  - vcurrent/global-styling
+  #- vcurrent/sticky-footer
+
 regions:
   header: 'Header'
   pre_content: 'Pre-content'
@@ -16,3 +20,5 @@ regions:
   content: 'Content'
   page_bottom: 'Page bottom'
   footer: 'Footer'
+  sidebar_left: 'Left sidebar'
+  sidebar_right: 'Right sidebar'
