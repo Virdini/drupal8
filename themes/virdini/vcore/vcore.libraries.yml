@@ -13,7 +13,7 @@ global-styling:
       css/components/collapse-processed.css: {}
       css/components/pager.css: {}
       css/components/tabs.css: {}
-      #css/components/breadcrumb.css: {}
+      css/components/breadcrumb.css: {}
       #css/components/node.css: {}
 
 messages:

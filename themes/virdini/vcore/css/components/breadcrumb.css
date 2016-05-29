@@ -7,3 +7,24 @@
   line-height: 1em;
   padding: 20px 0 10px;
 }
+.breadcrumb ol {
+  margin: 0;
+  padding: 0;
+}
+[dir="rtl"] .breadcrumb ol {
+  /* This is required to win over specificity of [dir="rtl"] ol */
+  margin-right: 0;
+}
+.breadcrumb li {
+  display: inline;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+/* IE8 does not support :not() and :last-child. */
+.breadcrumb li:before {
+  content: ' \BB ';
+}
+.breadcrumb li:first-child:before {
+  content: none;
+}

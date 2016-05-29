@@ -1,7 +1,7 @@
 name: Virdini Core
 type: theme
-description: 'Virdini core theme for Drupal 8.'
-alt text: 'Virdini core theme for Drupal 8.'
+description: 'Virdini core theme for projects'
+alt text: 'Virdini core theme for projects'
 package: Virdini
 # version: VERSION
 core: 8.x

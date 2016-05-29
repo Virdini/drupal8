@@ -14,18 +14,18 @@
  */
 function vcore_preprocess_menu_local_tasks(&$variables) {
   if (!empty($variables['primary'])) {
-    $variables['primary']['#attached'] = array(
-      'library' => array(
+    $variables['primary']['#attached'] = [
+      'library' => [
         'seven/drupal.nav-tabs',
-      ),
-    );
+      ],
+    ];
   }
   elseif (!empty($variables['secondary'])) {
-    $variables['secondary']['#attached'] = array(
-      'library' => array(
+    $variables['secondary']['#attached'] = [
+      'library' => [
         'seven/drupal.nav-tabs',
-      ),
-    );
+      ],
+    ];
   }
 }
 
