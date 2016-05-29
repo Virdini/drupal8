@@ -29,3 +29,4 @@ permissions:
   27: 'access in-place editing'
   28: 'administer menu'
   29: 'vbase site settings'
+  30: 'administer redirects'

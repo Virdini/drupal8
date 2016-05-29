@@ -44,6 +44,8 @@ dependencies:
   - ctools
   - pathauto
   - simple_sitemap
+  - simple_sitemap
+  - redirect
 themes:
   - vadmin
   - vcurrent
