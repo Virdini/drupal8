@@ -28,6 +28,10 @@ libraries-override:
 libraries-extend:
   core/drupal.vertical-tabs:
     - vcore/vertical-tabs
+  core/jquery.ui:
+    - vcore/vcore.jquery.ui
+  core/drupal.dialog:
+    - vcore/vcore.drupal.dialog
 
 regions:
   header: 'Header'

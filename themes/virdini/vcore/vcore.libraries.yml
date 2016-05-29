@@ -27,3 +27,15 @@ vertical-tabs:
   css:
     component:
       css/components/vertical-tabs.css: {}
+
+vcore.jquery.ui:
+  version: VERSION
+  css:
+    component:
+      css/components/jquery.ui/theme.css: { weight: -1 }
+
+vcore.drupal.dialog:
+  version: VERSION
+  css:
+    theme:
+      css/components/dialog.css: { weight: -10 }
