@@ -43,7 +43,7 @@ dependencies:
   - ckeditor_font
   - ctools
   - pathauto
-#  - simple_sitemap
+  - simple_sitemap
 themes:
   - vadmin
   - vcurrent
