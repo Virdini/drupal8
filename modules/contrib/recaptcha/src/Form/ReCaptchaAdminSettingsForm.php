@@ -37,91 +37,80 @@ class ReCaptchaAdminSettingsForm extends ConfigFormBase {
 
     $form['general'] = [
       '#type' => 'details',
-      '#title' => t('General settings'),
+      '#title' => $this->t('General settings'),
       '#open' => TRUE,
     ];
 
     $form['general']['recaptcha_site_key'] = [
       '#default_value' => $config->get('site_key'),
-      '#description' => t('The site key given to you when you <a href=":url">register for reCAPTCHA</a>.', [':url' => 'http://www.google.com/recaptcha/admin']),
+      '#description' => $this->t('The site key given to you when you <a href=":url">register for reCAPTCHA</a>.', [':url' => 'http://www.google.com/recaptcha/admin']),
       '#maxlength' => 40,
       '#required' => TRUE,
-      '#title' => t('Site key'),
+      '#title' => $this->t('Site key'),
       '#type' => 'textfield',
     ];
 
     $form['general']['recaptcha_secret_key'] = [
       '#default_value' => $config->get('secret_key'),
-      '#description' => t('The secret key given to you when you <a href=":url">register for reCAPTCHA</a>.', [':url' => 'http://www.google.com/recaptcha/admin']),
+      '#description' => $this->t('The secret key given to you when you <a href=":url">register for reCAPTCHA</a>.', [':url' => 'http://www.google.com/recaptcha/admin']),
       '#maxlength' => 40,
       '#required' => TRUE,
-      '#title' => t('Secret key'),
+      '#title' => $this->t('Secret key'),
       '#type' => 'textfield',
     ];
 
     // Widget configurations.
     $form['widget'] = [
       '#type' => 'details',
-      '#title' => t('Widget settings'),
+      '#title' => $this->t('Widget settings'),
       '#open' => TRUE,
     ];
     $form['widget']['recaptcha_theme'] = [
       '#default_value' => $config->get('widget.theme'),
-      '#description' => t('Defines which theme to use for reCAPTCHA.'),
+      '#description' => $this->t('Defines which theme to use for reCAPTCHA.'),
       '#options' => [
         'light' => t('Light (default)'),
         'dark' => t('Dark'),
       ],
-      '#title' => t('Theme'),
+      '#title' => $this->t('Theme'),
       '#type' => 'select',
     ];
     $form['widget']['recaptcha_type'] = [
       '#default_value' => $config->get('widget.type'),
-      '#description' => t('The type of CAPTCHA to serve.'),
+      '#description' => $this->t('The type of CAPTCHA to serve.'),
       '#options' => [
-        'image' => t('Image (default)'),
-        'audio' => t('Audio'),
+        'image' => $this->t('Image (default)'),
+        'audio' => $this->t('Audio'),
       ],
-      '#title' => t('Type'),
+      '#title' => $this->t('Type'),
       '#type' => 'select',
     ];
     $form['widget']['recaptcha_size'] = [
       '#default_value' => $config->get('widget.size'),
-      '#description' => t('The size of CAPTCHA to serve.'),
+      '#description' => $this->t('The size of CAPTCHA to serve.'),
       '#options' => [
-        '' => t('Normal (default)'),
-        'compact' => t('Compact'),
+        '' => $this->t('Normal (default)'),
+        'compact' => $this->t('Compact'),
       ],
-      '#title' => t('Size'),
+      '#title' => $this->t('Size'),
       '#type' => 'select',
     ];
     $form['widget']['recaptcha_tabindex'] = [
       '#default_value' => $config->get('widget.tabindex'),
-      '#description' => t('Set the <a href=":tabindex">tabindex</a> of the widget and challenge (Default = 0). If other elements in your page use tabindex, it should be set to make user navigation easier.', [':tabindex' => Url::fromUri('http://www.w3.org/TR/html4/interact/forms.html', ['fragment' => 'adef-tabindex'])->toString()]),
+      '#description' => $this->t('Set the <a href=":tabindex">tabindex</a> of the widget and challenge (Default = 0). If other elements in your page use tabindex, it should be set to make user navigation easier.', [':tabindex' => Url::fromUri('http://www.w3.org/TR/html4/interact/forms.html', ['fragment' => 'adef-tabindex'])->toString()]),
       '#maxlength' => 4,
-      '#title' => t('Tabindex'),
-      '#type' => 'textfield',
+      '#title' => $this->t('Tabindex'),
+      '#type' => 'number',
+      '#min' => -1,
     ];
     $form['widget']['recaptcha_noscript'] = [
       '#default_value' => $config->get('widget.noscript'),
-      '#description' => t('If JavaScript is a requirement for your site, you should <strong>not</strong> enable this feature. With this enabled, a compatibility layer will be added to the captcha to support non-js users.'),
-      '#title' => t('Enable fallback for browsers with JavaScript disabled'),
+      '#description' => $this->t('If JavaScript is a requirement for your site, you should <strong>not</strong> enable this feature. With this enabled, a compatibility layer will be added to the captcha to support non-js users.'),
+      '#title' => $this->t('Enable fallback for browsers with JavaScript disabled'),
       '#type' => 'checkbox',
     ];
 
     return parent::buildForm($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
-
-    $tabindex = $form_state->getValue('recaptcha_tabindex');
-    if (!is_numeric($tabindex)) {
-      $form_state->setErrorByName('recaptcha_tabindex', t('The tabindex must be an integer.'));
-    }
   }
 
   /**

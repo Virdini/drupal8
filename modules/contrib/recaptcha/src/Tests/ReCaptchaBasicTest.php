@@ -72,12 +72,10 @@ class ReCaptchaBasicTest extends WebTestBase {
     // Check form validation.
     $edit['recaptcha_site_key'] = '';
     $edit['recaptcha_secret_key'] = '';
-    $edit['recaptcha_tabindex'] = $this->randomMachineName(2);
     $this->drupalPostForm('admin/config/people/captcha/recaptcha', $edit, t('Save configuration'));
 
     $this->assertRaw(t('Site key field is required.'), '[testReCaptchaConfiguration]: Empty site key detected.');
     $this->assertRaw(t('Secret key field is required.'), '[testReCaptchaConfiguration]: Empty secret key detected.');
-    $this->assertRaw(t('The tabindex must be an integer.'), '[testReCaptchaConfiguration]: Invalid value for tab index detected.');
 
     // Save form with valid values.
     $edit['recaptcha_site_key'] = $site_key;
