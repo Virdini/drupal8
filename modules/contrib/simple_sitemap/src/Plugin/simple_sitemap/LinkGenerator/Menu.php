@@ -1,14 +1,13 @@
 <?php
 /**
  * @file
- * Contains \Drupal\simple_sitemap\LinkGenerator\Menu.
+ * Contains \Drupal\simple_sitemap\Plugin\simple_sitemap\LinkGenerator\Menu.
  *
  * Plugin for menu entity link generation.
  */
 
-namespace Drupal\simple_sitemap\Plugin\LinkGenerator;
+namespace Drupal\simple_sitemap\Plugin\simple_sitemap\LinkGenerator;
 
-use Drupal\simple_sitemap\Annotation\LinkGenerator;
 use Drupal\simple_sitemap\LinkGeneratorBase;
 
 /**
@@ -23,7 +22,7 @@ class Menu extends LinkGeneratorBase {
   /**
    * {@inheritdoc}
    */
-  function getInfo() {
+  function getQueryInfo() {
     return array(
       'field_info' => array(
         'entity_id' => 'mlid',
@@ -31,7 +30,6 @@ class Menu extends LinkGeneratorBase {
         'route_parameters' => 'route_parameters',
         'options' => 'options',
       ),
-      'path_info' => array()
     );
   }
 

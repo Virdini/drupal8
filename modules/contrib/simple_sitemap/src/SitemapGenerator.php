@@ -76,11 +76,12 @@ class SitemapGenerator {
         $instance = $manager->createInstance($link_generator_plugin['id']);
         foreach($this->entityTypes[$link_generator_plugin['id']] as $bundle => $bundle_settings) {
           if ($bundle_settings['index']) {
-            $operation['info'] = $instance->getInfo();
-            $operation['query'] = $instance->getQuery($bundle);
-            $operation['info']['bundle_settings'] = $bundle_settings;
-            $operation['info']['bundle_settings']['bundle_name'] = $bundle;
-            $operation['info']['bundle_settings']['bundle_entity_type'] = $link_generator_plugin['id'];
+            $operation['query']['query'] = $instance->getQuery($bundle);
+            $operation['query']['field_info'] = $instance->getQueryInfo()['field_info'];
+            $operation['entity_info']['bundle_settings'] = $bundle_settings;
+            $operation['entity_info']['bundle_name'] = $bundle;
+            $operation['entity_info']['bundle_entity_type'] = $link_generator_plugin['id'];
+            $operation['entity_info']['entity_type_name'] = !empty($link_generator_plugin['entity_type_name']) ? $link_generator_plugin['entity_type_name'] : '';
             $operations[] = $operation;
           }
         }
@@ -96,15 +97,16 @@ class SitemapGenerator {
    * @param array $links
    *  All links with their multilingual versions and settings.
    */
-  public static function generateSitemap($links) {
+  public static function generateSitemap($links, $remove_sitemap = FALSE) {
     // Invoke alter hook.
     \Drupal::moduleHandler()->alter('simple_sitemap_links', $links);
-
     $values = array(
-      'id' => db_query('SELECT MAX(id) FROM {simple_sitemap}')->fetchField() + 1,
+      'id' => $remove_sitemap ? 1 : db_query('SELECT MAX(id) FROM {simple_sitemap}')->fetchField() + 1,
       'sitemap_string' => self::generateSitemapChunk($links),
       'sitemap_created' => REQUEST_TIME,
     );
+    if ($remove_sitemap)
+      db_truncate('simple_sitemap')->execute();
     db_insert('simple_sitemap')->fields($values)->execute();
   }
 
@@ -188,3 +190,4 @@ class SitemapGenerator {
     return $writer->outputMemory();
   }
 }
+

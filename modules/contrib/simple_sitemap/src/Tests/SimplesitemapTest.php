@@ -40,19 +40,20 @@ class SimplesitemapTest extends WebTestBase {
    * Test Simple sitemap integration.
    */
   public function testSimplesitemap() {
-    \Drupal::service('simple_sitemap.generator')->generateSitemap('backend');
 
-    // Verify sitemap.xml can be cached.
+    // Verify sitemap.xml has been generated on install (custom path generation).
     $this->drupalGet('sitemap.xml');
     $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), 'MISS');
+    $this->assertText('http://');
     $this->drupalGet('sitemap.xml');
     $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), 'HIT');
+    $this->assertText('http://');
 
     /* @var $node \Drupal\Node\NodeInterface */
     $node = $this->createNode(['title' => 'A new page', 'type' => 'page']);
 
     // Generate new sitemap.
-    \Drupal::service('simple_sitemap.generator')->generateSitemap('backend');
+    \Drupal::service('simple_sitemap.generator')->generateSitemap('nobatch');
 
     // Verify the cache was flushed and node is in the sitemap.
     $this->drupalGet('sitemap.xml');

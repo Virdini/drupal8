@@ -1,21 +1,21 @@
 <?php
 /**
  * @file
- * Contains \Drupal\simple_sitemap\Plugin\LinkGenerator\NodeType.
+ * Contains \Drupal\simple_sitemap\Plugin\simple_sitemap\LinkGenerator\NodeType.
  *
  * Plugin for node entity link generation.
  */
 
-namespace Drupal\simple_sitemap\Plugin\LinkGenerator;
+namespace Drupal\simple_sitemap\Plugin\simple_sitemap\LinkGenerator;
 
-use Drupal\simple_sitemap\Annotation\LinkGenerator;
 use Drupal\simple_sitemap\LinkGeneratorBase;
 
 /**
  * NodeType class.
  *
  * @LinkGenerator(
- *   id = "node_type"
+ *   id = "node_type",
+ *   entity_type_name = "node"
  * )
  */
 class NodeType extends LinkGeneratorBase {
@@ -23,16 +23,12 @@ class NodeType extends LinkGeneratorBase {
   /**
    * {@inheritdoc}
    */
-  public function getInfo() {
+  public function getQueryInfo() {
     return array(
       'field_info' => array(
         'entity_id' => 'nid',
         'lastmod' => 'changed',
       ),
-      'path_info' => array(
-        'route_name' => 'entity.node.canonical',
-        'entity_type' => 'node',
-      )
     );
   }
 
