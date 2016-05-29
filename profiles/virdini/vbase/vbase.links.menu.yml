@@ -1,0 +1,6 @@
+vbase.site_settings:
+  title: 'Main Site Settings'
+  parent: system.admin_config_system
+  description: 'Change site name, email address, slogan.'
+  route_name: vbase.site_settings
+  weight: -20

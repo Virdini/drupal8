@@ -1,3 +1,14 @@
+vbase.site_settings:
+  title: 'Site details'
+  route_name: vbase.site_settings
+  base_route: vbase.site_settings
+  weight: -1
+
+vbase.tags_settings:
+  title: 'Tags'
+  route_name: vbase.tags_settings
+  base_route: vbase.site_settings
+
 vbase.adjustment_tab:
   title: 'Default tab'
   route_name: vbase.adjustment

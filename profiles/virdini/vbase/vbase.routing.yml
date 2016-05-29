@@ -1,3 +1,19 @@
+vbase.site_settings:
+  path: '/admin/config/system/site-settings'
+  defaults:
+    _form: 'Drupal\vbase\Form\BaseSiteSettingsForm'
+    _title: 'Main Site Settings'
+  requirements:
+    _permission: 'vbase site settings'
+
+vbase.tags_settings:
+  path: '/admin/config/system/tags-settings'
+  defaults:
+    _form: 'Drupal\vbase\Form\TagsSettingsForm'
+    _title: 'Tags Settings'
+  requirements:
+    _permission: 'vbase site settings'
+
 vbase.adjustment:
   path: '/virdini-adjustment'
   defaults:
