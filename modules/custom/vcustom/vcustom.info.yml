@@ -1,0 +1,6 @@
+name: Virdini Custom
+type: module
+description: 'Module for the current project'
+package: Virdini
+# version: VERSION
+core: 8.x

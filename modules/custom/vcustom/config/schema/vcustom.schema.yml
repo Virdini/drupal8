@@ -1,0 +1,18 @@
+# Schema for the configuration files of the VCustom module.
+
+vcustom.contact:
+  type: config_object
+  label: 'VCustom contact information'
+  mapping:
+    email:
+      type: email
+      label: 'Email address'
+    telephones:
+      label: 'Telephone numbers'
+      type: sequence
+      sequence:
+        type: string
+        label: 'Telephone number'
+    copyright:
+      type: string
+      label: 'Copyright'

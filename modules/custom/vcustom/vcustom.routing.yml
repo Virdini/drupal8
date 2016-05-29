@@ -1,0 +1,7 @@
+vcustom.contact_information:
+  path: '/admin/config/system/contact-information'
+  defaults:
+    _form: 'Drupal\vcustom\Form\ContactInformationForm'
+    _title: 'Contact Information'
+  requirements:
+    _permission: 'vbase site settings'
