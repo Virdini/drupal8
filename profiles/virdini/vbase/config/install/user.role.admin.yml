@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies: {  }
+id: admin
+label: Admin
+weight: 2
+is_admin: null
+permissions:
+  0: 'use text format full_html'
+  1: 'administer google analytics'
+  2: 'access toolbar'
+  3: 'access administration pages'
+  4: 'view the administration theme'
+  5: 'access content overview'
+  8: 'administer shortcuts'
+  9: 'customize shortcut links'
+  10: 'switch shortcut sets'
+  11: 'access shortcuts'
+  12: 'access site in maintenance mode'
+  13: 'administer taxonomy'
+  19: 'access contextual links'
+  20: 'administer meta tags'
+  21: 'administer nodes'
+  22: 'bypass node access'
+  23: 'change own username'
+  24: 'access user profiles'
+  25: 'create url aliases'
+  26: 'administer sitemap settings'
+  27: 'access in-place editing'
+  28: 'administer menu'
+  29: 'vbase site settings'
