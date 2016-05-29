@@ -4,17 +4,16 @@ global-styling:
     base:
       css/base/elements.css: {}
     component:
-      css/components/buttons.css: {}
-      css/components/messages.css: {}
-      css/components/dropbutton.component.css: {}
-      css/components/tablesort-indicator.css: {}
-      css/components/form.css: {}
-      css/components/details.css: {}
-      css/components/collapse-processed.css: {}
-      css/components/pager.css: {}
-      css/components/tabs.css: {}
       css/components/breadcrumb.css: {}
-      #css/components/node.css: {}
+      css/components/buttons.css: {}
+      css/components/collapse-processed.css: {}
+      css/components/details.css: {}
+      css/components/dropbutton.component.css: {}
+      css/components/form.css: {}
+      css/components/messages.css: {}
+      css/components/pager.css: {}
+      css/components/tablesort-indicator.css: {}
+      css/components/tabs.css: {}
 
 messages:
   version: VERSION
