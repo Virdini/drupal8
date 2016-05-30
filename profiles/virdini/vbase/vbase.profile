@@ -183,3 +183,64 @@ function vbase_module_implements_alter(&$implementations, $hook) {
     $implementations['vbase'] = $group;
   }
 }
+
+/**
+ * Implements hook_token_info_alter().
+ */
+function vbase_token_info_alter(&$info) {
+  $info['tokens']['current-page']['titlefix'] = [
+    'name' => t('Fixed Title'),
+    'description' => t('The title of the current page.') .' (Fixed)',
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function vbase_tokens($type, array $tokens, array $data = array(), array $options = array(), \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata) {
+  $replacements = array();
+  // Current page tokens.
+  if ($type == 'current-page') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'titlefix':
+          $replacements[$original] = _vbase_get_title();
+          break;
+      }
+    }
+  }
+  return $replacements;
+}
+
+function _vbase_get_title() {
+  $request = \Drupal::request();
+  $route_match = \Drupal::routeMatch();
+  $view_id = $route_match->getParameter('view_id');
+  if ($view_id) {
+    $display_id = $route_match->getParameter('display_id');
+    $config = \Drupal::config('views.view.'. $view_id);
+    $page_title = $config->get('display.'. $display_id .'.display_options.title');
+    if (!$page_title) {
+      $page_title = $config->get('display.default.display_options.title');
+    }
+  }
+  else {
+    $page_title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
+    if (!$page_title) {
+      $route_name = $route_match->getRouteName();
+      $matches = array();
+      preg_match('/entity\.(.*)\.(.*)/', $route_name, $matches);
+      if(!empty($matches[1]) && $matches[1] == 'node' && !empty($matches[2])) {
+        switch ($matches[2]) {
+          case 'edit_form':
+            $page_title = t('Edit');
+            break;
+          case 'content_translation_overview':
+            $page_title = t('Translations');
+            break;
+        }
+      }
+    }
+  }
+  return $page_title;
+}
