@@ -45,9 +45,7 @@
 #}
 <div id="wrapper">
 
-  <header role="banner">
-    {{ page.header }}
-  </header>
+  {% include directory ~ '/templates/layout/header.html.twig' %}
 
   {{ page.primary_menu }}
   {{ page.secondary_menu }}
@@ -55,8 +53,6 @@
   {{ page.breadcrumb }}
 
   {{ page.highlighted }}
-
-  {{ page.help }}
 
   <main role="main">
     
@@ -80,8 +76,4 @@
 
 </div>
 
-{% if page.footer %}
-  <footer role="contentinfo">
-    {{ page.footer }}
-  </footer>
-{% endif %}
+{% include directory ~ '/templates/layout/footer.html.twig' %}
