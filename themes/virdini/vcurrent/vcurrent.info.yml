@@ -11,6 +11,13 @@ libraries:
   - vcurrent/global-styling
   #- vcurrent/sticky-footer
 
+libraries-override:
+  vcore/global-styling:
+    css:
+      base:
+        css/base/elements.css: css/base/elements.css
+
+
 regions:
   header: 'Header'
   pre_content: 'Pre-content'
