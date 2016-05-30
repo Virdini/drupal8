@@ -18,7 +18,7 @@
           <meta property="position" itemprop="position" content="{{ key + 1 }}">
         </li>
       {% else %}
-        <li>{{ item.text }}</li>
+        <li class="breadcrumb-nolink">{{ item.text }}</li>
       {% endif %}
     {% endfor %}
     </ol>
