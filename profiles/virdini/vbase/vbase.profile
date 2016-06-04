@@ -216,7 +216,8 @@ function _vbase_get_title() {
   $request = \Drupal::request();
   $route_match = \Drupal::routeMatch();
   $view_id = $route_match->getParameter('view_id');
-  if ($view_id) {
+  $route_name = $route_match->getRouteName();
+  if (substr($route_name, 0, 4) === "view" && $view_id) {
     $display_id = $route_match->getParameter('display_id');
     $config = \Drupal::config('views.view.'. $view_id);
     $page_title = $config->get('display.'. $display_id .'.display_options.title');
@@ -227,7 +228,6 @@ function _vbase_get_title() {
   else {
     $page_title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
     if (!$page_title) {
-      $route_name = $route_match->getRouteName();
       $matches = array();
       preg_match('/entity\.(.*)\.(.*)/', $route_name, $matches);
       if(!empty($matches[1]) && $matches[1] == 'node' && !empty($matches[2])) {
