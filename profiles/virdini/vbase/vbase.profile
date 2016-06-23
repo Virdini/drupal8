@@ -217,7 +217,14 @@ function _vbase_get_title() {
   $route_match = \Drupal::routeMatch();
   $view_id = $route_match->getParameter('view_id');
   $route_name = $route_match->getRouteName();
-  if (substr($route_name, 0, 4) === "view" && $view_id) {
+  if ($route_name == 'contact.site_page') {
+    $config = \Drupal::config('contact.settings');
+    $contact_form = \Drupal::entityTypeManager()
+      ->getStorage('contact_form')
+      ->load($config->get('default_form'));
+      $page_title = $contact_form->label();
+  }
+  elseif (substr($route_name, 0, 4) === "view" && $view_id) {
     $display_id = $route_match->getParameter('display_id');
     $config = \Drupal::config('views.view.'. $view_id);
     $page_title = $config->get('display.'. $display_id .'.display_options.title');
