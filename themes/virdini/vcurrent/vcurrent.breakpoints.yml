@@ -1,0 +1,48 @@
+vcurrent.320:
+  label: "320(300) - 479(459)"
+  mediaQuery: ''
+  weight: 0
+  multipliers:
+    - 1x
+vcurrent.480:
+  label: "480(460) - 639(619)"
+  mediaQuery: 'all and (min-width: 480px)'
+  weight: 1
+  multipliers:
+    - 1x
+vcurrent.640:
+  label: "640(620) - 759(739)"
+  mediaQuery: 'all and (min-width: 640px)'
+  weight: 2
+  multipliers:
+    - 1x
+vcurrent.760:
+  label: "760(740) - 959(939)"
+  mediaQuery: 'all and (min-width: 760px)'
+  weight: 3
+  multipliers:
+    - 1x
+vcurrent.960:
+  label: "960(940)"
+  mediaQuery: 'all and (min-width: 960px)'
+  weight: 4
+  multipliers:
+    - 1x
+vcurrent.1280:
+  label: "1280(1260)"
+  mediaQuery: 'all and (min-width: 1280px)'
+  weight: 5
+  multipliers:
+    - 1x
+vcurrent.1600:
+  label: "1600(1580)"
+  mediaQuery: 'all and (min-width: 1600px)'
+  weight: 6
+  multipliers:
+    - 1x
+vcurrent.1920:
+  label: "1920(1900)"
+  mediaQuery: 'all and (min-width: 1920px)'
+  weight: 7
+  multipliers:
+    - 1x
