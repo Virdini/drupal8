@@ -184,34 +184,6 @@ function vbase_module_implements_alter(&$implementations, $hook) {
   }
 }
 
-/**
- * Implements hook_token_info_alter().
- */
-function vbase_token_info_alter(&$info) {
-  $info['tokens']['current-page']['titlefix'] = [
-    'name' => t('Fixed Title'),
-    'description' => t('The title of the current page.') .' (Fixed)',
-  ];
-}
-
-/**
- * Implements hook_tokens().
- */
-function vbase_tokens($type, array $tokens, array $data = array(), array $options = array(), \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata) {
-  $replacements = array();
-  // Current page tokens.
-  if ($type == 'current-page') {
-    foreach ($tokens as $name => $original) {
-      switch ($name) {
-        case 'titlefix':
-          $replacements[$original] = _vbase_get_title();
-          break;
-      }
-    }
-  }
-  return $replacements;
-}
-
 function _vbase_get_title() {
   $request = \Drupal::request();
   $route_match = \Drupal::routeMatch();
