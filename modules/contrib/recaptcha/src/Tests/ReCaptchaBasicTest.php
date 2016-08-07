@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\recaptcha\Tests\ReCaptchaBasicTestCase.
- */
-
 namespace Drupal\recaptcha\Tests;
 
 use Drupal\Core\Session\AccountInterface;
@@ -177,7 +172,8 @@ class ReCaptchaBasicTest extends WebTestBase {
     // Check for error message.
     $this->assertText(t('The answer you entered for the CAPTCHA was not correct.'), 'CAPTCHA should block user login form', 'reCAPTCHA');
 
-    // And make sure that user is not logged in: check for name and password fields on ?q=user
+    // And make sure that user is not logged in: check for name and password
+    // fields on "?q=user".
     $this->drupalGet('user/login');
     $this->assertField('name', t('Username field found.'), 'reCAPTCHA');
     $this->assertField('pass', t('Password field found.'), 'reCAPTCHA');

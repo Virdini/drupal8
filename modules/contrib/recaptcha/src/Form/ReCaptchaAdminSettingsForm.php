@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\recaptcha\Form\ReCaptchaAdminSettingsForm.
- */
 
 namespace Drupal\recaptcha\Form;
 
@@ -123,6 +119,7 @@ class ReCaptchaAdminSettingsForm extends ConfigFormBase {
       ->set('secret_key', $form_state->getValue('recaptcha_secret_key'))
       ->set('widget.theme', $form_state->getValue('recaptcha_theme'))
       ->set('widget.type', $form_state->getValue('recaptcha_type'))
+      ->set('widget.size', $form_state->getValue('recaptcha_size'))
       ->set('widget.tabindex', $form_state->getValue('recaptcha_tabindex'))
       ->set('widget.noscript', $form_state->getValue('recaptcha_noscript'))
       ->save();
