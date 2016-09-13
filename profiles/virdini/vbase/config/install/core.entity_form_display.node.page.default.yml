@@ -3,10 +3,8 @@ status: true
 dependencies:
   config:
     - field.field.node.page.body
-    - field.field.node.page.field_meta_tags
     - node.type.page
   module:
-    - metatag
     - path
     - text
 id: node.page.default
@@ -25,11 +23,6 @@ content:
   created:
     type: datetime_timestamp
     weight: 3
-    settings: {  }
-    third_party_settings: {  }
-  field_meta_tags:
-    type: metatag_firehose
-    weight: 6
     settings: {  }
     third_party_settings: {  }
   path:

@@ -1,13 +1,10 @@
-uuid: a6f654b4-65d8-413c-ba33-518216204e49
 langcode: en
 status: true
 dependencies:
   config:
     - field.field.node.page.body
-    - field.field.node.page.field_meta_tags
     - node.type.page
   module:
-    - metatag
     - text
     - user
 id: node.page.default
@@ -18,12 +15,6 @@ content:
   body:
     type: text_default
     weight: 1
-    label: hidden
-    settings: {  }
-    third_party_settings: {  }
-  field_meta_tags:
-    type: metatag_empty_formatter
-    weight: 2
     label: hidden
     settings: {  }
     third_party_settings: {  }
