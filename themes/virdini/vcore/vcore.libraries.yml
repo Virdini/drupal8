@@ -33,6 +33,11 @@ image-widget:
     component:
       css/components/image-widget.css: {}
 
+file:
+  version: VERSION
+  css:
+    component:
+      css/components/file.css: { weight: -10 }
 
 vcore.jquery.ui:
   version: VERSION
