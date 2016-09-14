@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\captcha\Element\Captcha.
- */
-
 namespace Drupal\captcha\Element;
 
 use Drupal\Core\Form\FormStateInterface;
@@ -37,7 +32,9 @@ class Captcha extends FormElement {
     // Override the default CAPTCHA validation function for case
     // insensitive validation.
     // TODO: shouldn't this be done somewhere else, e.g. in form_alter?
-    if (CAPTCHA_DEFAULT_VALIDATION_CASE_INSENSITIVE == \Drupal::config('captcha.settings')->get('default_validation')) {
+    if (CAPTCHA_DEFAULT_VALIDATION_CASE_INSENSITIVE == \Drupal::config('captcha.settings')
+        ->get('default_validation')
+    ) {
       $captcha_element['#captcha_validate'] = 'captcha_validate_case_insensitive_equality';
     }
     return $captcha_element;
@@ -47,11 +44,19 @@ class Captcha extends FormElement {
    * Process callback for CAPTCHA form element.
    */
   public static function processCaptchaElement(&$element, FormStateInterface $form_state, &$complete_form) {
-    // Add captcha.inc file
+    // Add captcha.inc file.
     module_load_include('inc', 'captcha');
 
     // Add Javascript for general CAPTCHA functionality.
     $element['#attached']['library'][] = 'captcha/base';
+
+    if ($form_state->getTriggeringElement() && !empty($form_state->getTriggeringElement()['#limit_validation_errors'])) {
+      // This is a partial (ajax) submission with limited validation. Do not
+      // change anything about the captcha element, assume that it will not
+      // update the captcha element, do not generate anything, which keeps the
+      // current token intact for the real submission.
+      return $element;
+    }
 
     // Get the form ID of the form we are currently processing (which is not
     // necessary the same form that is submitted (if any).
@@ -80,7 +85,7 @@ class Captcha extends FormElement {
     ];
 
     // Additional one time CAPTCHA token: store in database and send with form.
-    $captcha_token = md5(mt_rand());
+    $captcha_token = hash('sha256', mt_rand());
     db_update('captcha_sessions')
       ->fields(['token' => $captcha_token])
       ->condition('csid', $captcha_sid)
@@ -113,10 +118,15 @@ class Captcha extends FormElement {
     if (_captcha_required_for_user($captcha_sid, $this_form_id) || $element['#captcha_admin_mode']) {
       // Generate a CAPTCHA and its solution
       // (note that the CAPTCHA session ID is given as third argument).
-      $captcha = \Drupal::moduleHandler()->invoke($captcha_type_module, 'captcha', ['generate', $captcha_type_challenge, $captcha_sid]);
+      $captcha = \Drupal::moduleHandler()
+        ->invoke($captcha_type_module, 'captcha', [
+          'generate',
+          $captcha_type_challenge,
+          $captcha_sid,
+        ]);
 
       // @todo Isn't this moment a bit late to figure out that we don't need CAPTCHA?
-      if(!isset($captcha)) {
+      if (!isset($captcha)) {
         return $element;
       }
 
@@ -124,7 +134,11 @@ class Captcha extends FormElement {
         // The selected module did not return what we expected: log about it and quit.
         \Drupal::logger('CAPTCHA')->error(
           'CAPTCHA problem: unexpected result from hook_captcha() of module %module when trying to retrieve challenge type %type for form %form_id.',
-          ['%type' => $captcha_type_challenge, '%module' => $captcha_type_module, '%form_id' => $this_form_id]
+          [
+            '%type' => $captcha_type_challenge,
+            '%module' => $captcha_type_module,
+            '%form_id' => $this_form_id,
+          ]
         );
 
         return $element;

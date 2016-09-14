@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\image_captcha\Form\ImageCaptchaSettingsForm.
- */
-
 namespace Drupal\image_captcha\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
@@ -325,7 +320,7 @@ class ImageCaptchaSettingsForm extends ConfigFormBase {
         '#options' => $available_fonts,
         '#attributes' => ['class' => ['image_captcha_admin_fonts_selection']],
         '#process' => ['form_process_checkboxes'],
-        ];
+      ];
 
       $form['image_captcha_font_size'] = [
         '#type' => 'select',
@@ -366,14 +361,14 @@ class ImageCaptchaSettingsForm extends ConfigFormBase {
   /**
    * Helper function to get fonts from the given directories.
    *
-   * @param array|NULL $directories
+   * @param array|null $directories
    *   (Optional) an array of directories
    *   to recursively search through, if not given, the default
    *   directories will be used.
    *
    * @return array
    *   Fonts file objects (with fields 'name',
-   *   'basename' and 'filename'), keyed on the md5 hash of the font
+   *   'basename' and 'filename'), keyed on the sha256 hash of the font
    *   path (to have an easy token that can be used in an url
    *   without en/decoding issues).
    */
@@ -390,7 +385,7 @@ class ImageCaptchaSettingsForm extends ConfigFormBase {
     $fonts = [];
     foreach ($directories as $directory) {
       foreach (file_scan_directory($directory, '/\.[tT][tT][fF]$/') as $filename => $font) {
-        $fonts[md5($filename)] = $font;
+        $fonts[hash('sha256', $filename)] = $font;
       }
     }
 
