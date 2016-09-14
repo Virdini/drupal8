@@ -27,6 +27,13 @@ vertical-tabs:
     component:
       css/components/vertical-tabs.css: {}
 
+image-widget:
+  version: VERSION
+  css:
+    component:
+      css/components/image-widget.css: {}
+
+
 vcore.jquery.ui:
   version: VERSION
   css:
