@@ -41,9 +41,19 @@ function vbase_form_install_configure_submit($form, \Drupal\Core\Form\FormStateI
  */
 function vbase_file_validate(\Drupal\file\FileInterface $file) {
   $errors = array();
-  $transliteration = new \Drupal\Component\Transliteration\PhpTransliteration;
   $filename = $file->getFilename();
-  $filename_fixed = $transliteration->transliterate($filename);
+  
+  // Transliterate and sanitize the destination filename.
+  $filename_fixed = \Drupal::transliteration()->transliterate($filename, 'en', '');
+  // Replace whitespace.
+  $filename_fixed = str_replace(' ', '_', $filename_fixed);
+  // Remove remaining unsafe characters.
+  $filename_fixed = preg_replace('![^0-9A-Za-z_.-]!', '', $filename_fixed);
+  // Remove multiple consecutive non-alphabetical characters.
+  $filename_fixed = preg_replace('/(_)_+|(\.)\.+|(-)-+/', '\\1\\2\\3', $filename_fixed);
+  // Force lowercase to prevent issues on case-insensitive file systems.
+  $filename_fixed = \Drupal\Component\Utility\Unicode::strtolower($filename_fixed);
+  
   if ($filename != $filename_fixed) {
     $directory = drupal_dirname($file->destination);
     $file->destination = file_create_filename($filename_fixed, $directory);
