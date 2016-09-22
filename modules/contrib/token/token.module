@@ -9,11 +9,14 @@ use Drupal\Component\Render\PlainTextOutput;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Menu\MenuLinkInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\menu_link_content\MenuLinkContentInterface;
 use Drupal\node\NodeInterface;
 
 /**
@@ -568,11 +571,22 @@ function token_render_cache_set(&$markup, $elements) {
   \Drupal::request()->server->set('REQUEST_METHOD', $original_method);
 }
 
-function token_menu_link_load_all_parents($plugin_id) {
+/**
+ * Loads menu link titles for all purents of a menu link plugin ID.
+ *
+ * @param string $plugin_id
+ *   The menu link plugin ID.
+ * @param string $langcode
+ *   The language code.
+ *
+ * @return string[]
+ *   List of menu link parent titles.
+ */
+function token_menu_link_load_all_parents($plugin_id, $langcode) {
   $cache = &drupal_static(__FUNCTION__, array());
 
-  if (!isset($cache[$plugin_id])) {
-    $cache[$plugin_id] = array();
+  if (!isset($cache[$plugin_id][$langcode])) {
+    $cache[$plugin_id][$langcode] = array();
     /** @var \Drupal\Core\Menu\MenuLinkManagerInterface $menu_link_manager */
     $menu_link_manager = \Drupal::service('plugin.manager.menu.link');
     $parent_ids = $menu_link_manager->getParentIds($plugin_id);
@@ -580,22 +594,61 @@ function token_menu_link_load_all_parents($plugin_id) {
     unset($parent_ids[$plugin_id]);
     foreach ($parent_ids as $parent_id) {
       $parent = $menu_link_manager->createInstance($parent_id);
-      $cache[$plugin_id] = array($parent_id => $parent->getTitle()) + $cache[$plugin_id];
+      $cache[$plugin_id][$langcode] = array($parent_id => token_menu_link_translated_title($parent, $langcode)) + $cache[$plugin_id][$langcode];
     }
   }
 
-  return $cache[$plugin_id];
+  return $cache[$plugin_id][$langcode];
 }
 
-function token_taxonomy_term_load_all_parents($tid) {
+/**
+ * Returns the translated link of a menu title.
+ *
+ * If the underlying entity is a content menu item, load it to get the
+ * translated menu item title.
+ *
+ * @todo Remove this when there is a better way to get a translated menu
+ *   item title in core: https://www.drupal.org/node/2795143
+ *
+ * @param \Drupal\Core\Menu\MenuLinkInterface $menu_link
+ *   The menu link.
+ * @param string|null $langcode
+ *   (optional) The langcode, defaults to the current language.
+ *
+ * @return string
+ *   The menu link title.
+ */
+function token_menu_link_translated_title(MenuLinkInterface $menu_link, $langcode = NULL) {
+  $metadata = $menu_link->getMetaData();
+  if (isset($metadata['entity_id']) && $menu_link->getProvider() == 'menu_link_content') {
+    /** @var \Drupal\menu_link_content\MenuLinkContentInterface $entity */
+    $entity = \Drupal::entityTypeManager()->getStorage('menu_link_content')->load($metadata['entity_id']);
+    $entity = \Drupal::service('entity.repository')->getTranslationFromContext($entity, $langcode);
+    return $entity->getTitle();
+  }
+  return $menu_link->getTitle();
+}
+
+/**
+ * Loads all the parents of the term in the specified language.
+ *
+ * @param int $tid
+ *   The term id.
+ * @param string $langcode
+ *   The language code.
+ *
+ * @return string[]
+ *   The term parents collection.
+ */
+function token_taxonomy_term_load_all_parents($tid, $langcode) {
   $cache = &drupal_static(__FUNCTION__, array());
 
   if (!is_numeric($tid)) {
     return array();
   }
 
-  if (!isset($cache[$tid])) {
-    $cache[$tid] = array();
+  if (!isset($cache[$langcode][$tid])) {
+    $cache[$langcode][$tid] = array();
     /** @var \Drupal\taxonomy\TermStorageInterface $term_storage */
     $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
     $parents = $term_storage->loadAllParents($tid);
@@ -603,11 +656,12 @@ function token_taxonomy_term_load_all_parents($tid) {
     array_shift($parents);
     $parents = array_reverse($parents);
     foreach ($parents as $term) {
-      $cache[$tid][$term->id()] = $term->label();
+      $translation = \Drupal::service('entity.repository')->getTranslationFromContext($term, $langcode);
+      $cache[$langcode][$tid][$term->id()] = $translation->label();
     }
   }
 
-  return $cache[$tid];
+  return $cache[$langcode][$tid];
 }
 
 function token_element_children(&$elements, $sort = FALSE) {
@@ -761,4 +815,11 @@ function token_node_insert(NodeInterface $node) {
     $menu_link->link = 'entity:node/' .  $node->id();
     $menu_link->save();
   }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for menu_link_content.
+ */
+function token_menu_link_content_presave(MenuLinkContentInterface $menu_link_content) {
+  drupal_static_reset('token_menu_link_load_all_parents');
 }
