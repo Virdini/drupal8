@@ -79,3 +79,33 @@ function vbase_tokens($type, array $tokens, array $data = array(), array $option
   }
   return $replacements;
 }
+
+/**
+ * Implements hook_tokens_alter().
+ */
+function vbase_tokens_alter(array &$replacements, array $context, \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata) {
+  if ($context['type'] == 'node' && !empty($context['data']['node'])) {
+    if (isset($context['tokens']['title']) && !$replacements[$context['tokens']['title']]) {
+      $token_service = \Drupal::service('token');
+      $replacements[$context['tokens']['title']] = $token_service->replace('[current-page:title]');
+    }
+  }
+  elseif ($context['type'] == 'current-page' && isset($context['tokens']['title']) && !$replacements[$context['tokens']['title']]) {
+    $route_match = \Drupal::routeMatch();
+    $route_name = $route_match->getRouteName();
+    $matches = array();
+    preg_match('/entity\.(.*)\.(.*)/', $route_name, $matches);
+    if(!empty($matches[1]) && $matches[1] == 'node' && !empty($matches[2])) {
+      switch ($matches[2]) {
+        case 'edit_form':
+          $node = $route_match->getParameter('node');
+          $replacements[$context['tokens']['title']] = t('<em>Edit @type</em> @title', array('@type' => node_get_type_label($node), '@title' => $node->label()));
+          break;
+        case 'content_translation_overview':
+          $node = $route_match->getParameter('node');
+          $replacements[$context['tokens']['title']] = t('Translations of %label', array('%label' => $node->label()));
+          break;
+      }
+    }
+  }
+}
