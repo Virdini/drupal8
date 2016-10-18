@@ -195,41 +195,5 @@ function vbase_module_implements_alter(&$implementations, $hook) {
 }
 
 function _vbase_get_title() {
-  $request = \Drupal::request();
-  $route_match = \Drupal::routeMatch();
-  $view_id = $route_match->getParameter('view_id');
-  $route_name = $route_match->getRouteName();
-  if ($route_name == 'contact.site_page') {
-    $config = \Drupal::config('contact.settings');
-    $contact_form = \Drupal::entityTypeManager()
-      ->getStorage('contact_form')
-      ->load($config->get('default_form'));
-      $page_title = $contact_form->label();
-  }
-  elseif (substr($route_name, 0, 4) === "view" && $view_id) {
-    $display_id = $route_match->getParameter('display_id');
-    $config = \Drupal::config('views.view.'. $view_id);
-    $page_title = $config->get('display.'. $display_id .'.display_options.title');
-    if (!$page_title) {
-      $page_title = $config->get('display.default.display_options.title');
-    }
-  }
-  else {
-    $page_title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
-    if (!$page_title) {
-      $matches = array();
-      preg_match('/entity\.(.*)\.(.*)/', $route_name, $matches);
-      if(!empty($matches[1]) && $matches[1] == 'node' && !empty($matches[2])) {
-        switch ($matches[2]) {
-          case 'edit_form':
-            $page_title = t('Edit');
-            break;
-          case 'content_translation_overview':
-            $page_title = t('Translations');
-            break;
-        }
-      }
-    }
-  }
-  return $page_title;
+  return \Drupal::service('token')->replace('[current-page:title]');
 }

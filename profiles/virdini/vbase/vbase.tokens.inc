@@ -34,21 +34,10 @@ function vbase_token_info() {
 }
 
 /**
- * Implements hook_token_info_alter().
- */
-function vbase_token_info_alter(&$info) {
-  $info['tokens']['current-page']['titlefix'] = [
-    'name' => t('Fixed Title'),
-    'description' => t('The title of the current page.') .' (Fixed)',
-  ];
-}
-
-/**
  * Implements hook_tokens().
  */
 function vbase_tokens($type, array $tokens, array $data = array(), array $options = array(), \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata) {
   $replacements = array();
-  // Current page tokens.
   if ($type == 'node' && !empty($data['node'])) {
     $node = $data['node'];
     foreach ($tokens as $name => $original) {
@@ -68,15 +57,6 @@ function vbase_tokens($type, array $tokens, array $data = array(), array $option
       }
     }
   }
-  elseif ($type == 'current-page') {
-    foreach ($tokens as $name => $original) {
-      switch ($name) {
-        case 'titlefix':
-          $replacements[$original] = _vbase_get_title();
-          break;
-      }
-    }
-  }
   return $replacements;
 }
 
@@ -86,25 +66,36 @@ function vbase_tokens($type, array $tokens, array $data = array(), array $option
 function vbase_tokens_alter(array &$replacements, array $context, \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata) {
   if ($context['type'] == 'node' && !empty($context['data']['node'])) {
     if (isset($context['tokens']['title']) && !$replacements[$context['tokens']['title']]) {
-      $token_service = \Drupal::service('token');
-      $replacements[$context['tokens']['title']] = $token_service->replace('[current-page:title]');
+      $replacements[$context['tokens']['title']] = \Drupal::service('token')->replace('[current-page:title]');
     }
   }
-  elseif ($context['type'] == 'current-page' && isset($context['tokens']['title']) && !$replacements[$context['tokens']['title']]) {
+  elseif ($context['type'] == 'current-page' && isset($context['tokens']['title'])) {
     $route_match = \Drupal::routeMatch();
     $route_name = $route_match->getRouteName();
-    $matches = array();
-    preg_match('/entity\.(.*)\.(.*)/', $route_name, $matches);
-    if(!empty($matches[1]) && $matches[1] == 'node' && !empty($matches[2])) {
-      switch ($matches[2]) {
-        case 'edit_form':
-          $node = $route_match->getParameter('node');
-          $replacements[$context['tokens']['title']] = t('<em>Edit @type</em> @title', array('@type' => node_get_type_label($node), '@title' => $node->label()));
-          break;
-        case 'content_translation_overview':
-          $node = $route_match->getParameter('node');
-          $replacements[$context['tokens']['title']] = t('Translations of %label', array('%label' => $node->label()));
-          break;
+    if ($route_name == 'contact.site_page') {
+      $config = \Drupal::config('contact.settings');
+      $contact_form = \Drupal::entityTypeManager()
+        ->getStorage('contact_form')
+        ->load($config->get('default_form'));
+        $replacements[$context['tokens']['title']] = $contact_form->label();
+    }
+    else {
+      $matches = array();
+      preg_match('/entity\.(.*)\.(.*)/', $route_name, $matches);
+      if(!$replacements[$context['tokens']['title']] && !empty($matches[1]) && $matches[1] == 'node' && !empty($matches[2])) {
+        switch ($matches[2]) {
+          case 'edit_form':
+            $node = $route_match->getParameter('node');
+            $replacements[$context['tokens']['title']] = t('<em>Edit @type</em> @title', array('@type' => node_get_type_label($node), '@title' => $node->label()));
+            break;
+          case 'content_translation_overview':
+            $node = $route_match->getParameter('node');
+            $replacements[$context['tokens']['title']] = t('Translations of %label', array('%label' => $node->label()));
+            break;
+        }
+      }
+      elseif(!empty($matches[1]) && $matches[1] == 'contact_form' && !empty($matches[2])) {
+        // TODO: $replacements[$context['tokens']['title']] = $route_name;
       }
     }
   }
