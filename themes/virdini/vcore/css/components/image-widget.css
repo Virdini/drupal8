@@ -11,10 +11,10 @@
   padding: 0 0 10px 10px;
 }
 .image-widget-data {
-  float: left; /* LTR */
+  padding-left: 120px;
 }
 [dir="rtl"] .image-widget-data {
-  float: right;
+  padding-right: 120px;
 }
 .image-widget-data .text-field {
   width: auto;
