@@ -30,7 +30,8 @@ CKEDITOR.dialog.add( 'videoDialog', function( editor ) {
                 ]
             }
         ],
-        onOk: function() {
+
+        onOk: function(){
             var dialog = this;
 
 
@@ -48,14 +49,36 @@ CKEDITOR.dialog.add( 'videoDialog', function( editor ) {
                 var url = "https://www.dailymotion.com/embed/video/"+respuesta.id_video;
             }
 
-            var p = new CKEDITOR.dom.element( 'div' );
-            p.setAttribute("class", "videodetector");
+            var p = new CKEDITOR.dom.element('div');
+            p.setAttribute('class', 'videodetector');
 
-            var iframe = new CKEDITOR.dom.element( 'iframe' );
-            iframe.setAttribute("src", url);
-            iframe.setAttribute("frameborder", "0");
-            p.append( iframe );
+            var iframe = new CKEDITOR.dom.element('iframe');
+            iframe.setAttribute('src', url);
+            iframe.setAttribute('frameborder', '0');
+            p.append(iframe);
+
+            // var edit_btn = new CKEDITOR.dom.element('input');
+            // edit_btn.setAttribute('type', 'button');
+            // edit_btn.setAttribute('value', 'Edit video');
+            // edit_btn.setAttribute('class', 'edit-videodetector');
+            // p.append(edit_btn);
+
+            var remove_btn = new CKEDITOR.dom.element('input');
+            remove_btn.setAttribute('type', 'button');
+            remove_btn.setAttribute('value', 'Remove video');
+            remove_btn.setAttribute('class', 'remove-videodetector');
+            p.append(remove_btn);
+
             editor.insertElement(p);
+
+            // edit_btn.on('click', function(){
+            //     new CKEDITOR.dialog(editor, 'videoDialog');
+            // });
+
+            remove_btn.on('click', function(){
+                var to_remove = remove_btn.getParent();
+                to_remove.remove();
+            });
         }
     };
 });
