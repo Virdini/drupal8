@@ -97,6 +97,7 @@ function vbase_page_attachments(array &$attachments) {
     $attachments['#attached']['html_head'][] = [[
       '#type' => 'html_tag',
       '#tag' => 'meta',
+      '#browsers' => ['IE' => TRUE, '!IE' => FALSE],
       '#weight' => -1000,
       '#attributes' => [
         'http-equiv' => 'X-UA-Compatible',
