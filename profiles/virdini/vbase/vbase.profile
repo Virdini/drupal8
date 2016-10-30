@@ -4,6 +4,8 @@
  * Enables modules and site configuration for a Virdini Base site installation.
  */
 
+use Drupal\Core\Cache\Cache;
+
 /**
  * Implements hook_form_FORM_ID_alter() for install_configure_form().
  *
@@ -125,6 +127,8 @@ function vbase_page_attachments(array &$attachments) {
       }
     }
   }
+  // Add profile cache tags.
+  $attachments['#cache']['tags'] = Cache::mergeTags(isset($attachments['#cache']['tags']) ? $attachments['#cache']['tags'] : [], $config->getCacheTags());
 }
 
 /**
