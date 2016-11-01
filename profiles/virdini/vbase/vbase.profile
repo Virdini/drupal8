@@ -5,6 +5,28 @@
  */
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Access\AccessResult;
+
+/**
+ * Implements hook_node_access().
+ */
+function vbase_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\Session\AccountInterface $account) {
+  
+  switch ($op) {
+    case 'view':
+      $type = $node->bundle();
+      $config = \Drupal::config('vbase.settings.cp');
+      $bundles = $config->get('node_bundles');
+      if (!empty($bundles) && in_array($type, $bundles) && !$account->hasPermission('vbase view protected content', $account)) {
+        return AccessResult::forbidden()->addCacheableDependency($config)->cachePerPermissions();
+      }
+      return AccessResult::neutral()->addCacheableDependency($config)->cachePerPermissions();
+      break;
+  }
+  
+  return AccessResult::neutral();
+}
+
 
 /**
  * Implements hook_form_FORM_ID_alter() for install_configure_form().

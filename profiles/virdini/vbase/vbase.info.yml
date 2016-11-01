@@ -1,7 +1,7 @@
 name: Virdini Base
 type: profile
 description: 'Install with commonly used features pre-configured by Virdini.'
-version: 8.x-1.0.0
+version: 8.x-1.0.1
 core: 8.x
 distribution:
   name: Virdini
@@ -40,10 +40,8 @@ dependencies:
   - admin_toolbar_tools
   - metatag
   - ckeditor_videodetector
-  - ckeditor_font
   - ctools
   - pathauto
-  - simple_sitemap
   - simple_sitemap
   - redirect
 themes:

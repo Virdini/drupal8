@@ -1,4 +1,14 @@
+vbase virdini adjustment:
+  title: 'Access to virdini adjustment pages'
+  description: ''
 vbase site settings:
   title: 'Administer Main Site Settings'
+  description: ''
+  restrict access: true
+vbase view protected content:
+  title: 'Access to protected content'
+  description: ''
+vbase content protection settings:
+  title: 'Administer Content Protection Settings'
   description: ''
   restrict access: true

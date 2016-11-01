@@ -2,7 +2,7 @@
 
 vbase.settings.tags:
   type: config_object
-  label: 'VBase tags information'
+  label: 'VBase tags settings'
   mapping:
     generator:
       type: boolean
@@ -31,3 +31,14 @@ vbase.settings.tags:
       sequence:
         type: string
         label: 'Code'
+
+vbase.settings.tags:
+  type: config_object
+  label: 'VBase content protection settings'
+  mapping:
+    node_bundles:
+      label: 'Node Bundles'
+      type: sequence
+      sequence:
+        type: string
+        label: 'Node Bundle'

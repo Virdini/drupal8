@@ -7,12 +7,20 @@ vbase.site_settings:
     _permission: 'vbase site settings'
 
 vbase.tags_settings:
-  path: '/admin/config/system/tags-settings'
+  path: '/admin/config/system/site-settings/tags-settings'
   defaults:
     _form: 'Drupal\vbase\Form\TagsSettingsForm'
     _title: 'Tags Settings'
   requirements:
     _permission: 'vbase site settings'
+
+vbase.content_protection:
+  path: '/admin/config/system/site-settings/content-protection'
+  defaults:
+    _form: 'Drupal\vbase\Form\ContentProtectionSettingsForm'
+    _title: 'Content Protection'
+  requirements:
+    _permission: 'vbase content protection settings'
 
 vbase.adjustment:
   path: '/virdini-adjustment'
@@ -20,7 +28,7 @@ vbase.adjustment:
     _controller: '\Drupal\vbase\Controller\VBaseAdjustment::virdini'
     _title: 'Virdini Design Adjustment Page'
   requirements:
-    _access: 'TRUE'
+    _permission: 'vbase virdini adjustment'
 
 vbase.adjustment_tab_1:
   path: '/virdini-adjustment/tab_1'
@@ -28,7 +36,7 @@ vbase.adjustment_tab_1:
     _controller: '\Drupal\vbase\Controller\VBaseAdjustment::virdini'
     _title: 'Virdini Design Adjustment Page'
   requirements:
-    _access: 'TRUE'
+    _permission: 'vbase virdini adjustment'
 
 vbase.adjustment_tab_1_1:
   path: '/virdini-adjustment/tab_1/1'
@@ -36,7 +44,7 @@ vbase.adjustment_tab_1_1:
     _controller: '\Drupal\vbase\Controller\VBaseAdjustment::virdini'
     _title: 'Virdini Design Adjustment Page'
   requirements:
-    _access: 'TRUE'
+    _permission: 'vbase virdini adjustment'
 
 vbase.adjustment_tab_1_2:
   path: '/virdini-adjustment/tab_1/2'
@@ -44,7 +52,7 @@ vbase.adjustment_tab_1_2:
     _controller: '\Drupal\vbase\Controller\VBaseAdjustment::virdini'
     _title: 'Virdini Design Adjustment Page'
   requirements:
-    _access: 'TRUE'
+    _permission: 'vbase virdini adjustment'
 
 vbase.adjustment_tab_1_3:
   path: '/virdini-adjustment/tab_1/3'
@@ -52,4 +60,4 @@ vbase.adjustment_tab_1_3:
     _controller: '\Drupal\vbase\Controller\VBaseAdjustment::virdini'
     _title: 'Virdini Design Adjustment Page'
   requirements:
-    _access: 'TRUE'
+    _permission: 'vbase virdini adjustment'
