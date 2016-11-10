@@ -7,6 +7,11 @@
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Access\AccessResult;
 
+use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\TypedData\TranslatableInterface;
+use Drupal\Core\Entity\EntityInterface;
+
 /**
  * Implements hook_node_access().
  */
@@ -53,8 +58,6 @@ function vbase_form_install_configure_submit($form, \Drupal\Core\Form\FormStateI
   \Drupal::configFactory()->getEditable('views.view.content_recent')->set('status', FALSE)->save(TRUE);
   \Drupal::configFactory()->getEditable('views.view.frontpage')->set('status', FALSE)->save(TRUE);
   \Drupal::configFactory()->getEditable('views.view.taxonomy_term')->set('status', FALSE)->save(TRUE);
-  //\Drupal::configFactory()->getEditable('views.view.frontpage')->set('display.feed_1.display_options.enabled', FALSE)->save(TRUE);
-  //\Drupal::configFactory()->getEditable('views.view.taxonomy_term')->set('display.feed_1.display_options.enabled', FALSE)->save(TRUE);
   \Drupal::configFactory()->getEditable('views.settings')->set('ui.always_live_preview', FALSE)->save(TRUE);
 }
 
@@ -66,7 +69,6 @@ function vbase_form_install_configure_submit($form, \Drupal\Core\Form\FormStateI
 function vbase_file_validate(\Drupal\file\FileInterface $file) {
   $errors = array();
   $filename = $file->getFilename();
-  
   // Transliterate and sanitize the destination filename.
   $filename_fixed = \Drupal::transliteration()->transliterate($filename, 'en', '');
   // Replace whitespace.
@@ -77,7 +79,6 @@ function vbase_file_validate(\Drupal\file\FileInterface $file) {
   $filename_fixed = preg_replace('/(_)_+|(\.)\.+|(-)-+/', '\\1\\2\\3', $filename_fixed);
   // Force lowercase to prevent issues on case-insensitive file systems.
   $filename_fixed = \Drupal\Component\Utility\Unicode::strtolower($filename_fixed);
-  
   if ($filename != $filename_fixed) {
     $directory = drupal_dirname($file->destination);
     $file->destination = file_create_filename($filename_fixed, $directory);
@@ -157,7 +158,6 @@ function vbase_page_attachments(array &$attachments) {
  * Implements hook_page_attachments_alter().
  */
 function vbase_page_attachments_alter(array &$page) {
-  
   // Hide metatags
   $config = \Drupal::config('vbase.settings.tags');
   $keys = [];
@@ -178,7 +178,6 @@ function vbase_page_attachments_alter(array &$page) {
       }
     }
   }
-  
   // Hide links
   $keys = ['delete-form', 'edit-form', 'version-history', 'revision'];
   if (!empty($keys) && isset($page['#attached']['html_head_link'])) {
@@ -211,6 +210,13 @@ function vbase_entity_view_alter(array &$build) {
 }
 
 /**
+ * Helper function to get current page title
+ */
+function _vbase_get_title() {
+  return \Drupal::service('token')->replace('[current-page:title]');
+}
+
+/**
  * Implements hook_module_implements_alter().
  */
 function vbase_module_implements_alter(&$implementations, $hook) {
@@ -219,8 +225,179 @@ function vbase_module_implements_alter(&$implementations, $hook) {
     unset($implementations['vbase']);
     $implementations['vbase'] = $group;
   }
+  // Remove editor module implementation of entity hooks
+  elseif (in_array($hook, ['entity_insert', 'entity_update', 'entity_delete', 'entity_revision_delete'])) {
+    unset($implementations['editor']);
+  }
 }
 
-function _vbase_get_title() {
-  return \Drupal::service('token')->replace('[current-page:title]');
+/**
+ * This is an edited copy of function editor_entity_insert()
+ * that uses _vbase_editor_get_file_uuids_by_field()
+ * Implements hook_entity_insert().
+ */
+function vbase_entity_insert(EntityInterface $entity) {
+  // Only act on content entities.
+  if (!($entity instanceof FieldableEntityInterface)) {
+    return;
+  }
+  $referenced_files_by_field = _vbase_editor_get_file_uuids_by_field($entity);
+  foreach ($referenced_files_by_field as $field => $uuids) {
+    _editor_record_file_usage($uuids, $entity);
+  }
+}
+
+/**
+ * This is an edited copy of function editor_entity_update()
+ * that uses _vbase_editor_get_file_uuids_by_field()
+ * Implements hook_entity_update().
+ */
+function vbase_entity_update(EntityInterface $entity) {
+  // Only act on content entities.
+  if (!($entity instanceof FieldableEntityInterface)) {
+    return;
+  }
+
+  // On new revisions, all files are considered to be a new usage and no
+  // deletion of previous file usages are necessary.
+  if (!empty($entity->original) && $entity->getRevisionId() != $entity->original->getRevisionId()) {
+    $referenced_files_by_field = _vbase_editor_get_file_uuids_by_field($entity);
+    foreach ($referenced_files_by_field as $field => $uuids) {
+      _editor_record_file_usage($uuids, $entity);
+    }
+  }
+  // On modified revisions, detect which file references have been added (and
+  // record their usage) and which ones have been removed (delete their usage).
+  // File references that existed both in the previous version of the revision
+  // and in the new one don't need their usage to be updated.
+  else {
+    $original_uuids_by_field = _vbase_editor_get_file_uuids_by_field($entity->original);
+    $uuids_by_field = _vbase_editor_get_file_uuids_by_field($entity);
+    // Detect file usages that should be incremented.
+    foreach ($uuids_by_field as $field => $uuids) {
+      $added_files = _vbase_diff_once($uuids_by_field[$field], $original_uuids_by_field[$field]);
+      _editor_record_file_usage($added_files, $entity);
+    }
+    // Detect file usages that should be decremented.
+    foreach ($original_uuids_by_field as $field => $uuids) {
+      $removed_files = _vbase_diff_once($original_uuids_by_field[$field], $uuids_by_field[$field]);
+      _editor_delete_file_usage($removed_files, $entity, 1);
+    }
+  }
+}
+
+/**
+ * This is an edited copy of function editor_entity_insert()
+ * that uses _vbase_editor_get_file_uuids_by_field()
+ * Implements hook_entity_delete().
+ */
+function vbase_entity_delete(EntityInterface $entity) {
+  // Only act on content entities.
+  if (!($entity instanceof FieldableEntityInterface)) {
+    return;
+  }
+  $result = \Drupal::database()->select('file_usage', 'f')->fields('f', array('fid'))
+                                ->condition('module', 'editor')->condition('type', $entity->getEntityTypeId())
+                                ->condition('id', $entity->id())->execute();
+  foreach ($result as $record) {
+    if ($file = \Drupal\file\Entity\File::load($record->fid)) {
+      \Drupal::service('file.usage')->delete($file, 'editor', $entity->getEntityTypeId(), $entity->id(), 0);
+    }
+  }
+}
+
+/**
+ * This is an edited copy of function editor_entity_insert()
+ * that uses _vbase_editor_get_file_uuids_by_field()
+ * Implements hook_entity_revision_delete().
+ */
+function vbase_entity_revision_delete(EntityInterface $entity) {
+  // Only act on content entities.
+  if (!($entity instanceof FieldableEntityInterface)) {
+    return;
+  }
+  $referenced_files_by_field = _vbase_editor_get_file_uuids_by_field($entity);
+  foreach ($referenced_files_by_field as $field => $uuids) {
+    _editor_delete_file_usage($uuids, $entity, 1);
+  }
+}
+
+/**
+ * This is an edited copy of function _editor_get_file_uuids_by_field()
+ * Finds all files referenced (data-entity-uuid) by formatted text fields.
+ *
+ * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
+ *   An entity whose fields to analyze.
+ *
+ * @return array
+ *   An array of file entity UUIDs.
+ */
+function _vbase_editor_get_file_uuids_by_field(FieldableEntityInterface $entity) {
+  $uuids = array();
+  $field_definitions = $entity->getFieldDefinitions();
+  $formatted_text_fields = _editor_get_formatted_text_fields($entity);
+  foreach ($formatted_text_fields as $formatted_text_field) {
+    // In case of a translatable field, iterate over all its translations.
+    if ($field_definitions[$formatted_text_field]->isTranslatable() && $entity instanceof TranslatableInterface) {
+      $langcodes = array_keys($entity->getTranslationLanguages());
+    }
+    else {
+      $langcodes = [LanguageInterface::LANGCODE_NOT_APPLICABLE];
+    }
+    $text = '';
+    $field_items = $entity->get($formatted_text_field);
+    foreach ($field_items as $field_item) {
+      if (!empty($langcodes)) {
+        foreach ($langcodes as $langcode) {
+          if ($langcode == LanguageInterface::LANGCODE_NOT_APPLICABLE) {
+            $field_items = $entity->get($formatted_text_field);
+          }
+          else {
+            $field_items = $entity->getTranslation($langcode)->get($formatted_text_field);
+          }
+          foreach ($field_items as $field_item) {
+            $text .= $field_item->value;
+          }
+        }
+      }
+      else {
+        $text .= $field_item->value;
+      }
+    }
+    $uuids[$formatted_text_field] = _editor_parse_file_uuids($text);
+  }
+  return $uuids;
+}
+
+/**
+ * Computes the difference of arrays.
+ *
+ * The main difference from the array_diff() is that this method does not
+ * remove duplicates. For example:
+ * @code
+ *   array_diff([1, 1, 1], [1]); // []
+ *   _vbase_diff_once([1, 1, 1], [1]); // [1, 1]
+ * @endcode
+ *
+ * Keys are maintained from the $array1.
+ *
+ * The comparison of items is always performed in the strict (===) mode.
+ *
+ * @param array $array1
+ *   The array to compare from.
+ * @param array $array2
+ *   The array to compare to.
+ *
+ * @return array
+ */
+function _vbase_diff_once(array $array1, array $array2) {
+  foreach ($array2 as $item) {
+    // Always use strict mode because otherwise there could be fatal errors on
+    // object conversions.
+    $key = array_search($item, $array1, TRUE);
+    if ($key !== FALSE) {
+      unset($array1[$key]);
+    }
+  }
+  return $array1;
 }
