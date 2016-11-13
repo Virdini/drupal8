@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Drush integration.
@@ -22,6 +23,5 @@ function simple_sitemap_drush_command() {
  * Regenerate sitemap for all languages.
  */
 function drush_simple_sitemap_generate() {
-  $generator = \Drupal::service('simple_sitemap.generator');
-  $generator->generateSitemap('drush');
+  \Drupal::service('simple_sitemap.generator')->generateSitemap('drush');
 }
