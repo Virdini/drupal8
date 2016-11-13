@@ -1,0 +1,9 @@
+FlexSlider:
+  version: 2.6.3
+  css:
+    component:
+      /libraries/FlexSlider/flexslider.css: {}
+  js:
+    /libraries/FlexSlider/jquery.flexslider-min.js: {minified: true}
+  dependencies:
+    - core/jquery
