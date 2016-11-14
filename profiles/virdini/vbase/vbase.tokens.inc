@@ -6,9 +6,7 @@
 
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\Core\Field\EntityReferenceFieldItemList;
 use Drupal\field\FieldStorageConfigInterface;
-use Drupal\taxonomy\Entity\Term;
 use Drupal\Core\Url;
 
 /**
@@ -40,6 +38,11 @@ function vbase_token_info() {
       'type' => 'virdini-term-alias',
     ];
   }
+  $info['tokens']['term']['virdini-parent-alias'] = [
+    'name' => t('Parent term alias'),
+    'description' => t("The parent term alias of the taxonomy term, if one exists."),
+    'type' => 'alias',
+  ];
   return $info;
 }
 
@@ -67,6 +70,29 @@ function vbase_tokens($type, array $tokens, array $data = array(), array $option
             $alias = \Drupal::service('path.alias_manager')->getAliasByPath($path, $langcode);
             if ($path != $alias) {
               $replacements[$original] = ltrim($alias, '/');
+            }
+          }
+          break;
+      }
+    }
+  }
+  elseif ($type == 'term' && !empty($data['term'])) {
+    $term = $data['term'];
+    $taxonomy_storage = \Drupal::EntityTypeManager()->getStorage('taxonomy_term');
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'virdini-parent-alias':
+          if ($parents = $taxonomy_storage->loadParents($term->id())) {
+            $parent = array_pop($parents);
+            $bubbleable_metadata->addCacheableDependency($parent);
+            $path = '/'. $parent->toUrl()->getInternalPath();
+            $alias = \Drupal::service('path.alias_manager')->getAliasByPath($path, $langcode);
+            if ($path != $alias) {
+              $replacements[$original] = ltrim($alias, '/');
+              $pattern = \Drupal::service('pathauto.generator')->getPatternByEntity($parent)->getPattern();
+              if (preg_match('/[^\[]*/', $pattern, $matches) && $prefix = $matches[0]) {
+                $replacements[$original] = substr($replacements[$original], strlen($prefix));
+              }
             }
           }
           break;
