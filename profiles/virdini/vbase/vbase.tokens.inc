@@ -4,39 +4,55 @@
  * Token callbacks for the vbase profile.
  */
 
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Field\EntityReferenceFieldItemList;
+use Drupal\field\FieldStorageConfigInterface;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\Core\Url;
+
 /**
  * Implements hook_token_info().
  */
 function vbase_token_info() {
-  $info['types']['virdini-term-alias'] = [
-    'name' => t('Virdini Term Alias'),
-    'description' => t('Tokens from node reference fields.'),
-    'needs-data' => 'node',
-  ];
+  $info = [];
   $fields = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions('node');
-  foreach ($fields as $field_name => $field) {
-    if ($field instanceof \Drupal\field\FieldStorageConfigInterface
-        && $field->getType() == 'entity_reference'
-        && $field->getSetting('target_type') == 'taxonomy_term') {
-      $info['tokens']['virdini-term-alias'][$field_name .':alias'] = [
-        'name' => $field_name,
-        'description' => t('@field_name field.', array('@field_name' => $field_name)),
-        'type' => 'alias',
-      ];
+  if (!empty($fields)) {
+    foreach ($fields as $field_name => $field) {
+      if ($field instanceof FieldStorageConfigInterface
+          && $field->getType() == 'entity_reference'
+          && $field->getSetting('target_type') == 'taxonomy_term') {
+        $info['tokens']['virdini-term-alias'][$field_name .':alias'] = [
+          'name' => $field_name,
+          'description' => t('@field_name field.', ['@field_name' => $field_name]),
+          'type' => 'alias',
+        ];
+      }
     }
+    $info['types']['virdini-term-alias'] = [
+      'name' => t('Virdini Term Alias'),
+      'description' => t('Tokens from node reference fields.'),
+      'needs-data' => 'node',
+    ];
+    $info['tokens']['node']['virdini-term-alias'] = [
+      'name' => t('Virdini Term Alias'),
+      'description' => t('Tokens from node reference fields.'),
+      'type' => 'virdini-term-alias',
+    ];
   }
-  $info['tokens']['node']['virdini-term-alias'] = array(
-    'name' => $info['types']['virdini-term-alias']['name'],
-    'description' => $info['types']['virdini-term-alias']['description'],
-    'type' => 'virdini-term-alias',
-  );
   return $info;
 }
 
 /**
  * Implements hook_tokens().
  */
-function vbase_tokens($type, array $tokens, array $data = array(), array $options = array(), \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata) {
+function vbase_tokens($type, array $tokens, array $data = array(), array $options = array(), BubbleableMetadata $bubbleable_metadata) {
+  if (isset($options['langcode'])) {
+    $langcode = $options['langcode'];
+  }
+  else {
+    $langcode = LanguageInterface::LANGCODE_DEFAULT;
+  }
   $replacements = array();
   if ($type == 'node' && !empty($data['node'])) {
     $node = $data['node'];
@@ -44,13 +60,13 @@ function vbase_tokens($type, array $tokens, array $data = array(), array $option
       $_name = explode(':', $name);
       switch ($_name[0]) {
         case 'virdini-term-alias':
-          if (isset($_name[1]) && $_name[1]) {
-            $item = $node->get($_name[1]);
-            if ($item instanceof \Drupal\Core\Field\EntityReferenceFieldItemList) {
-              $terms = $item->referencedEntities();
-              if (!empty($terms) && $terms[0] instanceof \Drupal\taxonomy\Entity\Term) {
-                $replacements[$original] = ltrim($terms[0]->url(), '/');
-              }
+          $translation = \Drupal::entityManager()->getTranslationFromContext($node, $langcode, array('operation' => 'node_tokens'));
+          if ($translation->hasField($_name[1]) && ($items = $translation->get($_name[1])) && !$items->isEmpty() && $tid = $items->target_id) {
+            $url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $tid]);
+            $path = '/'. $url->getInternalPath();
+            $alias = \Drupal::service('path.alias_manager')->getAliasByPath($path, $langcode);
+            if ($path != $alias) {
+              $replacements[$original] = ltrim($alias, '/');
             }
           }
           break;
@@ -63,7 +79,7 @@ function vbase_tokens($type, array $tokens, array $data = array(), array $option
 /**
  * Implements hook_tokens_alter().
  */
-function vbase_tokens_alter(array &$replacements, array $context, \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata) {
+function vbase_tokens_alter(array &$replacements, array $context, BubbleableMetadata $bubbleable_metadata) {
   if ($context['type'] == 'node' && !empty($context['data']['node'])) {
     if (isset($context['tokens']['title']) && !$replacements[$context['tokens']['title']]) {
       $replacements[$context['tokens']['title']] = \Drupal::service('token')->replace('[current-page:title]');
