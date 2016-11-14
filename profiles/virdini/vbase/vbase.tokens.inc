@@ -65,8 +65,9 @@ function vbase_tokens($type, array $tokens, array $data = array(), array $option
         case 'virdini-term-alias':
           $translation = \Drupal::entityManager()->getTranslationFromContext($node, $langcode, array('operation' => 'node_tokens'));
           if ($translation->hasField($_name[1]) && ($items = $translation->get($_name[1])) && !$items->isEmpty() && $tid = $items->target_id) {
-            $url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $tid]);
-            $path = '/'. $url->getInternalPath();
+            $term = \Drupal::EntityTypeManager()->getStorage('taxonomy_term')->load($tid);
+            $bubbleable_metadata->addCacheableDependency($term);
+            $path = '/'. $term->toUrl()->getInternalPath();
             $alias = \Drupal::service('path.alias_manager')->getAliasByPath($path, $langcode);
             if ($path != $alias) {
               $replacements[$original] = ltrim($alias, '/');
