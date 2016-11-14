@@ -6,7 +6,7 @@ dependencies:
 id: default_term
 label: 'Default term'
 type: 'canonical_entities:taxonomy_term'
-pattern: '[term:parents:join-path]/[term:name]'
+pattern: '[term:virdini-parent-alias]/[term:name]'
 selection_criteria: {  }
 selection_logic: and
 weight: 0
