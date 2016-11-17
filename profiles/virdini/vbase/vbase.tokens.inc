@@ -63,7 +63,7 @@ function vbase_tokens($type, array $tokens, array $data = array(), array $option
       $_name = explode(':', $name);
       switch ($_name[0]) {
         case 'virdini-term-alias':
-          $translation = \Drupal::entityManager()->getTranslationFromContext($node, $langcode, array('operation' => 'node_tokens'));
+          $translation = \Drupal::service('entity.repository')->getTranslationFromContext($node, $langcode, array('operation' => 'node_tokens'));
           if ($translation->hasField($_name[1]) && ($items = $translation->get($_name[1])) && !$items->isEmpty() && $tid = $items->target_id) {
             $term = \Drupal::EntityTypeManager()->getStorage('taxonomy_term')->load($tid);
             $bubbleable_metadata->addCacheableDependency($term);
