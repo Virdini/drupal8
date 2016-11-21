@@ -215,7 +215,9 @@ function vbase_entity_view_alter(array &$build) {
  * @see template_preprocess_html()
  */
 function vbase_preprocess_html(array &$variables) {
-  $variables['head_attributes'] = new Drupal\Core\Template\Attribute();
+  if (!isset($variables['head_attributes'])) {
+    $variables['head_attributes'] = new Drupal\Core\Template\Attribute();
+  }
 }
 
 /**
