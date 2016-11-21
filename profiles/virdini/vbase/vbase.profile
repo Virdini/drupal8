@@ -210,6 +210,15 @@ function vbase_entity_view_alter(array &$build) {
 }
 
 /**
+ * Implements hook_preprocess_html().
+ *
+ * @see template_preprocess_html()
+ */
+function vbase_preprocess_html(array &$variables) {
+  $variables['head_attributes'] = new Drupal\Core\Template\Attribute();
+}
+
+/**
  * Helper function to get current page title
  */
 function _vbase_get_title() {
