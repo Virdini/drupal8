@@ -90,9 +90,80 @@ function vbase_file_validate(\Drupal\file\FileInterface $file) {
  * Implements hook_theme().
  */
 function vbase_theme($existing, $type, $theme, $path) {
-  return array(
-    'vbase_adjustment_text' => array('render element' => ''),
-  );
+  return [
+    'vbase_adjustment_text' => [
+      'render element' => '',
+    ],
+    'developers' => [
+      'variables' => [
+        'logo' => NULL,
+        'width' => NULL,
+        'label' => NULL,
+        'title' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements template_preprocess_HOOK().
+ */
+function template_preprocess_developers(array &$variables) {
+  $config = \Drupal::config('vbase.settings.developers');
+  $variables['logo'] = $config->get('logo');
+  if (!$variables['logo']) {
+    $variables['logo'] = 'logo.svg';
+  }
+  $variables['width'] = $config->get('width');
+  $variables['label_display'] = $config->get('label');
+  $key = (int)$config->get('developed') .'-'. (int)$config->get('maintained');
+  switch ($key) {
+    case '1-0':
+      $variables['title'] = t('Website was developed by Virdini');
+      $variables['label'] = t('Developed');
+      break;
+    case '0-1':
+      $variables['title'] = t('Website maintained by Virdini');
+      $variables['label'] = t('Maintained');
+      break;
+    default:
+      $variables['title'] = t('Website was developed and maintained by Virdini');
+      $variables['label'] = t('Developed and maintained');
+      break;
+  }
+  if (isset($variables['#title'])) {
+    $variables['title'] = $variables['#title'];
+  }
+  if (isset($variables['#label'])) {
+    $variables['label'] = $variables['#label'];
+  }
+  if (isset($variables['#logo'])) {
+    $variables['logo'] = $variables['#logo'];
+  }
+  if (isset($variables['#width'])) {
+    $variables['width'] = $variables['#width'];
+  }
+  if ($variables['width'] < 70) {
+    $variables['width'] = 70;
+  }
+  
+  
+  if (!isset($variables['#cache'])) {
+    $variables['#cache'] = [];
+  }
+  $variables['#cache']['tags'] = Cache::mergeContexts(isset($variables['#cache']['contexts']) ? $variables['#cache']['contexts'] : [], ['languages:language_interface']);
+  $variables['#cache']['tags'] = Cache::mergeTags(isset($variables['#cache']['tags']) ? $variables['#cache']['tags'] : [], $config->getCacheTags());
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * @see template_preprocess_page()
+ */
+function vbase_preprocess_page(array &$variables) {
+  $variables['developers'] = [
+    '#theme' => 'developers',
+  ];
 }
 
 /**

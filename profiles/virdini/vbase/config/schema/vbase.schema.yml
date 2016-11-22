@@ -42,3 +42,24 @@ vbase.settings.tags:
       sequence:
         type: string
         label: 'Node Bundle'
+
+vbase.settings.developers:
+  type: config_object
+  label: 'VBase developers settings'
+  mapping:
+    developed:
+      type: boolean
+      label: 'Developed'
+    maintained:
+      type: boolean
+      label: 'Maintained'
+    label:
+      type: boolean
+      label: 'Label'
+    width:
+      type: integer
+      label: 'Width'
+    logo:
+      type: string
+      label: 'Logo'
+

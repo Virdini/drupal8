@@ -9,6 +9,11 @@ vbase.tags_settings:
   route_name: vbase.tags_settings
   base_route: vbase.site_settings
 
+vbase.developers_settings:
+  title: 'Developers'
+  route_name: vbase.developers_settings
+  base_route: vbase.site_settings
+
 vbase.content_protection:
   title: 'Content Protection'
   route_name: vbase.content_protection

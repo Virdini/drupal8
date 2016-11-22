@@ -14,6 +14,14 @@ vbase.tags_settings:
   requirements:
     _permission: 'vbase site settings'
 
+vbase.developers_settings:
+  path: '/admin/config/system/site-settings/developers-settings'
+  defaults:
+    _form: 'Drupal\vbase\Form\DevelopersSettingsForm'
+    _title: 'Developers Settings'
+  requirements:
+    _permission: 'vbase site settings'
+
 vbase.content_protection:
   path: '/admin/config/system/site-settings/content-protection'
   defaults:
