@@ -13,7 +13,7 @@ use Drupal\Core\Url;
  * Implements hook_token_info().
  */
 function vbase_token_info() {
-  $info = [];
+  $info = ['tokens' => []];
   $fields = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions('node');
   if (!empty($fields)) {
     foreach ($fields as $field_name => $field) {
@@ -27,16 +27,18 @@ function vbase_token_info() {
         ];
       }
     }
-    $info['types']['virdini-term-alias'] = [
-      'name' => t('Virdini Term Alias'),
-      'description' => t('Tokens from node reference fields.'),
-      'needs-data' => 'node',
-    ];
-    $info['tokens']['node']['virdini-term-alias'] = [
-      'name' => t('Virdini Term Alias'),
-      'description' => t('Tokens from node reference fields.'),
-      'type' => 'virdini-term-alias',
-    ];
+    if (isset($info['tokens']['virdini-term-alias'])) {
+      $info['types']['virdini-term-alias'] = [
+        'name' => t('Virdini Term Alias'),
+        'description' => t('Tokens from node reference fields.'),
+        'needs-data' => 'node',
+      ];
+      $info['tokens']['node']['virdini-term-alias'] = [
+        'name' => t('Virdini Term Alias'),
+        'description' => t('Tokens from node reference fields.'),
+        'type' => 'virdini-term-alias',
+      ];
+    }
   }
   $info['tokens']['term']['virdini-parent-alias'] = [
     'name' => t('Parent term alias'),
