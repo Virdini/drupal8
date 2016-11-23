@@ -58,12 +58,12 @@ class DevelopersSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Logo'),
       '#default_value' => $config->get('logo'),
       '#options' => [
-        'logo.svg',
-        'logo.dark.svg',
-        'virdini.black.svg',
-        'virdini.white.svg',
-        'virdini.black.t.svg',
-        'virdini.white.t.svg',
+        'logo.svg' => 'logo.svg',
+        'logo.dark.svg' => 'logo.dark.svg',
+        'virdini.black.svg' => 'virdini.black.svg',
+        'virdini.white.svg' => 'virdini.white.svg',
+        'virdini.black.t.svg' => 'virdini.black.t.svg',
+        'virdini.white.t.svg' => 'virdini.white.t.svg',
       ],
     ];
     
