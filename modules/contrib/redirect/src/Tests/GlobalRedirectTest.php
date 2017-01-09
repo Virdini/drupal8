@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Global Redirect functionality tests
- */
 
 namespace Drupal\redirect\Tests;
 

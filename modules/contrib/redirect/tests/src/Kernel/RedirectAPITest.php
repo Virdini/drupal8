@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\Tests\redirect\Kernel\RedirectAPITest.
- */
-
 namespace Drupal\Tests\redirect\Kernel;
 
 use Drupal\language\Entity\ConfigurableLanguage;

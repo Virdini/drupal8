@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\redirect\EventSubscriber\RedirectRequestSubscriber.
- */
-
 namespace Drupal\redirect\EventSubscriber;
 
 use Drupal\Core\Cache\CacheableMetadata;
@@ -15,14 +10,11 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Path\AliasManager;
 use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
-use Drupal\Core\Routing\MatchingRouteNotFoundException;
 use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Url;
 use Drupal\redirect\Exception\RedirectLoopException;
 use Drupal\redirect\RedirectChecker;
 use Drupal\redirect\RedirectRepository;
-use Psr\Log\InvalidArgumentException;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;

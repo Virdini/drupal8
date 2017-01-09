@@ -46,3 +46,7 @@ redirect.settings:
     term_path_handler:
       type: boolean
       label: 'Taxonomy Term Path Handler'
+
+action.configuration.redirect_delete_action:
+  type: action_configuration_default
+  label: 'Delete redirect configuration'

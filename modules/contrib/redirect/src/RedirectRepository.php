@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\redirect\RedirectRepository
- */
-
 namespace Drupal\redirect;
 
 use Drupal\Core\Config\ConfigFactoryInterface;

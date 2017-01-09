@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains Drupal\Tests\redirect\Unit\RedirectCheckerTest.
- */
-
 namespace Drupal\Tests\redirect\Unit;
 
 use Drupal\redirect\RedirectChecker;

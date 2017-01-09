@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\redirect\Form\RedirectSettingsForm
- */
-
 namespace Drupal\redirect\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
