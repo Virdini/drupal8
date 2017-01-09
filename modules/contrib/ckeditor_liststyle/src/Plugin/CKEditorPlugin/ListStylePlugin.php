@@ -46,23 +46,23 @@ class ListStylePlugin extends PluginBase implements CKEditorPluginInterface, CKE
   /**
    * {@inheritdoc}
    */
-   public function isInternal() {
-     return FALSE;
-   }
+  public function isInternal() {
+    return FALSE;
+  }
 
   /**
    * {@inheritdoc}
    */
-   public function getDependencies(Editor $editor) {
-     return [];
-   }
+  public function getDependencies(Editor $editor) {
+    return [];
+  }
 
   /**
    * {@inheritdoc}
    */
-   public function getLibraries(Editor $editor) {
-     return [];
-   }
+  public function getLibraries(Editor $editor) {
+    return [];
+  }
 
   /**
    * {@inheritdoc}
