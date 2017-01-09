@@ -110,7 +110,7 @@ class LinkitEditorDialog extends FormBase {
       '#weight' => 0,
     ];
 
-    $this->addAttributes($form, $form_state, $this->linkitProfile->getAttributes());
+    $this->addAttributes($form, $form_state, $this->linkitProfile->getAttributes(), $input);
 
     $form['actions'] = [
       '#type' => 'actions',
@@ -168,8 +168,10 @@ class LinkitEditorDialog extends FormBase {
    *   The current state of the form.
    * @param AttributeCollection $attributes
    *   A collection of attributes for the current profile.
+   * @param array $input
+   *   An array with the attribute values from the editor.
    */
-  private function addAttributes(array &$form, FormStateInterface &$form_state, AttributeCollection $attributes) {
+  private function addAttributes(array &$form, FormStateInterface &$form_state, AttributeCollection $attributes, array $input) {
     if ($attributes->count()) {
       $form['linkit_attributes'] = [
         '#type' => 'container',
@@ -180,6 +182,7 @@ class LinkitEditorDialog extends FormBase {
       /** @var \Drupal\linkit\AttributeInterface $plugin */
       foreach ($attributes as $plugin) {
         $plugin_name = $plugin->getHtmlName();
+
         $default_value = isset($input[$plugin_name]) ? $input[$plugin_name] : '';
         $form['linkit_attributes'][$plugin_name] = $plugin->buildFormElement($default_value);
         $form['linkit_attributes'][$plugin_name] += [

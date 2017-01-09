@@ -121,3 +121,11 @@ linkit.linkit_profile.*.third_party.imce:
       type: boolean
     scheme:
       type: string
+
+ckeditor.plugin.linkit:
+  type: mapping
+  label: 'Profile dropdown'
+  mapping:
+    linkit_profile:
+      type: string
+      label: 'List of profiles'

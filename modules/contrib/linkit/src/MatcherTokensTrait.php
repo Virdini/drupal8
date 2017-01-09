@@ -24,7 +24,7 @@ trait MatcherTokensTrait {
     if (\Drupal::moduleHandler()->moduleExists('token')) {
       // Add the token tree UI.
       $form['token_tree'] = array(
-        '#theme' => 'token_tree',
+        '#theme' => 'token_tree_link',
         '#token_types' => $types,
         '#dialog' => TRUE,
         '#weight' => -90,

@@ -22,7 +22,7 @@
     attach: function (context, settings) {
       var $link = $(context).find('.linkit-imce-open').once('linkit-imce-open');
       if ($link.length) {
-        $link.bind('click', function(event) {
+        $link.bind('click', function (event) {
           event.preventDefault();
           window.open($(this).attr('href'), '', 'width=760,height=560,resizable=1');
         });

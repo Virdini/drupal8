@@ -7,13 +7,13 @@
 
 (function ($, Drupal, drupalSettings, CKEDITOR) {
 
-  "use strict";
+  'use strict';
 
   // Alter the dialog settings to make a bigger dialog.
-  //$(window).on('dialog:beforecreate', function (event, dialog, $element, settings) {
+  // $(window).on('dialog:beforecreate', function (event, dialog, $element, settings) {
   //  settings.dialogClass = settings.dialogClass.replace('ui-dialog--narrow', '');
   //  settings.width = 700;
-  //});
+  // });
 
   CKEDITOR.plugins.add('linkit', {
     init: function (editor) {

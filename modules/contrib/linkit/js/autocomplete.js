@@ -5,7 +5,7 @@
 
 (function ($, Drupal, _, document) {
 
-  "use strict";
+  'use strict';
 
   var autocomplete;
 
@@ -95,19 +95,17 @@
    *   An empty <ul> element to use as the widget's menu.
    * @param {array} items
    *   An Array of items that match the user typed term.
-   *
-   * @return {object}
    */
   function renderMenu(ul, items) {
     var self = this.element.autocomplete('instance');
 
-    var grouped_items = _.groupBy(items, function(item) {
-      return item.hasOwnProperty('group') ? item.group : "";
+    var grouped_items = _.groupBy(items, function (item) {
+      return item.hasOwnProperty('group') ? item.group : '';
     });
 
     $.each(grouped_items, function (group, items) {
       if (group.length) {
-        ul.append('<li class="linkit-result--group">' + group + "</li>");
+        ul.append('<li class="linkit-result--group">' + group + '</li>');
       }
 
       $.each(items, function (index, item) {
