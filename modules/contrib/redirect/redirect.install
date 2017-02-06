@@ -178,3 +178,17 @@ function redirect_update_8104() {
 function redirect_update_8105() {
   \Drupal::service('module_installer')->install(['redirect_404']);
 }
+
+/**
+ * Removes unnecessary settings from storage.
+ */
+function redirect_update_8106() {
+  $config = \Drupal::configFactory()->getEditable('redirect.settings');
+  $config->set('route_normalizer_enabled', $config->get('normalize_aliases'));
+  $config->clear('term_path_handler');
+  $config->clear('normalize_aliases');
+  $config->clear('deslash');
+  $config->clear('frontpage_redirect');
+  $config->clear('nonclean_to_clean');
+  $config->save();
+}

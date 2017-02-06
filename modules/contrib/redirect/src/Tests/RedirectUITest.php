@@ -424,9 +424,6 @@ class RedirectUITest extends WebTestBase {
     $redirect->save();
     $this->assertRedirect('a-path', 'https://www.example.org');
     $this->drupalLogin($this->adminUser);
-    $this->drupalPostForm('admin/config/search/redirect/settings', ['redirect_deslash' => 1], t('Save configuration'));
-    $this->drupalGet('/2015/10/10/');
-    $this->assertResponse(404);
   }
 
 }
