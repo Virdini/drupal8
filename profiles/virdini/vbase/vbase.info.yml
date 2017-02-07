@@ -1,7 +1,7 @@
 name: Virdini Base
 type: profile
 description: 'Install with commonly used features pre-configured by Virdini.'
-version: 8.x-1.0.6
+version: 8.x-1.0.7
 core: 8.x
 'interface translation project': vbase
 'interface translation server pattern': profiles/virdini/vbase/translations/vbase.%language.po
@@ -46,6 +46,7 @@ dependencies:
   - pathauto
   - simple_sitemap
   - redirect
+  - mailsystem
 themes:
   - vadmin
   - vcurrent
