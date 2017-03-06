@@ -24,7 +24,7 @@ class Fix404RedirectUILanguageTest extends Redirect404TestBase {
    *
    * @var array
    */
-  public static $modules = ['content_translation'];
+  public static $modules = ['language'];
 
   /**
    * Admin user's permissions for this test.
@@ -33,6 +33,7 @@ class Fix404RedirectUILanguageTest extends Redirect404TestBase {
    */
   protected $adminPermissions = [
     'administer redirects',
+    'administer redirect settings',
     'access site reports',
     'access content',
     'bypass node access',
