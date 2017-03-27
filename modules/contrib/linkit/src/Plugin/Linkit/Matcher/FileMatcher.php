@@ -183,6 +183,7 @@ class FileMatcher extends EntityMatcher {
    * entity interface.
    */
   protected function buildPath($entity) {
-    return $entity->url();
+    /** @var \Drupal\file\FileInterface $entity */
+    return file_url_transform_relative(file_create_url($entity->getFileUri()));
   }
 }

@@ -229,7 +229,7 @@ class EntityMatcher extends ConfigurableMatcherBase {
       // Check the access against the defined entity access handler.
       /** @var \Drupal\Core\Access\AccessResultInterface $access */
       $access = $entity->access('view', $this->currentUser, TRUE);
-      if ($access->isForbidden()) {
+      if (!$access->isAllowed()) {
         continue;
       }
 
