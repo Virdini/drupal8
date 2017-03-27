@@ -4,6 +4,7 @@
  * @file
  * Advanced Link module.
  */
+
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\editor\Entity\Editor;
 
@@ -33,28 +34,30 @@ function editor_advanced_link_form_editor_link_dialog_alter(&$form, FormStateInt
     $input = $form_state->get('link_element') ?: [];
   }
 
-  /**
+  /*
    * Helper to retrieve form fields' default values.
    *
    * @param string $attribute_name
    * @param string $fallback
+   *
    * @return mixed
    *   The existing value or the fallback.
    */
-  $get_default_value = function($attribute_name, $fallback = '') use ($input) {
+  $get_default_value = function ($attribute_name, $fallback = '') use ($input) {
     return !empty($input[$attribute_name]) ? $input[$attribute_name] : $fallback;
   };
 
-  /**
+  /*
    * Helper to set the status of a form field according to the status of the
    * filter about the attribute it is defining.
    *
    * @param string $attribute_name
+   *
    * @return bool
    *   TRUE if the filter is disabled or if the entire "a" tag is allowed or if
    *   the given attribute is allowed for the "a" tag.
    */
-  $is_accessible = function($attribute_name) use ($restrictions) {
+  $is_accessible = function ($attribute_name) use ($restrictions) {
     return $restrictions === FALSE || $restrictions['allowed']['a'] === TRUE || !empty($restrictions['allowed']['a'][$attribute_name]);
   };
 
@@ -131,7 +134,7 @@ function editor_advanced_link_form_editor_link_dialog_alter(&$form, FormStateInt
 /**
  * Filter empty attributes to avoid empty HTML output.
  */
-function _editor_advanced_link_attributes_validate($element, FormStateInterface $form_state, $form) {
+function _editor_advanced_link_attributes_validate(array &$form, FormStateInterface $form_state) {
   $values = $form_state->getValue('attributes');
   $link_element = $form_state->get('link_element');
   foreach ($values as $key => $value) {
