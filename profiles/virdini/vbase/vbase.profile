@@ -16,7 +16,7 @@ use Drupal\Core\Entity\EntityInterface;
  * Implements hook_node_access().
  */
 function vbase_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\Session\AccountInterface $account) {
-  
+
   switch ($op) {
     case 'view':
       $type = $node->bundle();
@@ -28,7 +28,7 @@ function vbase_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\S
       return AccessResult::neutral()->addCacheableDependency($config)->cachePerPermissions();
       break;
   }
-  
+
   return AccessResult::neutral();
 }
 
@@ -146,8 +146,8 @@ function template_preprocess_developers(array &$variables) {
   if ($variables['width'] < 70) {
     $variables['width'] = 70;
   }
-  
-  
+
+
   if (!isset($variables['#cache'])) {
     $variables['#cache'] = [];
   }
@@ -201,22 +201,24 @@ function vbase_page_attachments(array &$attachments) {
       ],
     ], 'ie-chrome'];
   }
-  $verification = [
-    'google-site-verification' => $config->get('google_verification'),
-    'yandex-verification' => $config->get('yandex_verification'),
-  ];
-  foreach ($verification as $name => $data) {
-    if (!empty($data)) {
-      foreach ($data as $key => $value) {
-        if ($value) {
-          $attachments['#attached']['html_head'][] = [[
-            '#type' => 'html_tag',
-            '#tag' => 'meta',
-            '#attributes' => [
-              'name' => $name,
-              'content' => $value,
-            ],
-          ], $name . $key];
+  if (\Drupal::service('path.matcher')->isFrontPage()) {
+    $verification = [
+      'google-site-verification' => $config->get('google_verification'),
+      'yandex-verification' => $config->get('yandex_verification'),
+    ];
+    foreach ($verification as $name => $data) {
+      if (!empty($data)) {
+        foreach ($data as $key => $value) {
+          if ($value) {
+            $attachments['#attached']['html_head'][] = [[
+              '#type' => 'html_tag',
+              '#tag' => 'meta',
+              '#attributes' => [
+                'name' => $name,
+                'content' => $value,
+              ],
+            ], $name . $key];
+          }
         }
       }
     }
