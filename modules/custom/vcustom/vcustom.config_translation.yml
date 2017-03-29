@@ -1,0 +1,5 @@
+#vcustom.contact_information:
+#  title: 'Contact Information'
+#  base_route_name: vcustom.contact_information
+#  names:
+#    - vcustom.contact

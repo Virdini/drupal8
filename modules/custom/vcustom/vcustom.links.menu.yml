@@ -1,4 +1,5 @@
 vcustom.contact_information:
   title: 'Contact Information'
+  parent: vbase.site_settings
+  description: ''
   route_name: vcustom.contact_information
-  base_route: vcustom.contact_information
