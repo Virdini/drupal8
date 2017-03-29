@@ -1,0 +1,5 @@
+vbase.site_settings:
+  title: 'Main Site Settings'
+  base_route_name: vbase.site_settings
+  names:
+    - system.site
