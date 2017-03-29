@@ -4,3 +4,21 @@ vbase.site_settings:
   description: 'Change site name, email address, slogan.'
   route_name: vbase.site_settings
   weight: -20
+  
+vbase.tags_settings:
+  title: 'Tags'
+  parent: vbase.site_settings
+  description: ''
+  route_name: vbase.tags_settings
+
+vbase.developers_settings:
+  title: 'Developers'
+  parent: vbase.site_settings
+  description: ''
+  route_name: vbase.developers_settings
+
+vbase.content_protection:
+  title: 'Content Protection'
+  parent: vbase.site_settings
+  description: ''
+  route_name: vbase.content_protection
