@@ -1,3 +1,10 @@
+developers.settings:
+  css:
+    component:
+      css/developers.settings.css: {}
+  js:
+    js/developers.settings.js: {}
+
 FlexSlider:
   version: 2.6.3
   css:

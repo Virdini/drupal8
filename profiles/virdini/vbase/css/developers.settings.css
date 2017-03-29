@@ -1,0 +1,9 @@
+#developers-settings-logo {
+  vertical-align: middle;
+  margin-left: 10px;
+  background-color: #fff;
+  background-image: -webkit-linear-gradient(45deg,#efefef 25%,transparent 25%,transparent 75%,#efefef 75%,#efefef),-webkit-linear-gradient(45deg,#efefef 25%,transparent 25%,transparent 75%,#efefef 75%,#efefef);
+  background-position: 0 0,10px 10px;
+  -webkit-background-size: 21px 21px;
+  background-size: 21px 21px;
+}

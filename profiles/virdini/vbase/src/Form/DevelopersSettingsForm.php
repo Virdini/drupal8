@@ -51,12 +51,21 @@ class DevelopersSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('vbase.settings.developers');
-    
+
+    $form['#attached']['library'][] = 'vbase/developers.settings';
+
+    $logo = $config->get('logo') ?: 'logo.svg';
+    $width = (int)$config->get('width');
+    if ($width < 70) {
+      $width = 70;
+    }
+
     $form['logo'] = [
       '#required' => TRUE,
       '#type' => 'select',
       '#title' => $this->t('Logo'),
-      '#default_value' => $config->get('logo'),
+      '#default_value' => $logo,
+      '#field_suffix' => '<img id="developers-settings-logo" src="https://info.virdini.com/logo/'. $logo .'" width="'. $width .'">',
       '#options' => [
         'logo.svg' => 'logo.svg',
         'logo.dark.svg' => 'logo.dark.svg',
@@ -66,25 +75,25 @@ class DevelopersSettingsForm extends ConfigFormBase {
         'virdini.white.t.svg' => 'virdini.white.t.svg',
       ],
     ];
-    
+
     $form['width'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Width'),
-      '#default_value' => $config->get('width'),
+      '#default_value' => $width,
     ];
-    
+
     $form['developed'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Developed'),
       '#default_value' => $config->get('developed'),
     ];
-    
+
     $form['maintained'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Maintained'),
       '#default_value' => $config->get('maintained'),
     ];
-    
+
     $form['label'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Label'),
