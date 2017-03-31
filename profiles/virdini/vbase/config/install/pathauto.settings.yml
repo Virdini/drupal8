@@ -39,4 +39,5 @@ transliterate: true
 reduce_ascii: false
 ignore_words: ''
 case: true
-update_action: 0
+update_action: 2
+enabled_entity_types: {  }
