@@ -1,9 +1,10 @@
 max_links: 2000
 cron_generate: true
 remove_duplicates: true
-batch_process_limit: 100
+skip_untranslated: true
+batch_process_limit: 1500
+base_url: ''
 enabled_entity_types:
   - node
-  - menu_link_content
   - taxonomy_term
-skip_untranslated: true
+  - menu_link_content

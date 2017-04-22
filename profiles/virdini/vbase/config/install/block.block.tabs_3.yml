@@ -2,18 +2,18 @@ langcode: en
 status: true
 dependencies:
   theme:
-    - vadmin
-id: vadmin_primary_local_tasks
-theme: vadmin
-region: header
-weight: -2
+    - vcurrent
+id: tabs_3
+theme: vcurrent
+region: pre_content
+weight: 0
 provider: null
 plugin: local_tasks_block
 settings:
   id: local_tasks_block
-  label: 'Primary tabs'
+  label: Tabs
   provider: core
   label_display: '0'
   primary: true
-  secondary: false
+  secondary: true
 visibility: {  }

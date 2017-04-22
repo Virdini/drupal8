@@ -14,8 +14,8 @@ attributes:
     settings:
       automatic_title: true
 matchers:
-  5c7ead46-b04b-412e-a300-bed93bd32f64:
-    uuid: 5c7ead46-b04b-412e-a300-bed93bd32f64
+  1675449c-9f98-4bea-97f4-3bbcfd93358d:
+    uuid: 1675449c-9f98-4bea-97f4-3bbcfd93358d
     id: 'entity:node'
     weight: 0
     settings:
@@ -23,8 +23,8 @@ matchers:
       bundles: {  }
       group_by_bundle: true
       include_unpublished: false
-  80ecd777-73ad-423b-a460-9626675d34ad:
-    uuid: 80ecd777-73ad-423b-a460-9626675d34ad
+  694a1d2b-5952-4b6c-93a5-986f09268856:
+    uuid: 694a1d2b-5952-4b6c-93a5-986f09268856
     id: 'entity:taxonomy_term'
     weight: 0
     settings:

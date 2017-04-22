@@ -5,7 +5,7 @@ dependencies:
     - system
   theme:
     - vadmin
-id: vadmin_messages
+id: messages_2
 theme: vadmin
 region: highlighted
 weight: 0
@@ -13,7 +13,7 @@ provider: null
 plugin: system_messages_block
 settings:
   id: system_messages_block
-  label: 'Status messages'
+  label: Messages
   provider: system
   label_display: '0'
 visibility: {  }

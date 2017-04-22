@@ -46,6 +46,7 @@ dependencies:
   - pathauto
   - simple_sitemap
   - redirect
+  - redirect_404
   - mailsystem
 themes:
   - vadmin

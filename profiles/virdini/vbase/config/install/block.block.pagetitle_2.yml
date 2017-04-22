@@ -3,10 +3,10 @@ status: true
 dependencies:
   theme:
     - vadmin
-id: vadmin_page_title
+id: pagetitle_2
 theme: vadmin
 region: header
-weight: -3
+weight: -2
 provider: null
 plugin: page_title_block
 settings:

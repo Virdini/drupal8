@@ -1,12 +1,14 @@
 langcode: en
 status: true
 dependencies:
+  module:
+    - system
   theme:
     - vcurrent
-id: vcurrent_page_title
+id: pagetitle
 theme: vcurrent
-region: header
-weight: -4
+region: pre_content
+weight: -3
 provider: null
 plugin: page_title_block
 settings:
@@ -14,4 +16,9 @@ settings:
   label: 'Page title'
   provider: core
   label_display: '0'
-visibility: {  }
+visibility:
+  request_path:
+    id: request_path
+    pages: '<front>'
+    negate: true
+    context_mapping: {  }

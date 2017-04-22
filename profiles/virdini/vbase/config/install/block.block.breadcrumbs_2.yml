@@ -5,7 +5,7 @@ dependencies:
     - system
   theme:
     - vadmin
-id: vadmin_breadcrumbs
+id: breadcrumbs_2
 theme: vadmin
 region: breadcrumb
 weight: 0

@@ -5,10 +5,10 @@ dependencies:
     - system
   theme:
     - vcurrent
-id: vcurrent_content
+id: content
 theme: vcurrent
 region: content
-weight: 0
+weight: -1
 provider: null
 plugin: system_main_block
 settings:

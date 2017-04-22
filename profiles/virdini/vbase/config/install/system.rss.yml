@@ -1,0 +1,6 @@
+channel:
+  description: ''
+items:
+  limit: 1
+  view_mode: title
+langcode: en

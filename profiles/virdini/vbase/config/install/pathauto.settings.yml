@@ -1,3 +1,4 @@
+enabled_entity_types: {  }
 punctuation:
   double_quotes: 0
   quotes: 0
@@ -5,7 +6,7 @@ punctuation:
   comma: 0
   period: 0
   hyphen: 1
-  underscore: 0
+  underscore: 1
   colon: 0
   semicolon: 0
   pipe: 0
@@ -37,7 +38,6 @@ max_length: 200
 max_component_length: 100
 transliterate: true
 reduce_ascii: false
-ignore_words: ''
 case: true
+ignore_words: 'a, an, as, at, before, but, by, for, from, is, in, into, like, of, off, on, onto, per, since, than, the, this, that, to, up, via, with'
 update_action: 2
-enabled_entity_types: {  }

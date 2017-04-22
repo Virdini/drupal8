@@ -1,12 +1,12 @@
 langcode: en
-status: false
+status: true
 dependencies:
   theme:
-    - vcurrent
-id: vcurrent_local_actions
-theme: vcurrent
-region: '-1'
-weight: -4
+    - vadmin
+id: primaryadminactions
+theme: vadmin
+region: pre_content
+weight: 0
 provider: null
 plugin: local_actions_block
 settings:

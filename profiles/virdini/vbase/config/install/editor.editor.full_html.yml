@@ -11,7 +11,7 @@ third_party_settings:
     status: true
     scheme: public
     directory: inline-files
-    extensions: 'txt pdf doc docx xls xlsx zip rar'
+    extensions: 'txt pdf doc docx xls xlsx zip rar tar gz'
 format: full_html
 editor: ckeditor
 settings:
@@ -26,16 +26,15 @@ settings:
             - Underline
             - Strike
             - '-'
+            - Superscript
+            - Subscript
+        -
+          name: Alignment
+          items:
             - JustifyLeft
             - JustifyCenter
             - JustifyRight
             - JustifyBlock
-            - '-'
-            - Indent
-            - Outdent
-            - '-'
-            - RemoveFormat
-            - '-'
         -
           name: Links
           items:
@@ -50,25 +49,20 @@ settings:
         -
           name: Media
           items:
-            - Table
             - Blockquote
             - DrupalImage
-            - VideoDetector
             - DrupalFile
-        -
-          name: Style
-          items:
-            - Format
-            - FontSize
+            - VideoDetector
+            - Table
         -
           name: Tools
           items:
-            - PasteText
-            - PasteFromWord
-            - ShowBlocks
             - Source
-            - Maximize
+            - ShowBlocks
+            - RemoveFormat
   plugins:
+    language:
+      language_list: un
     stylescombo:
       styles: ''
     linkit:
@@ -77,7 +71,7 @@ image_upload:
   status: true
   scheme: public
   directory: inline-images
-  max_size: 10MB
+  max_size: '10 MB'
   max_dimensions:
     width: null
     height: null
