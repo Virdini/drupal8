@@ -10,8 +10,13 @@
  * @see template_preprocess_image_widget()
  */
 #}
+{%
+  set classes = [
+    data.preview ? 'with-preview',
+  ]
+%}
 {{ attach_library('vcore/image-widget') }}
-<div{{ attributes }}>
+<div{{ attributes.addClass(classes) }}>
   {% if data.preview %}
     <div class="image-preview">
       {{ data.preview }}
@@ -19,6 +24,9 @@
   {% endif %}
   <div class="image-widget-data">
     {# Render widget data without the image preview that was output already. #}
-    {{ data|without('preview') }}
+    <div class="clearfix image-widget-alt-title">
+      {{ data.title }}{{ data.alt }}
+    </div>
+    {{ data|without('preview', 'alt', 'title') }}
   </div>
 </div>
