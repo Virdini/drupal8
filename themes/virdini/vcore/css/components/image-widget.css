@@ -24,9 +24,11 @@
   width: 50%;
   float: left;
   min-width: 200px;
+  padding-right: 10px;
+  box-sizing: border-box;
 }
 .image-widget-alt-title .form-text {
-  width: 95%;
+  width: 100%;
 }
 [dir="rtl"] .image-widget-data {
   padding-right: 120px;
