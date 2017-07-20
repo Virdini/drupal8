@@ -6,6 +6,7 @@
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
 
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Language\LanguageInterface;
@@ -13,19 +14,35 @@ use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
- * Implements hook_node_access().
+ * Implements hook_ENTITY_TYPE_access() for node.
  */
-function vbase_node_access(\Drupal\node\NodeInterface $node, $op, \Drupal\Core\Session\AccountInterface $account) {
+function vbase_node_access(EntityInterface $entity, $op, AccountInterface $account) {
 
   switch ($op) {
     case 'view':
-      $type = $node->bundle();
       $config = \Drupal::config('vbase.settings.cp');
       $bundles = $config->get('node_bundles');
-      if (!empty($bundles) && in_array($type, $bundles) && !$account->hasPermission('vbase view protected content', $account)) {
+      if (!empty($bundles) && in_array($entity->bundle(), $bundles) && !$account->hasPermission('vbase view protected content', $account)) {
         return AccessResult::forbidden()->addCacheableDependency($config)->cachePerPermissions();
       }
       return AccessResult::neutral()->addCacheableDependency($config)->cachePerPermissions();
+      break;
+  }
+
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access() for user.
+ */
+function vbase_user_access(EntityInterface $entity, $op, AccountInterface $account) {
+
+  switch ($op) {
+    case 'update':
+      // Protect Root
+      if ($entity->id() == 1 && $account->id() != 1) {
+        return AccessResult::forbidden()->cachePerPermissions();
+      }
       break;
   }
 
