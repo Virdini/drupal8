@@ -5,20 +5,12 @@
 .is-horizontal .tabs {
   position: relative;
 }
-.is-collapse-enabled .tabs:before,
-.is-horizontal .tabs:before {
-  content: '';
-  display: block;
-  background-color: #A6A6A6;
-  height: 1px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  z-index: 10;
-  right: 0;
-}
 .block-local-tasks-block {
   overflow: hidden;
+  clear: both;
+}
+.with-left-menu .block-local-tasks-block {
+  clear: none;
 }
 
 /**
@@ -33,33 +25,29 @@
   display: block;
   overflow: hidden;
   box-sizing: border-box;
-  margin: -1px 0 0;
-  padding: 9px 2em 7px 1em; /* LTR */
+  padding: 0;
   width: 100%;  /* 1 */
-  border: 1px solid #bfbfbf;
-  background-color: rgba(242, 242, 240, 0.7);
-  color: #0074bd;
+  color: #fff;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-[dir="rtl"] .tabs__tab {
-  padding-left: 2em;
-  padding-right: 1em;
 }
 .tabs a {
   display: block;
   padding: 0.2em 1em;
   text-decoration: none;
+  background-color: #0b64a3;
+  border: 1px solid #0b64a3;
+  color: #fff;
 }
 ul.tabs {
   list-style: outside none none;
   margin: 0 0 0.5em;
   padding: 0;
 }
-.tabs__tab:hover,
-.tabs__tab:focus {
-  color: #008ee6;
-  background-color: #fafaf7;
+.tabs__tab a:hover,
+.tabs__tab a:focus {
+  color: #0b64a3;
+  background-color: #fff;
 }
 li.tabs__tab {
   display: block;
@@ -71,11 +59,11 @@ li.tabs__tab {
   padding-right: 0;
 }
 li.tabs__tab a {
-  padding: 9px 2em 7px 1em; /* LTR */
+  padding: 7px 10px;
 }
-[dir="rtl"] li.tabs__tab a {
-  padding-left: 2em;
-  padding-right: 1em;
+.is-horizontal li.tabs__tab a {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 .tabs a:hover,
 .tabs a:focus {
@@ -87,41 +75,32 @@ li.tabs__tab a {
   clear: both;
   margin: 16px 0 0;
   margin: 1rem 0 0;
-  padding-left: 2em;
+  font-size: 0.95em;
+  line-height: 24px;
+  overflow: hidden;
 }
-.tabs.primary .tabs__tab.is-active {
+.tabs .tabs__tab.is-active {
   z-index: 15;
-  border-color: #a6a6a6;
-  border-radius: 4px 0 0 0; /* LTR */
-  background-color: #ffffff;
-  color: #004f80;
+  color: #0b64a3;
+  margin: 0;
 }
-[dir="rtl"] .tabs.primary .tabs__tab.is-active {
-  border-top-left-radius: 0;
-  border-top-right-radius: 4px;
-}
-.tabs.primary a {
-  background: none;
-}
-.tabs.primary a:focus {
-  color: #008ee6;
-  background-color: #fafaf7;
-  text-decoration: underline;
-}
-.tabs.primary .is-active a:focus {
-  background: none;
-  text-decoration: underline;
+.tabs .tabs__tab.is-active a {
+  background-color: #fff;
+  color: inherit;
 }
 
 /* Only add the arrow if there's space */
 @media screen and (min-width:18.75em) { /* 300px */
   .tabs.primary a {
-    background: url(../../../../../core/misc/icons/0074bd/chevron-right.svg) 99% center no-repeat;
+    /*background-image: url(../../../../../core/misc/icons/0074bd/chevron-right.svg);*/
+    background-position: 99% center;
+    background-repeat: no-repeat;
   }
   [dir="rtl"] .tabs.primary a {
-    background: url(../../../../../core/misc/icons/0074bd/chevron-left.svg) 1% center no-repeat;
+    /*background-image: url(../../../../../core/misc/icons/0074bd/chevron-left.svg);*/
+    background-position: 1% center;
   }
-  .tabs.primary .tabs__tab.is-active a {
+  .tabs .tabs__tab.is-active a {
     background-image: none;
   }
 }
@@ -130,32 +109,29 @@ li.tabs__tab a {
 }
 
 /* JS dependent styling */
- .is-collapse-enabled .tabs__trigger {
+.is-collapse-enabled .tabs__trigger {
   box-sizing: content-box;
   display: block;
   position: absolute;
   z-index: 10;
   right: 0; /* LTR */
-  top: 2px;
+  top: 0px;
   left: auto; /* LTR */
   width: 25%;
-  padding-right: 4px;
-  padding-left: 4px;
-  border-left: 0; /* LTR */
-  border-radius: 0 4px 0 0; /* LTR */
   letter-spacing: 0.1em;
   text-align: center;
   outline: 0;
+  line-height: 39px;
+  color: #0b64a3;
 }
 [dir="rtl"] .is-collapse-enabled .tabs__trigger {
   border-right: 0;
   border-left: 1px solid #bfbfbf;
-  border-radius: 4px 0 0 0;
   right: auto;
   left: 0;
 }
 .is-collapse-enabled .tabs {
-  padding-top: 38px;
+  padding-top: 40px;
   max-height: 0;
 }
 .tabs.is-open {
@@ -164,7 +140,7 @@ li.tabs__tab a {
 }
 .is-collapse-enabled .tabs__tab.is-active {
   position: absolute;
-  top: 2px;
+  top: 0px;
   left: 0; /* LTR */
   width: 75%;
   border-bottom: 0;
@@ -177,16 +153,14 @@ li.tabs__tab a {
   content: none;
 }
 .is-open .tabs__tab.is-active {
-  border-color: #a6a6a6;
   background-color: #ffffff;
-  color: #004f80;
-  border-bottom: 1px solid #a6a6a6;
+  color: #0b64a3;
 }
 
 /* Styles for the horizontal state always take priority */
 .is-horizontal .tabs {
   max-height: none !important;
-  padding-top: 0 !important;
+  padding: 0 !important;
   overflow: visible;
 }
 .is-horizontal .tabs__tab {
@@ -209,33 +183,18 @@ li.tabs__tab a {
   margin-left: 0;
   margin-right: -1px;
 }
-.is-horizontal .tabs.primary .tabs__tab:first-child {
-  border-radius: 4px 0 0 0; /* LTR */
-}
-[dir="rtl"] .is-horizontal .tabs.primary .tabs__tab:first-child {
-  border-radius: 0 4px 0 0;
-}
-.is-horizontal .tabs.primary .tabs__tab:last-child {
-  border-radius: 0 4px 0 0; /* LTR */
-}
-[dir="rtl"] .is-horizontal .tabs.primary .tabs__tab:last-child {
-  border-radius: 4px 0 0 0;
-}
 
 /* Override the states above */
 .is-horizontal .tabs__tab.is-active,
 .is-horizontal .tabs.primary .tabs__tab.is-active,
 [dir="rtl"] .is-horizontal .tabs.primary .tabs__tab.is-active {
-  border-radius: 4px 4px 0 0;
   position: relative;
   width: auto;
   top: 0;
   border-bottom: 0;
-  margin: 0 -4px;
 }
 .is-horizontal .tabs.primary a {
   background-image: none;
-  padding: 7px 2em 7px 2em;
 }
 .is-horizontal .tabs__trigger {
   display: none;
@@ -247,37 +206,18 @@ li.tabs__tab a {
   margin-top: 16px;
   margin-top: 1rem;
 }
-.tabs.secondary .tabs__tab {
-  display: block;
-  padding: 5px 15px 5px 16px; /* LTR */
-  margin-left: -1px; /* LTR */
-  color: #0074bd;
-  -webkit-transition: border-color 0.2s, background-color 0.2s;
-  transition: border-color 0.2s, background-color 0.2s;
-}
-[dir="rtl"] .tabs.secondary .tabs__tab {
-  padding-left: 15px;
-  padding-right: 16px;
-  margin-left: 0;
-  margin-right: -1px;
-}
-/* This is required to win over specificity of [dir="rtl"] .tabs.secondary .tabs__tab */
-[dir="rtl"] .views-displays .tabs.secondary li,
-[dir="rtl"] .views-displays .tabs.secondary li.is-active {
-  padding-left: 0;
-  padding-right: 0;
-}
+
 .tabs.secondary .tabs__tab + .tabs__tab {
   border-top: 1px solid #d9d8d4;
 }
 .tabs.secondary .tabs__tab.is-active {
-  color: #004f80;
-  border-left: 2px solid #004f80; /* LTR */
+  color: #0b64a3;
+  border-left: 2px solid #0b64a3; /* LTR */
   padding-left: 15px; /* LTR */
 }
 [dir="rtl"] .tabs.secondary .tabs__tab.is-active {
   border-left: 1px solid #bfbfbf;
-  border-right: 2px solid #004f80;
+  border-right: 2px solid #0b64a3;
   padding-right: 15px;
 }
 /* This is required to win over specificity of [dir="rtl"] .tabs.secondary .tabs__tab.is-active */
@@ -285,43 +225,15 @@ li.tabs__tab a {
   border: 0 none;
   padding-right: 0;
 }
-.tabs.secondary .tabs__tab:hover,
-.tabs.secondary .tabs__tab:focus {
-  color: #008ee6;
-  border-left: 2px solid #008ee6; /* LTR */
-  padding-left: 15px; /* LTR */
-}
-[dir="rtl"] .tabs.secondary .tabs__tab:hover,
-[dir="rtl"] .tabs.secondary .tabs__tab:focus {
-  border-left: 1px solid #bfbfbf;
-  border-right: 2px solid #008ee6;
-  padding-right: 15px;
-}
 /* This is required to win over specificity of [dir="rtl"] .tabs.secondary .tabs__tab:hover */
 [dir="rtl"] .views-displays .tabs li.tabs__tab:hover {
   border: 0 none;
   padding-right: 0;
 }
-.tabs.secondary a {
-  background-color: transparent;
-  padding: 7px 13px 5px;
-  text-decoration: none;
-}
-/* This is required to win over specificity of [dir="rtl"] li.tabs__tab a */
-[dir="rtl"] .tabs.secondary a {
-  padding-left: 13px;
-  padding-right: 13px;
-}
 /* This is required to win over specificity of [dir="rtl"] .tabs.secondary a */
 [dir="rtl"] .views-displays .tabs.secondary a {
   padding-left: 7px;
   padding-right: 7px;
-}
-.tabs.secondary .is-active a {
-  color: #004f80;
-}
-.tabs.secondary a:focus {
-  text-decoration: underline;
 }
 
 /* Styles for the horizontal state */
@@ -331,8 +243,6 @@ li.tabs__tab a {
   position: relative;
   top: 0;
   z-index: 15;
-  margin-left: 1em;
-  margin-right: 1em;
   border-bottom: 2px solid transparent;
   border-left: 1px solid transparent; /* LTR */
   border-right-color: transparent; /* LTR */
@@ -346,14 +256,5 @@ li.tabs__tab a {
  */
 [dir="rtl"] .is-horizontal .tabs.secondary .tabs__tab {
   float: right;
-  border-right: 1px solid transparent;
-  border-left-color: transparent;
   padding-right: 0; /* 1 */
-}
-.is-horizontal .tabs.secondary .tabs__tab.is-active {
-  border-bottom-color: #004f80;
-}
-.is-horizontal .tabs.secondary .tabs__tab:hover,
-.is-horizontal .tabs.secondary .tabs__tab:focus {
-  border-bottom-color: #008ee6;
 }

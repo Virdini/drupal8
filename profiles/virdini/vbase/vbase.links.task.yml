@@ -24,9 +24,24 @@ vbase.adjustment_tab:
   route_name: vbase.adjustment
   base_route: vbase.adjustment
   weight: -1
-  
+
 vbase.adjustment_tab_1:
   title: 'Tab 1'
+  route_name: vbase.adjustment_tab_1
+  base_route: vbase.adjustment
+
+vbase.adjustment_tab_2:
+  title: 'Tab 2'
+  route_name: vbase.adjustment_tab_1
+  base_route: vbase.adjustment
+
+vbase.adjustment_tab_3:
+  title: 'Tab 3'
+  route_name: vbase.adjustment_tab_1
+  base_route: vbase.adjustment
+
+vbase.adjustment_tab_4:
+  title: 'Tab 4'
   route_name: vbase.adjustment_tab_1
   base_route: vbase.adjustment
 
@@ -42,5 +57,20 @@ vbase.adjustment_tab_1_2:
 
 vbase.adjustment_tab_1_3:
   title: 'Sub Tab 3'
+  route_name: vbase.adjustment_tab_1_3
+  parent_id: vbase.adjustment_tab
+
+vbase.adjustment_tab_1_4:
+  title: 'Sub Tab 4'
+  route_name: vbase.adjustment_tab_1_3
+  parent_id: vbase.adjustment_tab
+
+vbase.adjustment_tab_1_5:
+  title: 'Sub Tab 5'
+  route_name: vbase.adjustment_tab_1_3
+  parent_id: vbase.adjustment_tab
+
+vbase.adjustment_tab_1_6:
+  title: 'Sub Tab 6'
   route_name: vbase.adjustment_tab_1_3
   parent_id: vbase.adjustment_tab
