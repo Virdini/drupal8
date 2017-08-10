@@ -7,8 +7,8 @@ dependencies:
 type: module
 configure: advagg_css_minify.settings
 
-# Information added by Drupal.org packaging script on 2017-07-08
-version: '8.x-3.0'
+# Information added by Drupal.org packaging script on 2017-08-10
+version: '8.x-3.1'
 core: '8.x'
 project: 'advagg'
-datestamp: 1499487847
+datestamp: 1502356761

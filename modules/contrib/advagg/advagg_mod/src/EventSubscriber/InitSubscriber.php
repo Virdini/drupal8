@@ -9,6 +9,7 @@ use Drupal\advagg_mod\Asset\DeferJs;
 use Drupal\advagg_mod\Asset\RemoveConsoleLog;
 use Drupal\advagg_mod\Asset\TranslateCss;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Render\HtmlResponse;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -189,6 +190,11 @@ class InitSubscriber implements EventSubscriberInterface {
       return;
     }
     $response = $response->getResponse();
+
+    // Only process Html Responses.
+    if (!$response instanceof HtmlResponse) {
+      return;
+    }
     $content = $this->cssDeferer->defer($response->getContent());
     $response->setContent($content);
 
@@ -205,7 +211,13 @@ class InitSubscriber implements EventSubscriberInterface {
     if (!$this->config->get('js_defer')) {
       return;
     }
+
     $response = $response->getResponse();
+
+    // Only process Html Responses.
+    if (!$response instanceof HtmlResponse) {
+      return;
+    }
     $content = $this->jsDeferer->defer($response->getContent());
     $response->setContent($content);
 
@@ -223,6 +235,11 @@ class InitSubscriber implements EventSubscriberInterface {
       return;
     }
     $response = $response->getResponse();
+
+    // Only process Html Responses.
+    if (!$response instanceof HtmlResponse) {
+      return;
+    }
     $content = $this->jsAsyncer->async($response->getContent());
     $response->setContent($content);
   }

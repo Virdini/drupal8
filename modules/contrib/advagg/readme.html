@@ -20,6 +20,8 @@
 
     <li>Operations</li>
 
+    <li>Developing with Advanced Aggregates</li>
+
     <li>Tips &amp; Tricks
 
 
@@ -274,6 +276,45 @@
     <li><p><strong>Increment Global Counter</strong>: Force the creation of all new files with new
         names by incrementing a global counter.</p></li>
 </ul>
+
+<h2 id="developingyoursitewithadvancedagreggates">Developing your site with Advanced Agreggates</h2>
+
+<p>With the new architecture, Advanced Agreggates is much more intelligent when in
+    development. It will detect changed files, however, depending on settings it
+    may not be instant. Also, repeatedly optimizing a file for every minor change
+    when doing stylesheets or JavaScript isn't the most efficient option. So, what
+    can you do? If just one site instance (questionable but budgets etc), you may
+    want to just adjust the configuration to refresh caches a bit faster or disable
+    AdvAgg temporarily while doing heavy development.</p>
+
+<p>That will work but, there are a few other methods that will work better for
+    some work flows especially if doing config import and export. </p>
+
+<h3 id="temporarilydisablingadvagg">Temporarily Disabling AdvAgg</h3>
+
+<ol>
+    <li><p>Via a local.settings.php. Often developers will disable core asset
+        aggregation ith config overrides or enable various core development
+        features. You can do the same to disable AdvAgg. For example some users use
+        the following lines:</p>
+
+        <pre><code>// Disable Core CSS and JS aggregation.
+$config['system.performance']['css']['preprocess'] = FALSE;
+$config['system.performance']['js']['preprocess'] = FALSE;
+
+// Disable AdvAgg.
+$config['advagg.settings']['enabled'] = FALSE;
+</code></pre></li>
+
+    <li><p>Via main config page, un-check <code>Enable Advanced Aggregates</code>. This will take
+        effect right away for all users.</p></li>
+
+    <li><p>Via the AdvAgg url parameter. Not as reliable depending on various system
+        caches. To use, just append <code>?advagg=0</code> to your url.</p></li>
+
+    <li><p>Using the browser cookie function from the Operations page. Similar to the
+        url parameter this isn't as good as the first 2 options.</p></li>
+</ol>
 
 <h2 id="tipstricks">TIPS &amp; TRICKS</h2>
 
