@@ -1,42 +1,37 @@
 <?php
 
-/**
- * @file
- * Unit tests for the override_node_options module.
- */
+namespace Drupal\Tests\override_node_options\Functional;
 
-namespace Drupal\override_node_options\Tests;
-
+use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\node\NodeInterface;
-use Drupal\simpletest\WebTestBase;
-use Drupal\user\UserInterface;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Unit tests for the override_node_options module.
  *
  * @group override_node_options
  */
-class OverrideNodeOptionsTest extends WebTestBase {
+class OverrideNodeOptionsTest extends BrowserTestBase {
 
   /**
    * A standard authenticated user.
    *
-   * @var UserInterface $normalUser
+   * @var Drupal\user\UserInterface
    */
   protected $normalUser;
 
   /**
    * An administrator user.
    *
-   * @var UserInterface $adminUser
+   * @var Drupal\user\UserInterface
    */
   protected $adminUser;
 
   /**
    * A node to test against.
    *
-   * @var NodeInterface $node
+   * @var Drupal\node\NodeInterface
    */
   protected $node;
 
@@ -68,23 +63,25 @@ class OverrideNodeOptionsTest extends WebTestBase {
   /**
    * Assert that fields in a node were updated to certain values.
    *
-   * @param NodeInterface $node
+   * @param Drupal\node\NodeInterface $node
    *   The node object to check (will be reloaded from the database).
    * @param array $fields
    *   An array of values to check equality, keyed by node object property.
+   * @param int $vid
+   *   The node revision ID to load.
    */
   public function assertNodeFieldsUpdated(NodeInterface $node, array $fields, $vid = NULL) {
     if (!$vid) {
       // Re-load the node from the database to make sure we have the current
       // values.
-      $node = node_load($node->id(), TRUE);
+      $node = Node::load($node->id());
     }
     if ($vid) {
       $node = node_revision_load($vid);
     }
 
     foreach ($fields as $field => $value) {
-      $this->assertEqual(
+      self::assertEquals(
         $node->get($field)->value,
         $value,
         t('Node :field was updated to :value, expected :expected.',
@@ -101,7 +98,7 @@ class OverrideNodeOptionsTest extends WebTestBase {
   /**
    * Assert that the user cannot access fields on node add and edit forms.
    *
-   * @param NodeInterface $node
+   * @param Drupal\node\NodeInterface $node
    *   The node object, will be used on the node edit form.
    * @param array $fields
    *   An array of form fields to check.
@@ -109,12 +106,12 @@ class OverrideNodeOptionsTest extends WebTestBase {
   public function assertNodeFieldsNoAccess(NodeInterface $node, array $fields) {
     $this->drupalGet('node/add/' . $node->getType());
     foreach ($fields as $field) {
-      $this->assertNoFieldByName($field);
+      $this->assertSession()->fieldNotExists($field);
     }
 
     $this->drupalGet('node/' . $this->node->id() . '/edit');
     foreach ($fields as $field) {
-      $this->assertNoFieldByName($field);
+      $this->assertSession()->fieldNotExists($field);
     }
   }
 
@@ -175,10 +172,10 @@ class OverrideNodeOptionsTest extends WebTestBase {
     $this->drupalLogin($this->adminUser);
 
     $this->drupalPostForm('node/' . $this->node->id() . '/edit', ['uid[0][target_id]' => 'invalid-user'], t('Save'));
-    $this->assertText('There are no entities matching "invalid-user".');
+    $this->assertSession()->pageTextContains('There are no entities matching "invalid-user".');
 
-    $this->drupalPostForm('node/' . $this->node->id() . '/edit', array('created[0][value][date]' => 'invalid-date'), t('Save'));
-    $this->assertText('The Authored on date is invalid.');
+    $this->drupalPostForm('node/' . $this->node->id() . '/edit', ['created[0][value][date]' => 'invalid-date'], t('Save'));
+    $this->assertSession()->pageTextContains('The Authored on date is invalid.');
 
     $time = time();
     $fields = [
@@ -192,4 +189,5 @@ class OverrideNodeOptionsTest extends WebTestBase {
     $this->drupalLogin($this->normalUser);
     $this->assertNodeFieldsNoAccess($this->node, array_keys($fields));
   }
+
 }
