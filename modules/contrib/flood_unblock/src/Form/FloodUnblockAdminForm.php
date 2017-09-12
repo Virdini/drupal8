@@ -57,11 +57,6 @@ class FloodUnblockAdminForm extends FormBase {
     $flood_user_entries = $this->floodUnblockManager->get_blocked_user_entries();
     $entries = $flood_ip_entries + $flood_user_entries;
 
-    // Get config setting for flood unblock.
-    $config = $this->config('flood_unblock.settings');
-    $ip_limit = $config->get('flood_unblock.user.failed_login_ip_limit');
-    $user_limit = $config->get('flood_unblock.user.failed_login_user_limit');
-
     $blocks = array();
     foreach ($entries as $identifier => $entry) {
       $blocks[$identifier] = array(
@@ -72,12 +67,12 @@ class FloodUnblockAdminForm extends FormBase {
       if ($entry['type'] == 'ip') {
         $blocks[$identifier]['ip'] = $entry['ip'] . $entry['location'];
         $blocks[$identifier]['uid'] = '';
-        $blocks[$identifier]['blocked'] = $entry['count'] >= $ip_limit ? "Yes" : "";
+        $blocks[$identifier]['blocked'] = $entry['blocked'] ? $this->t('Yes') : "";
       }
       if ($entry['type'] == 'user') {
         $blocks[$identifier]['ip'] = $entry['ip'] . $entry['location'];
         $blocks[$identifier]['uid'] = $entry['username'];
-        $blocks[$identifier]['blocked'] = $entry['count'] >= $user_limit ? "Yes" : "";
+        $blocks[$identifier]['blocked'] = $entry['blocked'] ? $this->t('Yes') : "";
       }
     }
 
@@ -155,11 +150,11 @@ class FloodUnblockAdminForm extends FormBase {
         $type = $form['table']['#options'][$value]['type'];
         switch ($type) {
           case 'ip':
-            $type = 'user.failed_login_ip';
+            $type = '.failed_login_ip';
             break;
 
           case 'user':
-            $type = 'user.failed_login_user';
+            $type = '.failed_login_user';
             break;
 
         }
