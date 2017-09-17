@@ -3,6 +3,9 @@
 namespace Drupal\vbase\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
+
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -14,14 +17,49 @@ use Drupal\node\Entity\NodeType;
 class ContentProtectionSettingsForm extends ConfigFormBase {
 
   /**
+   * Config name
+   */
+  const CONFIG_NAME = 'vbase.settings.cp';
+
+  /**
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * @var \Drupal\Core\Config\TypedConfigManagerInterface
+   */
+  protected $configTyped;
+
+  /**
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $nodeTypeStorage;
+
+  /**
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $vocabularyStorage;
+
+  /**
    * Constructs a ContentProtectionSettingsForm object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $config_typed
+   *
    */
-  public function __construct(ConfigFactoryInterface $config_factory) {
+  public function __construct(ConfigFactoryInterface $config_factory,
+                              EntityTypeManagerInterface $entity_type_manager,
+                              TypedConfigManagerInterface $config_typed) {
     parent::__construct($config_factory);
+    $this->entityTypeManager = $entity_type_manager;
+    $this->configTyped = $config_typed;
 
+    $this->nodeTypeStorage = $this->entityTypeManager->getStorage('node_type');
+    $this->vocabularyStorage = $this->entityTypeManager->getStorage('taxonomy_vocabulary');
   }
 
   /**
@@ -29,7 +67,9 @@ class ContentProtectionSettingsForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('entity_type.manager'),
+      $container->get('config.typed')
     );
   }
 
@@ -44,29 +84,38 @@ class ContentProtectionSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['vbase.settings.cp'];
+    return [self::CONFIG_NAME];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $settings = $this->config('vbase.settings.cp');
-    
-    $options = [];
-    $nodeTypes = NodeType::loadMultiple();
-    foreach ($nodeTypes as $nodeType) {
-      $options[$nodeType->id()] = $nodeType->label();
-    }
-    
+    $config = $this->config(self::CONFIG_NAME);
+    $definition = $this->configTyped->getDefinition(self::CONFIG_NAME);
+
     $form['node_bundles'] = [
       '#type' => 'select',
       '#multiple' => TRUE,
-      '#title' => $this->t('Node Bundles'),
-      '#options' => $options,
-      '#default_value' => $settings->get('node_bundles'),
+      '#title' => $this->t($definition['mapping']['node_bundles']['label']),
+      '#options' => [],
+      '#default_value' => $config->get('node_bundles'),
     ];
-    
+    foreach ($this->nodeTypeStorage->loadMultiple() as $entity) {
+      $form['node_bundles']['#options'][$entity->id()] = $entity->label();
+    }
+
+    $form['taxonomy_vocabularies'] = [
+      '#type' => 'select',
+      '#multiple' => TRUE,
+      '#title' => $this->t($definition['mapping']['taxonomy_vocabularies']['label']),
+      '#options' => [],
+      '#default_value' => $config->get('taxonomy_vocabularies'),
+    ];
+    foreach ($this->vocabularyStorage->loadMultiple() as $entity) {
+      $form['taxonomy_vocabularies']['#options'][$entity->id()] = $entity->label();
+    }
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -81,9 +130,16 @@ class ContentProtectionSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->config('vbase.settings.cp')
-      ->set('node_bundles', $form_state->getValue('node_bundles'))
-      ->save();
+
+    $config = $this->config(self::CONFIG_NAME);
+    $definition = $this->configTyped->getDefinition(self::CONFIG_NAME);
+    foreach ($form_state->getValues() as $key => $value) {
+      if (isset($definition['mapping'][$key])) {
+        $config->set($key, $value);
+      }
+    }
+
+    $config->save();
 
     parent::submitForm($form, $form_state);
   }

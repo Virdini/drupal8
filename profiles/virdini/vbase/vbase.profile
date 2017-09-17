@@ -33,6 +33,25 @@ function vbase_node_access(EntityInterface $entity, $op, AccountInterface $accou
 }
 
 /**
+ * Implements hook_ENTITY_TYPE_access() for taxonomy_term.
+ */
+function vbase_taxonomy_term_access(EntityInterface $entity, $op, AccountInterface $account) {
+
+  switch ($op) {
+    case 'view':
+      $config = \Drupal::config('vbase.settings.cp');
+      $bundles = $config->get('taxonomy_vocabularies');
+      if (!empty($bundles) && in_array($entity->bundle(), $bundles) && !$account->hasPermission('vbase view protected content', $account)) {
+        return AccessResult::forbidden()->addCacheableDependency($config)->cachePerPermissions();
+      }
+      return AccessResult::neutral()->addCacheableDependency($config)->cachePerPermissions();
+      break;
+  }
+
+  return AccessResult::neutral();
+}
+
+/**
  * Implements hook_ENTITY_TYPE_access() for user.
  */
 function vbase_user_access(EntityInterface $entity, $op, AccountInterface $account) {
