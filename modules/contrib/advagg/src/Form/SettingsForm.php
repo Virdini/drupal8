@@ -117,15 +117,42 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('dns_prefetch'),
       '#description' => t('Start the DNS lookup for external CSS and JavaScript files as soon as possible.'),
     ];
-    $form['global']['immutable'] = [
-      '#type' => 'checkbox',
-      '#title' => t('Send immutable header for all optimized files.'),
-      '#default_value' => $config->get('immutable'),
-      '#description' => t('Have Apache send <a href="@url1">Cache-Control: immutable</a> for all aggregated files. Current <a href="@url2">browser support</a>', [
-        '@url1' => 'http://bitsup.blogspot.de/2016/05/cache-control-immutable.html',
-        '@url2' => 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#Browser_compatibility',
-      ]),
+    $form['global']['server_config'] = [
+      '#type' => 'fieldset',
+      '#title' => t('Server Config'),
+      'immutable_group' => [
+        'title' => [
+          '#type' => 'html_tag',
+          '#tag' => 'strong',
+          '#value' => t('Cache-Control: Immutable'),
+        ],
+        'information' => [
+          '#type' => 'html_tag',
+          '#tag' => 'p',
+          '#value' => t('Your server can send <a href="@url1">Cache-Control: immutable</a> header for all optimized files. This should improve performance for some users. Current <a href="@url2">browser support</a>', [
+            '@url1' => 'http://bitsup.blogspot.de/2016/05/cache-control-immutable.html',
+            '@url2' => 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#Browser_compatibility',
+          ]),
+        ],
+        'immutable' => [
+          '#type' => 'checkbox',
+          '#title' => t('Include Cache-Control: immutable in generated .htaccess files.'),
+          '#default_value' => $config->get('immutable'),
+          '#description' => t('With the Apache server, AdvAgg can generate config to send the header for all optimized files.'),
+        ],
+      ],
     ];
+    if (stripos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== FALSE) {
+      $form['global']['server_config']['immutable_group']['immutable']['#access'] = FALSE;
+      $form['global']['server_config']['immutable_group']['nginx'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'p',
+        '#value' => t("With Nginx, AdvAgg can't set the headers for optimized files in a performant manner. However, you can easily do so in your server config. See the <a href='@url'>manual for instructions</a>.", [
+          '@url' => 'https://www.drupal.org/docs/8/modules/advanced-cssjs-aggregation/advanced-aggregates#server-settings',
+        ]),
+      ];
+    }
+
     $options = [
       0 => t('Development'),
       1 => t('Low'),
@@ -156,7 +183,13 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'details',
       '#open' => TRUE,
       '#title' => $this->t('Compression Options'),
+      '#description' => t('Compressed files will automatically be served by the Apache server'),
     ];
+    if (stripos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== FALSE) {
+      $form['compression']['#description'] = t("AdvAgg can't configure your Nginx server to automatically serve compressed assets. See the <a href='@url'>AdvAgg manual</a> for instructions on manually doing so.", [
+        '@url' => 'https://www.drupal.org/docs/8/modules/advanced-cssjs-aggregation/advanced-aggregates#server-settings',
+      ]);
+    }
     $form['compression']['css_gzip'] = [
       '#type' => 'checkbox',
       '#title' => t('Gzip CSS assets'),
@@ -320,12 +353,28 @@ class SettingsForm extends ConfigFormBase {
         ],
       ],
     ];
-    $form['obscure']['symlinksifownermatch'] = array(
+    $form['obscure']['symlinks'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Use "Options +FollowSymLinks"'),
+      '#default_value' => $config->get('symlinks'),
+      '#description' => t('Some shared hosts require "<code>Options +FollowSymLinks</code>" in the .htaccess for asset directories.'),
+      '#states' => [
+        'enabled' => [
+          '#edit-symlinksifownermatch' => ['checked' => FALSE],
+        ],
+      ],
+    ];
+    $form['obscure']['symlinksifownermatch'] = [
       '#type' => 'checkbox',
       '#title' => t('Use "Options +SymLinksIfOwnerMatch"'),
       '#default_value' => $config->get('symlinksifownermatch'),
-      '#description' => t('By default the custom .htaccess files are configured to use "<code>Options +FollowSymLinks</code>". Some hosting companies do not support this so "<code>Options +SymLinksIfOwnerMatch</code>" must be used instead.'),
-    );
+      '#description' => t('Some shared hosts require "<code>Options +SymLinksIfOwnerMatch</code>" in the .htaccess for asset directories.'),
+      '#states' => [
+        'enabled' => [
+          '#edit-symlinks' => ['checked' => FALSE],
+        ],
+      ],
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -337,6 +386,9 @@ class SettingsForm extends ConfigFormBase {
     $config = $this->config('advagg.settings');
     $htaccess = FALSE;
     if ($config->get('immutable') != $form_state->getValue('immutable')) {
+      $htaccess = TRUE;
+    }
+    elseif ($config->get('symlinks') != $form_state->getValue('symlinks')) {
       $htaccess = TRUE;
     }
     elseif ($config->get('symlinksifownermatch') != $form_state->getValue('symlinksifownermatch')) {
@@ -356,6 +408,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('js.fix_type', $form_state->getValue('js_fix_type'))
       ->set('js.preserve_external', $form_state->getValue('js_preserve_external'))
       ->set('immutable', $form_state->getValue('immutable'))
+      ->set('symlinks', $form_state->getValue('symlinks'))
       ->set('symlinksifownermatch', $form_state->getValue('symlinksifownermatch'))
       ->save();
     $this->config('system.performance')

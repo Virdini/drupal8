@@ -123,17 +123,17 @@ function advagg_css_alter(&$css) {
  * Give advice on how to temporarily disable css/js aggregation.
  */
 function advagg_form_system_performance_settings_alter(&$form) {
-  $msg = t('NOTE: If you wish to bypass aggregation for a set amount of time, you can go to the <a href="@operations">AdvAgg operations</a> page and press the "aggregation bypass cookie" button.', [
+  $msg = t('NOTE: If you wish to bypass AdvAgg optimizations for a set amount of time, you can go to the <a href="@operations">AdvAgg operations</a> page and press the <em>"optimization bypass cookie"</em> button.', [
     '@operations' => Url::fromRoute('advagg.operations')->toString(),
   ]);
 
   if (\Drupal::currentUser()->hasPermission('bypass advanced aggregation')) {
-    $msg .= t('You can also selectively bypass aggregation by adding <code>@code</code> to the URL of any page.', [
+    $msg .= ' ' . t('You can also selectively bypass AdvAgg optimization by adding <code>@code</code> to the URL of any page.', [
       '@code' => '?advagg=0',
     ]);
   }
   else {
-    $msg .= t('You do not have the <a href="@permission">bypass advanced aggregation permission</a> so adding <code>@code</code> to the URL will not work at this time for you; either grant this permission to your user role or use the bypass cookie if you wish to selectively bypass aggregation.', [
+    $msg .= ' ' . t('You do not have the <a href="@permission">bypass advanced aggregation permission</a> so adding <code>@code</code> to the URL will not work at this time for you; either grant this permission to your user role or use the bypass cookie if you wish to selectively bypass AdvAgg optimizations.', [
       '@permission' => Url::fromRoute('user.admin_permissions')->toString(),
       '@code' => '?advagg=0',
     ]);
@@ -196,7 +196,7 @@ function advagg_enabled() {
         ]));
       }
       else {
-        drupal_set_message(t('The AdvAgg bypass cookie is currently enabled. Turn it off by <a href="@login">logging in</a> with a user with the "administer site configuration" permissions and going to the AdvAgg Operations page (located at @advagg_operations) and clicking the <em>Toggle the "aggregation bypass cookie" for this browser</em> button.', [
+        drupal_set_message(t('The AdvAgg bypass cookie is currently enabled. Turn it off by <a href="@login">logging in</a> with a user with the "administer site configuration" permissions and going to the <a herf="@advagg_operations">AdvAgg Operations page</a> and clicking the <em>Toggle the "aggregation bypass cookie" for this browser</em> button.', [
           '@login' => '/user/login',
           '@advagg_operations' => Url::fromRoute('advagg.operations')->toString(),
         ]));

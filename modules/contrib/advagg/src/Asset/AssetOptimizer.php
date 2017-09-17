@@ -309,7 +309,7 @@ abstract class AssetOptimizer {
     if ($this->cacheTime) {
       return $this->cacheTime;
     }
-    $this->cacheTime = microtime(TRUE);
+    $this->cacheTime = (int) microtime(TRUE);
 
     // 1 Day.
     if ($this->cacheLevel === 1) {
@@ -456,10 +456,15 @@ abstract class AssetOptimizer {
     }
     file_prepare_directory($path, FILE_CREATE_DIRECTORY);
     $immutable = ($config->get('immutable')) ? ', immutable' : '';
-    $options = ($config->get('symlinksifownermatch')) ? 'SymLinksIfOwnerMatch' : 'FollowSymlinks';
+    $options = '';
+    if ($config->get('symlinks')) {
+      $options = 'Options +FollowSymlinks';
+    }
+    elseif ($config->get('symlinksifownermatch')) {
+      $options = 'Options +SymLinksIfOwnerMatch';
+    }
     $htaccess = <<<EOT
-      Options +{$options}
-
+      {$options}
       <IfModule mod_rewrite.c>
         RewriteEngine on
         <IfModule mod_headers.c>

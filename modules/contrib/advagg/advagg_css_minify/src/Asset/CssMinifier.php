@@ -200,8 +200,9 @@ class CssMinifier extends SingleAssetOptimizerBase {
     $directory = $directory == '.' ? '' : $directory . '/';
 
     // Alter all internal url() paths. Leave external paths alone. We don't need
-    // to normalize absolute paths here because that will be done later.
-    return preg_replace('/url\(\s*([\'"]?)(?![a-z]+:|\/+)([^\'")]+)([\'"]?)\s*\)/i', 'url(\1' . $directory . '\2\3)', $file);
+    // to normalize absolute paths here because that will be done later. Also
+    // ignore SVG paths (# or %23).
+    return preg_replace('/url\(\s*([\'"]?)(?![a-z]+:|\/+|\#|\%23+)([^\'")]+)([\'"]?)\s*\)/i', 'url(\1' . $directory . '\2\3)', $file);
   }
 
   /**

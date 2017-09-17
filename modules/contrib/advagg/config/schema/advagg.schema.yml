@@ -66,6 +66,9 @@ advagg.settings:
     show_bypass_cookie_message:
       type: boolean
       label: 'Display a message when the bypass cookie is active.'
+    symlinks:
+      type: boolean
+      label: 'Use Options +FollowSymlinks to support some hosts.'
     symlinksifownermatch:
       type: boolean
-      label: 'Use +SymLinksIfOwnerMatch instead of +FollowSymlinks to support some hosts.'
+      label: 'Use options +SymLinksIfOwnerMatch to support some hosts.'

@@ -18,4 +18,5 @@ js:
   preserve_external: false
 skip_enabled_preprocess_check: false
 show_bypass_cookie_message: true
+symlinks: false
 symlinksifownermatch: false
