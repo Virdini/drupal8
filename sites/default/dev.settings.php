@@ -53,6 +53,11 @@ $config['system.performance']['css']['preprocess'] = FALSE;
 $config['system.performance']['js']['preprocess'] = FALSE;
 
 /**
+  * Disable AdvAgg CSS and JS aggregation.
+  */
+$config['advagg.settings']['enabled'] = FALSE;
+
+/**
  * Disable the render cache (this includes the page cache).
  *
  * Note: you should test with the render cache enabled, to ensure the correct
