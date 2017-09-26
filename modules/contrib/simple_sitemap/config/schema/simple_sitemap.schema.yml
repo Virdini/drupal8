@@ -7,6 +7,9 @@ simple_sitemap.settings:
     cron_generate:
       label: 'Cron generate'
       type: boolean
+    cron_generate_interval:
+      label: 'Cron generate interval'
+      type: integer
     remove_duplicates:
       label: 'Remove duplicates'
       type: boolean
@@ -35,6 +38,12 @@ simple_sitemap.bundle_settings.*.*:
     priority:
       label: 'Priority'
       type: string
+    changefreq:
+      label: 'Change frequency'
+      type: string
+    include_images:
+      label: 'Include images'
+      type: 'integer'
 
 simple_sitemap.custom:
   label: 'Custom links'
@@ -51,4 +60,7 @@ simple_sitemap.custom:
             type: string
           priority:
             label: 'Priority'
+            type: string
+          changefreq:
+            label: 'Change frequency'
             type: string

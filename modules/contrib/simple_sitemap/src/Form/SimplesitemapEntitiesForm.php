@@ -34,7 +34,7 @@ class SimplesitemapEntitiesForm extends SimplesitemapFormBase {
     $form['#attached']['drupalSettings']['simple_sitemap'] = ['all_entities' => [], 'atomic_entities' => []];
 
     $entity_type_labels = [];
-    foreach ($this->entityHelper->getSitemapEntityTypes() as $entity_type_id => $entity_type) {
+    foreach ($this->entityHelper->getSupportedEntityTypes() as $entity_type_id => $entity_type) {
       $entity_type_labels[$entity_type_id] = $entity_type->getLabel() ? : $entity_type_id;
     }
     asort($entity_type_labels);
@@ -96,6 +96,8 @@ class SimplesitemapEntitiesForm extends SimplesitemapFormBase {
             $this->generator->setBundleSettings($entity_type_id, $entity_type_id, [
               'index' => TRUE,
               'priority' => $values[$entity_type_id . '_simple_sitemap_priority'],
+              'changefreq' => $values[$entity_type_id . '_simple_sitemap_changefreq'],
+              'include_images' => $values[$entity_type_id . '_simple_sitemap_include_images'],
             ]);
           }
         }
