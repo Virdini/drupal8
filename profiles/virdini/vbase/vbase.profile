@@ -229,7 +229,7 @@ function vbase_page_attachments(array &$attachments) {
     $attachments['#attached']['html_head'][] = [[
       '#type' => 'html_tag',
       '#tag' => 'meta',
-      '#browsers' => ['IE' => TRUE, '!IE' => FALSE],
+      //'#browsers' => ['!IE' => FALSE], // Temporarily disabled due to bug https://www.drupal.org/node/2914058
       '#weight' => -1000,
       '#attributes' => [
         'http-equiv' => 'X-UA-Compatible',
