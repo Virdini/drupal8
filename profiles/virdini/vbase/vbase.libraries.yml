@@ -6,7 +6,12 @@ developers.settings:
     js/developers.settings.js: {}
 
 FlexSlider:
-  version: 2.6.3
+  remote: https://github.com/woocommerce/FlexSlider
+  version: "2.6.4"
+  license:
+    name: GNU-GPL-2.0
+    url: https://github.com/woocommerce/FlexSlider/blob/2.6.4/LICENSE.md
+    gpl-compatible: true
   css:
     component:
       /libraries/FlexSlider/flexslider.css: {}
