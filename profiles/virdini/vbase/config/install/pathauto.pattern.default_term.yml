@@ -9,5 +9,5 @@ type: 'canonical_entities:taxonomy_term'
 pattern: '[term:virdini-parent-alias]/[term:name]'
 selection_criteria: {  }
 selection_logic: and
-weight: 0
+weight: 1
 relationships: {  }

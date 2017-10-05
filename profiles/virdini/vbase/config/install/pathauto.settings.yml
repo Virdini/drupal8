@@ -30,8 +30,8 @@ punctuation:
   question_mark: 0
   less_than: 0
   greater_than: 0
-  slash: 0
-  back_slash: 0
+  slash: 1
+  back_slash: 1
 verbose: false
 separator: '-'
 max_length: 200

@@ -1,6 +1,6 @@
 generator: false
-mobile: false
-viewport: false
+mobile: true
+viewport: true
 ie_chrome: true
 telephone: true
 google_verification: {  }

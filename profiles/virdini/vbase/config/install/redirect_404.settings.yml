@@ -1,3 +1,3 @@
 row_limit: 10000
-pages: ''
+pages: "/wp-login*\r\n/.well-known/apple-app-site-association\r\n/apple-app-site-association\r\n/sites/default/files/*\r\n/admin/*\r\n/google*.html\r\n/wp-admin/*\n"
 suppress_404: true

@@ -4,4 +4,4 @@ dependencies: {  }
 id: front
 label: 'Front page'
 tags:
-  title: '[site:name]'
+  title: '[site:name] | [site:slogan]'

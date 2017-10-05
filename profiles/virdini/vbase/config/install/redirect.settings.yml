@@ -5,5 +5,5 @@ passthrough_querystring: true
 warning: false
 ignore_admin_path: false
 access_check: false
-content_location_header: false
+content_location_header: true
 route_normalizer_enabled: true
