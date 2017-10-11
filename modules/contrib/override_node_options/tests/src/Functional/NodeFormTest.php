@@ -12,33 +12,31 @@ use Drupal\Tests\BrowserTestBase;
  *
  * @group override_node_options
  */
-class OverrideNodeOptionsTest extends BrowserTestBase {
+class NodeFormTest extends BrowserTestBase {
 
   /**
    * A standard authenticated user.
    *
-   * @var Drupal\user\UserInterface
+   * @var \Drupal\user\UserInterface
    */
   protected $normalUser;
 
   /**
    * An administrator user.
    *
-   * @var Drupal\user\UserInterface
+   * @var \Drupal\user\UserInterface
    */
   protected $adminUser;
 
   /**
    * A node to test against.
    *
-   * @var Drupal\node\NodeInterface
+   * @var \Drupal\node\NodeInterface
    */
   protected $node;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   public static $modules = ['override_node_options'];
 
@@ -57,13 +55,18 @@ class OverrideNodeOptionsTest extends BrowserTestBase {
       'create page content',
       'edit any page content',
     ]);
+
+    $this->adminUser = $this->drupalCreateUser([
+      'create page content',
+    ]);
+
     $this->node = $this->drupalCreateNode();
   }
 
   /**
    * Assert that fields in a node were updated to certain values.
    *
-   * @param Drupal\node\NodeInterface $node
+   * @param \Drupal\node\NodeInterface $node
    *   The node object to check (will be reloaded from the database).
    * @param array $fields
    *   An array of values to check equality, keyed by node object property.
@@ -76,6 +79,7 @@ class OverrideNodeOptionsTest extends BrowserTestBase {
       // values.
       $node = Node::load($node->id());
     }
+
     if ($vid) {
       $node = node_revision_load($vid);
     }
@@ -98,7 +102,7 @@ class OverrideNodeOptionsTest extends BrowserTestBase {
   /**
    * Assert that the user cannot access fields on node add and edit forms.
    *
-   * @param Drupal\node\NodeInterface $node
+   * @param \Drupal\node\NodeInterface $node
    *   The node object, will be used on the node edit form.
    * @param array $fields
    *   An array of form fields to check.
@@ -126,12 +130,36 @@ class OverrideNodeOptionsTest extends BrowserTestBase {
       'override page promote to front page option',
       'override page sticky option',
     ]);
-    $this->drupalLogin($this->adminUser);
 
-    $fields = ['promote' => TRUE, 'sticky' => TRUE];
+    $generalUser = $this->drupalCreateUser([
+      'create page content',
+      'edit any page content',
+      'override all published option',
+      'override all promote to front page option',
+      'override all sticky option',
+    ]);
 
-    $this->drupalPostForm('node/' . $this->node->id() . '/edit', ['promote[value]' => TRUE, 'sticky[value]' => TRUE], t('Save and keep published'));
-    $this->assertNodeFieldsUpdated($this->node, $fields);
+    $fields = [
+      'promote' => TRUE,
+      'status' => TRUE,
+      'sticky' => TRUE,
+    ];
+
+    foreach ([$this->adminUser, $generalUser] as $user) {
+      $this->drupalLogin($user);
+
+      $this->drupalPostForm(
+        "node/{$this->node->id()}/edit",
+        [
+          'promote[value]' => TRUE,
+          'status[value]' => TRUE,
+          'sticky[value]' => TRUE,
+        ],
+        t('Save')
+      );
+
+      $this->assertNodeFieldsUpdated($this->node, $fields);
+    }
 
     $this->drupalLogin($this->normalUser);
     $this->assertNodeFieldsNoAccess($this->node, array_keys($fields));
@@ -146,12 +174,21 @@ class OverrideNodeOptionsTest extends BrowserTestBase {
       'edit any page content',
       'override page revision option',
     ]);
-    $this->drupalLogin($this->adminUser);
 
-    $fields = ['revision' => TRUE];
+    $generalUser = $this->drupalCreateUser([
+      'create page content',
+      'edit any page content',
+      'override all revision option',
+    ]);
 
-    $this->drupalPostForm('node/' . $this->node->id() . '/edit', $fields, t('Save'));
-    $this->assertNodeFieldsUpdated($this->node, [], $this->node->getRevisionId());
+    foreach ([$this->adminUser, $generalUser] as $user) {
+      $this->drupalLogin($user);
+
+      $fields = ['revision' => TRUE];
+
+      $this->drupalPostForm('node/' . $this->node->id() . '/edit', $fields, t('Save'));
+      $this->assertNodeFieldsUpdated($this->node, [], $this->node->getRevisionId());
+    }
 
     $this->drupalLogin($this->normalUser);
     $this->assertNodeFieldsNoAccess($this->node, array_keys($fields));
@@ -169,22 +206,33 @@ class OverrideNodeOptionsTest extends BrowserTestBase {
         'override page authored by option',
       ]
     );
-    $this->drupalLogin($this->adminUser);
 
-    $this->drupalPostForm('node/' . $this->node->id() . '/edit', ['uid[0][target_id]' => 'invalid-user'], t('Save'));
-    $this->assertSession()->pageTextContains('There are no entities matching "invalid-user".');
-
-    $this->drupalPostForm('node/' . $this->node->id() . '/edit', ['created[0][value][date]' => 'invalid-date'], t('Save'));
-    $this->assertSession()->pageTextContains('The Authored on date is invalid.');
+    $generalUser = $this->drupalCreateUser([
+      'create page content',
+      'edit any page content',
+      'override all authored by option',
+      'override all authored on option',
+    ]);
 
     $time = time();
-    $fields = [
-      'uid[0][target_id]' => '',
-      'created[0][value][date]' => \Drupal::service('date.formatter')->format($time, 'custom', 'Y-m-d'),
-      'created[0][value][time]' => \Drupal::service('date.formatter')->format($time, 'custom', 'H:i:s'),
-    ];
-    $this->drupalPostForm('node/' . $this->node->id() . '/edit', $fields, t('Save'));
-    $this->assertNodeFieldsUpdated($this->node, ['uid' => 0, 'created' => $time]);
+
+    foreach ([$this->adminUser, $generalUser] as $user) {
+      $this->drupalLogin($user);
+
+      $this->drupalPostForm('node/' . $this->node->id() . '/edit', ['uid[0][target_id]' => 'invalid-user'], t('Save'));
+      $this->assertSession()->pageTextContains('There are no entities matching "invalid-user".');
+
+      $this->drupalPostForm('node/' . $this->node->id() . '/edit', ['created[0][value][date]' => 'invalid-date'], t('Save'));
+      $this->assertSession()->pageTextContains('The Authored on date is invalid.');
+
+      $fields = [
+        'uid[0][target_id]' => '',
+        'created[0][value][date]' => \Drupal::service('date.formatter')->format($time, 'custom', 'Y-m-d'),
+        'created[0][value][time]' => \Drupal::service('date.formatter')->format($time, 'custom', 'H:i:s'),
+      ];
+      $this->drupalPostForm('node/' . $this->node->id() . '/edit', $fields, t('Save'));
+      $this->assertNodeFieldsUpdated($this->node, ['uid' => 0, 'created' => $time]);
+    }
 
     $this->drupalLogin($this->normalUser);
     $this->assertNodeFieldsNoAccess($this->node, array_keys($fields));
