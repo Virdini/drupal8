@@ -24,6 +24,12 @@ use Drupal\Core\Cache\Cache;
  */
 function advagg_drush_help($command) {
   switch ($command) {
+    case 'drush:advagg-da':
+      return dt('Keep all Advagg settings but disable all functionality.');
+
+    case 'drush:advagg-en':
+      return dt('Restore all Advagg functionality if disabled.');
+
     case 'drush:advagg-cron':
       return dt('Run the advagg cron hook. This will clear out all stale advagg aggregated files, remove aggregates that include missing files, and remove unused aggregates.');
 
@@ -52,6 +58,20 @@ function advagg_drush_command() {
     ],
     'aliases' => ['advagg-c'],
   ];
+  $items['advagg-disable'] = [
+    'description' => dt('Disable Advagg.'),
+    'examples' => [
+      'Standard example' => 'drush advagg-disable',
+    ],
+    'aliases' => ['advagg-da'],
+  ];
+  $items['advagg-enable'] = [
+    'description' => dt('Enable Advagg.'),
+    'examples' => [
+      'Standard example' => 'drush advagg-enable',
+    ],
+    'aliases' => ['advagg-en'],
+  ];
   $items['advagg-clear-all-files'] = [
     'description' => dt('Remove all generated files.'),
     'examples' => [
@@ -67,6 +87,26 @@ function advagg_drush_command() {
     'aliases' => ['advagg-fna'],
   ];
   return $items;
+}
+
+/**
+ * Callback function for drush advagg-disable.
+ */
+function drush_advagg_disable() {
+  /** @var \Drupal\Core\Config\Config $config */
+  $config = \Drupal::service('config.factory')->getEditable('advagg.settings');
+  $config->set('enabled', 0)->save();
+  drush_log(dt('All Advagg functionality is disabled.'), 'ok');
+}
+
+/**
+ * Callback function for drush advagg-enable.
+ */
+function drush_advagg_enable() {
+  /** @var \Drupal\Core\Config\Config $config */
+  $config = \Drupal::service('config.factory')->getEditable('advagg.settings');
+  $config->set('enabled', 1)->save();
+  drush_log(dt('All Advagg functionality is enabled.'), 'ok');
 }
 
 /**

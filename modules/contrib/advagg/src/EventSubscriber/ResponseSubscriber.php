@@ -3,6 +3,7 @@
 namespace Drupal\advagg\EventSubscriber;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Render\HtmlResponse;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -33,7 +34,12 @@ class ResponseSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    return [KernelEvents::RESPONSE => ['processResponse', -9999]];
+    return [
+      KernelEvents::RESPONSE => [
+        ['processResponse', -9999],
+        ['forceAbsolutePaths', 0],
+      ],
+    ];
   }
 
   /**
@@ -63,6 +69,43 @@ class ResponseSubscriber implements EventSubscriberInterface {
       }
       $response->setContent(str_replace('<head>', $domains, $response->getContent()));
     }
+  }
+
+  /**
+   * Force absolute paths.
+   *
+   * @param \Symfony\Component\HttpKernel\Event\FilterResponseEvent $response
+   *   The response event object.
+   */
+  public function forceAbsolutePaths(FilterResponseEvent $response) {
+    // Skip if not enabled.
+    if (!$this->config->get('path.convert.absolute')) {
+      return;
+    }
+    $response = $response->getResponse();
+
+    // Only process Html Responses.
+    if (!$response instanceof HtmlResponse) {
+      return;
+    }
+    $content = $response->getContent();
+    $pattern = '/(<script src="|url\("|rel="stylesheet" href=")(\/[a-zA-Z0-0].*")/';
+    $response->setContent(preg_replace_callback($pattern, [$this, 'forceAbsolutePathsCallback'], $content));
+
+  }
+
+  /**
+   * Callback to replace individual stylesheet links.
+   *
+   * @param array $matches
+   *   Array from matches from preg_replace_callback.
+   *
+   * @return string
+   *   Updated html string.
+   */
+  public function forceAbsolutePathsCallback(array $matches) {
+    global $base_root;
+    return "{$matches[1]}{$base_root}{$matches[2]}";
   }
 
 }

@@ -202,6 +202,7 @@ function advagg_cdn_js_alter(&$javascript) {
           'group' => -100,
           'type' => 'external',
           'scope' => 'footer',
+          'browsers' => [],
           'data' => $targets['core/assets/vendor/jquery.ui/ui/core-min.js'][$cdn],
         ];
       }

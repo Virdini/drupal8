@@ -42,3 +42,17 @@ function advagg_cdn_minify_install() {
   \Drupal::cache('render')->invalidateAll();
   \Drupal::cache('advagg')->invalidateAll();
 }
+
+/**
+ * Implements hook_update_N().
+ *
+ * Update selected jQuery/jQuery UI versions to latest used in Drupal core.
+ */
+function advagg_cdn_update_8300() {
+  /** @var \Drupal\Core\Config\Config $config */
+  $config = \Drupal::configFactory()->getEditable('advagg_cdn.settings');
+  $config
+    ->set('jquery_version', '3.2.1')
+    ->set('jquery_ui_version', '1.12.1')
+    ->save();
+}

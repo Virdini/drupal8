@@ -3,6 +3,7 @@
 namespace Drupal\advagg_mod\Asset;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Component\Utility\Crypt;
 
 /**
  * Add defer tag to scripts.
@@ -17,6 +18,13 @@ class DeferJs {
   protected $deferType;
 
   /**
+   * The global count to use from advagg configuration.
+   *
+   * @var int
+   */
+  protected $counter;
+
+  /**
    * DeferCss constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -24,6 +32,7 @@ class DeferJs {
    */
   public function __construct(ConfigFactoryInterface $config_factory) {
     $this->deferType = $config_factory->get('advagg_mod.settings')->get('css_defer_js_code');
+    $this->counter = $config_factory->get('advagg.settings')->get('global_counter');
   }
 
   /**
@@ -36,6 +45,11 @@ class DeferJs {
    *   Updated content.
    */
   public function defer($content) {
+    // Admin Toolbar 8x fails when deferred.
+    $cid = Crypt::hashBase64(drupal_get_path('module', 'admin_toolbar') . '/js/admin_toolbar.js' . $this->counter);
+    if (strstr($content, $cid)) {
+      return $content;
+    }
     // Only defer local scripts.
     if ($this->deferType === 2) {
       $pattern = '/<script src="\/[a-zA-Z0-0].*"/';

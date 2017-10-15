@@ -28,7 +28,10 @@ advagg.settings:
           mapping:
             absolute_to_protocol_relative:
               type: boolean
-              label: 'Convert absolute path css/js src/url() to be protocol relative'
+              label: 'Convert absolute path css/js src/url() to be protocol relative.'
+            absolute:
+              type: boolean
+              label: 'Convert relative paths to absolute.'
             force_https:
               type: boolean
               label: 'Convert absolute path css/js src/url() to use https://'

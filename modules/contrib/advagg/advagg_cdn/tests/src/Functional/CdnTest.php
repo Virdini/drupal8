@@ -29,7 +29,7 @@ class CdnTest extends AdvaggFunctionalTestBase {
     $this->drupalGet(Url::fromRoute('advagg_cdn.settings'));
     $session = $this->assertSession();
     $session->statusCodeEquals(200);
-    $session->responseContains('src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"');
+    $session->responseContains('src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"');
     $session->responseNotContains('jquery-ui.min.css');
 
     // Test config form function, enable cdn for jQueryUI, disable minification.

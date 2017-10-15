@@ -74,7 +74,7 @@ function advagg_cron($bypass = FALSE) {
         if (filemtime($file) > ($time - 604800)) {
           continue;
         }
-        $filename = str_replace(['css_', 'js_'], pathinfo($file, PATHINFO_FILENAME));
+        $filename = str_replace(['css_', 'js_'], '', pathinfo($file, PATHINFO_FILENAME));
         $cid = substr($filename, 0, strpos($filename, '.'));
         if (!$cache->get($cid)) {
           @file_unmanaged_delete($file);

@@ -339,6 +339,19 @@ class SettingsForm extends ConfigFormBase {
       '#states' => [
         'enabled' => [
           '#edit-path-convert-force-https' => ['checked' => FALSE],
+          '#edit-path-convert-absolute' => ['checked' => FALSE],
+        ],
+      ],
+    ];
+    $form['obscure']['path_convert_absolute'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Convert relative paths to be absolute paths.'),
+      '#default_value' => $config->get('path.convert.absolute'),
+      '#description' => t('If the src to a CSS/JS file points starts with a relative path / convert to absolute.'),
+      '#states' => [
+        'enabled' => [
+          '#edit-path-convert-force-https' => ['checked' => FALSE],
+          '#edit-path-convert-absolute-to-protocol-relative' => ['checked' => FALSE],
         ],
       ],
     ];
@@ -350,6 +363,7 @@ class SettingsForm extends ConfigFormBase {
       '#states' => [
         'enabled' => [
           '#edit-path-convert-absolute-to-protocol-relative' => ['checked' => FALSE],
+          '#edit-path-convert-absolute' => ['checked' => FALSE],
         ],
       ],
     ];
@@ -399,6 +413,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('css.fix_type', $form_state->getValue('css_fix_type'))
       ->set('css.combine_media', $form_state->getValue('css_combine_media'))
       ->set('path.convert.force_https', $form_state->getValue('path_convert_force_https'))
+      ->set('path.convert.absolute', $form_state->getValue('path_convert_absolute'))
       ->set('path.convert.absolute_to_protocol_relative', $form_state->getValue('path_convert_absolute_to_protocol_relative'))
       ->set('enabled', $form_state->getValue('enabled'))
       ->set('dns_prefetch', $form_state->getValue('dns_prefetch'))
