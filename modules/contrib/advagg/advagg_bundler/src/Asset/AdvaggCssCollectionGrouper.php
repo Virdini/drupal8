@@ -1,57 +1,56 @@
 <?php
 
-namespace Drupal\advagg\Asset;
+namespace Drupal\advagg_bundler\Asset;
 
 use Drupal\Core\Asset\AssetCollectionGrouperInterface;
-use Drupal\Core\Asset\CssCollectionGrouper as CoreCssCollectionGrouper;
+use Drupal\Core\Asset\CssCollectionGrouper;
 use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Groups CSS assets.
  */
-class CssCollectionGrouper extends CoreCssCollectionGrouper implements AssetCollectionGrouperInterface {
+class AdvaggCssCollectionGrouper extends CssCollectionGrouper implements AssetCollectionGrouperInterface {
 
   /**
-   * A config object for the advagg configuration.
-   *
-   * @var \Drupal\Core\Config\Config
-   */
-  protected $config;
-
-  /**
-   * Construct the AssetDumper instance.
+   * Construct the grouper instance.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   A config factory for retrieving required config objects.
    */
   public function __construct(ConfigFactoryInterface $config_factory) {
-    $this->config = $config_factory->get('advagg.settings');
+    $this->config = $config_factory->get('advagg_bundler.settings');
   }
 
   /**
    * {@inheritdoc}
-   *
-   * Puts multiple items into the same group if they are groupable and if they
-   * are for the same 'browsers' and 'inline'. Items of the 'file' type are
-   * groupable if their 'preprocess' flag is TRUE, and items of the 'external'
-   * type are never groupable.
-   *
-   * Also ensures that the process of grouping items does not change their
-   * relative order. This requirement may result in multiple groups for the same
-   * type, inline, media and browsers, depending on settings if needed to
-   * accommodate other items in between.
    */
   public function group(array $css_assets) {
-    if ($this->config->get('core_groups')) {
+    $max = $this->config->get('css.max');
+
+    // Only modify core grouping if bundler is enabled.
+    if (!$this->config->get('active') || !$max) {
       return parent::group($css_assets);
     }
-    $combine_media = $this->config->get('css.combine_media');
+
+    $logic = $this->config->get('css.logic');
+    $preprocess_count = count(array_filter(array_column($css_assets, 'preprocess')));
+    $target = $max - (count($css_assets) - $preprocess_count);
+    if ($logic === 0) {
+      $split = round($preprocess_count / $target);
+    }
+    else {
+      $split = array_sum(array_column($css_assets, 'size')) / $target;
+    }
+
+    $current_size = 0;
     $groups = [];
+
     // If a group can contain multiple items, we track the information that must
     // be the same for each item in the group, so that when we iterate the next
     // item, we can determine if it can be put into the current group, or if a
     // new group needs to be made for it.
     $current_group_keys = NULL;
+
     // When creating a new group, we pre-increment $i, so by initializing it to
     // -1, the first group will have index 0.
     $i = -1;
@@ -78,18 +77,7 @@ class CssCollectionGrouper extends CoreCssCollectionGrouper implements AssetColl
           // Group file items if their 'preprocess' flag is TRUE.
           // Help ensure maximum reuse of aggregate files by only grouping
           // together items that share the same 'group' value.
-          if ($item['preprocess']) {
-            $group_keys = [$item['group'], $item['browsers']];
-            if (!$combine_media) {
-              $group_keys[] = $item['media'];
-            }
-            if (isset($item['inline'])) {
-              $group_keys[] = $item['inline'];
-            }
-          }
-          else {
-            $group_keys = FALSE;
-          }
+          $group_keys = $item['preprocess'] ? [$item['type'], $item['group'], $item['media'], $item['browsers']] : FALSE;
           break;
 
         case 'external':
@@ -97,10 +85,10 @@ class CssCollectionGrouper extends CoreCssCollectionGrouper implements AssetColl
           $group_keys = FALSE;
           break;
       }
+
       // If the group keys don't match the most recent group we're working with,
       // then a new group must be made.
       if ($group_keys !== $current_group_keys) {
-        unset($group_keys['break']);
         $i++;
         // Initialize the new group with the same properties as the first item
         // being placed into it. The item's 'data', 'weight' and 'basename'
@@ -108,16 +96,32 @@ class CssCollectionGrouper extends CoreCssCollectionGrouper implements AssetColl
         // the group.
         $groups[$i] = $item;
         unset($groups[$i]['data'], $groups[$i]['weight'], $groups[$i]['basename']);
-        if ($combine_media && $item['type'] === 'file' && $item['preprocess']) {
-          unset($groups[$i]['media']);
-        }
         $groups[$i]['items'] = [];
         $current_group_keys = $group_keys ? $group_keys : NULL;
       }
 
       // Add the item to the current group.
       $groups[$i]['items'][] = $item;
+
+      if ($current_group_keys) {
+        if ($logic === 0) {
+          if (count($groups[$i]['items']) >= $split) {
+            $current_group_keys = NULL;
+          }
+        }
+        else {
+          $current_size += $item['size'];
+          if ($current_size >= $split) {
+            $current_size = 0;
+            $current_group_keys = NULL;
+          }
+        }
+      }
+      else {
+        $current_size = 0;
+      }
     }
+
     return $groups;
   }
 

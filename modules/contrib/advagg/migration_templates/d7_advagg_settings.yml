@@ -6,7 +6,6 @@ source:
   plugin: variable
   variables:
     - advagg_brotli
-    - advagg_core_groups
     - advagg_cron_frequency
     - advagg_enabled
     - advagg_include_base_url
@@ -18,7 +17,6 @@ source:
     - advagg_css_fix_type
 
 process:
-  core_groups: advagg_core_groups
   cron_frequency: advagg_cron_frequency
   enabled: advagg_enabled
   'js/brotli': advagg_brotli

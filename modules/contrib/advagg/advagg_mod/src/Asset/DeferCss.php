@@ -18,6 +18,20 @@ class DeferCss {
   protected $deferMethod;
 
   /**
+   * The global counter to use for calculating paths.
+   *
+   * @var int
+   */
+  protected $counter;
+
+  /**
+   * Whether or not to alter external stylesheets.
+   *
+   * @var bool
+   */
+  protected $external;
+
+  /**
    * DeferCss constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -26,6 +40,7 @@ class DeferCss {
   public function __construct(ConfigFactoryInterface $config_factory) {
     $this->deferMethod = $config_factory->get('advagg_mod.settings')->get('css_defer_js_code');
     $this->counter = $config_factory->get('advagg.settings')->get('global_counter');
+    $this->external = $config_factory->get('advagg_mod.settings')->get('css_defer_external');
   }
 
   /**
@@ -38,8 +53,13 @@ class DeferCss {
    *   Updated content.
    */
   public function defer($content) {
-    // Modify CSS links to preload.
-    $pattern = '/<link rel=["\']stylesheet["\'].*(href="\/[a-zA-Z0-9][a-zA-Z0-9\/_\.\-\?]*").*\>/';
+    if ($this->external) {
+      $pattern = '/<link rel=["\']stylesheet["\'](.*)(href="[a-zA-Z0-9\/_\.\-\?\:]*")(.*)\/\>/';
+    }
+    else {
+      $pattern = '/<link rel=["\']stylesheet["\'](.*)(href="\/[a-zA-Z0-9][a-zA-Z0-9\/_\.\-\?]*")(.*)\/\>/';
+    }
+
     $content = preg_replace_callback($pattern, [$this, 'callback'], $content);
 
     // Put JS inline if configured.
@@ -64,7 +84,7 @@ class DeferCss {
    *   Updated html string.
    */
   protected function callback(array $matches) {
-    return "<link rel='preload' {$matches[1]} as='style' onload='this.rel=\"stylesheet\"'><noscript>{$matches[0]}</noscript>";
+    return "<link rel='preload' {$matches[1]} {$matches[2]} as='style' onload=\"this.rel='stylesheet'\" {$matches[3]}\\><noscript>{$matches[0]}</noscript>";
   }
 
   /**

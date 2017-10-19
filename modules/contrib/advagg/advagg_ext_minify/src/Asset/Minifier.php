@@ -27,6 +27,13 @@ class Minifier extends SingleAssetOptimizerBase {
   protected $out;
 
   /**
+   * File System Service
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $file;
+
+  /**
    * Construct the optimizer instance.
    *
    * @param \Psr\Log\LoggerInterface $logger
@@ -39,8 +46,17 @@ class Minifier extends SingleAssetOptimizerBase {
   public function __construct(LoggerInterface $logger, ConfigFactoryInterface $config_factory, FileSystemInterface $file) {
     parent::__construct($logger);
     $this->config = $config_factory->get('advagg_ext_minify.settings');
+    $this->file = $file;
     $this->in = $file->realpath($file->tempnam('public://js/optimized', 'advagg_in'));
     $this->out = $file->realpath($file->tempnam('public://js/optimized', 'advagg_out'));
+  }
+
+  /**
+   * Destructor to clean up temporary files.
+   */
+  public function __destruct() {
+    $this->file->unlink($this->in);
+    $this->file->unlink($this->out);
   }
 
   /**

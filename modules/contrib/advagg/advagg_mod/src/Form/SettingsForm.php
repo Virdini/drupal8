@@ -242,7 +242,18 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'checkbox',
       '#title' => t('Use JS to load CSS in the admin theme'),
       '#default_value' => $config->get('css_defer_admin'),
-      '#description' => t('This will optimize CSS delivery with JavaScript when viewing the admin theme'),
+      '#description' => t('This will optimize CSS delivery with JavaScript when viewing the admin theme.'),
+      '#states' => [
+        'disabled' => [
+          ':input[name="css_defer"]' => ['value' => '0'],
+        ],
+      ],
+    ];
+    $form['css']['placement']['css_defer_external'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Use JS to load external CSS'),
+      '#default_value' => $config->get('css_defer_external'),
+      '#description' => t('This will optimize CSS delivery with JavaScript for external stylesheets.'),
       '#states' => [
         'disabled' => [
           ':input[name="css_defer"]' => ['value' => '0'],
@@ -281,6 +292,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('css_adjust_sort_external', $form_state->getValue('css_adjust_sort_external'))
       ->set('css_defer', $form_state->getValue('css_defer'))
       ->set('css_defer_admin', $form_state->getValue('css_defer_admin'))
+      ->set('css_defer_external', $form_state->getValue('css_defer_external'))
       ->set('css_defer_js_code', $form_state->getValue('css_defer_js_code'))
       ->set('css_preprocess', $form_state->getValue('css_preprocess'))
       ->set('css_translate', $form_state->getValue('css_translate'))

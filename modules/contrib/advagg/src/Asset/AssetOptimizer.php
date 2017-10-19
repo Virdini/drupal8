@@ -176,6 +176,11 @@ abstract class AssetOptimizer {
     $cid = Crypt::hashBase64($asset['data'] . $this->config->get('global_counter'));
     $cached = $this->cache->get($cid);
     if ($cached && file_exists($cached->data['file'])) {
+      if ($this->config->get('css.combine_media') && isset($asset['media']) && $asset['media'] !== 'all') {
+        $asset['media'] = 'all';
+      }
+      $asset['size'] = $cached->data['filesize'];
+
       if ($this->cacheLevel === 3) {
         $asset['data'] = $cached->data['file'];
         $this->dnsPrefetch += $cached->data['prefetch'];
@@ -216,6 +221,7 @@ abstract class AssetOptimizer {
       $data['hash'] = Crypt::hashBase64($data['contents']);
     }
     $data['cid'] = $cid;
+    $asset['size'] = $data['filesize'];
 
     if ($data['file'] = $this->optimizeFile($asset, $data)) {
       $asset['contents'] = $data['contents'];

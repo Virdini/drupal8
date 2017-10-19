@@ -11,6 +11,7 @@
  - [Tips & Tricks]
     - [JavaScript Bookmarklet]
     - [How to get a high PageSpeed score]
+ - [Advagg Bundler](#bundler)
  - [AdvAgg CDN](#cdn)
  - [AdvAgg CSS/JS Validator](#validator)
  - [AdvAgg External Minifier](#minify-external)
@@ -51,6 +52,14 @@
 AdvAgg comes with quite a few submodules to do various tasks. Most are
 compatible with the vast majority of other mods but some may have conflicts.
 If so those are noted here and more details in the module's full write-ups.
+
+#### AdvAgg Bundler (advagg_bundler)
+
+*This module may have conflicts with other modules (but none known).*
+
+Overrides the core aggregation algorithm to provide a user chosen number of
+agreggates for both JS and CSS. Most beneficial for servers that support
+HTTP2.
 
 #### AdvAgg Cdn (advagg_cdn)
 
@@ -376,6 +385,49 @@ Ensure AdvAgg Minify JS is enabled and go to
 `admin/config/development/performance/advagg/js-minify`
  - Select JSMin if available; otherwise select JSMin+
 
+# ADVANCED AGGREGATES BUNDLER {#bundler}
+
+## OVERVIEW
+
+*This module may have conflicts with other modules (but none known).*
+
+Overrides the core aggregation algorithm to provide a user chosen number of
+agreggates for both JS and CSS. Most beneficial for servers that support
+HTTP2. Since then you can go between full aggregation (best for browsers that
+don't support HTTP2) and individual files (best for HTTP2).
+
+If there are less asset files being attached than the user selected number of
+aggregates, there will be one file per aggregate and less aggregates than the
+user chose.
+
+Conversely, depending on what aggregates and other settings it may not be
+possible to reduce the number of aggregates. This situation can usually be
+fixed by using the options in the AdvAgg Modifier to optimize JS ordering and
+enable preprocess on all JS. Depending on rounding etc and order of agreggates,
+the number may also be off by one.
+
+## CONFIGURATION
+
+Located at `admin/config/development/performance/advagg/bundler`.
+
+ - **Bundler is Active:** Use the bundler. [Default: disabled]
+
+### CSS BUNDLING Options
+
+ - **Target Number of CSS Bundles Per Page:** How many aggregates should be
+   made. [Default: 0 (Disabled)]
+
+ - **Grouping Logic:** Which logic to use. File count is slightly quicker
+   however will likely lead to more uneven file sizes. [Default: File Size]
+
+### JAVASCRIPT BUNDLING Options
+
+ - **Target Number of JS Bundles Per Page:** How many aggregates should be
+   made. [Default: 0 (Disabled)]
+
+ - **Grouping Logic:** Which logic to use. File count is slightly quicker
+   however will likely lead to more uneven file sizes. [Default: File Size]
+
 # ADVANCED AGGREGATES CDN {#cdn}
 
 ## OVERVIEW
@@ -626,6 +678,9 @@ Located at `admin/config/development/performance/advagg/mod`.
 
    - **Use JS to load CSS in admin theme:** Apply JS based CSS loading to the
      admin theme as well. [Default: Disabled]
+
+   - **Use JS to load External CSS:** Optimize delivery for external
+     stylesheets using JavaScript. [Default: Enabled]
 
    - **How to include the JS loading code:** Method of including the JS to load
      the CSS. [Default: Inline]

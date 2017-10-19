@@ -1,11 +1,11 @@
-name: 'AdvAgg CDN'
-description: 'Use a shared CDN for JavaScript and/or CSS libraries, Google Libraries API currently.'
+name: 'AdvAgg Bundler'
+description: 'Custumize the number of aggregates to be created.'
 package: 'Advanced CSS/JS Aggregation'
 # core: 8.x
 dependencies:
   - advagg
 type: module
-configure: advagg_cdn.settings
+configure: advagg_bundler.settings
 
 # Information added by Drupal.org packaging script on 2017-10-18
 version: '8.x-3.4'

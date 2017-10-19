@@ -14,6 +14,9 @@ advagg_mod.settings:
     css_defer_admin:
       type: boolean
       label: 'Whether to defer loading of CSS on the admin theme.'
+    css_defer_external:
+      type: boolean
+      label: 'Whether to also defer loading of external stylesheets.'
     css_defer_js_code:
       type: integer
       label: 'Default value of the inclusion method for the loadCSS code.'
