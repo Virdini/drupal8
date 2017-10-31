@@ -23,11 +23,11 @@ class ConvertImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('convert', $this->configuration)) {
-      $this->logger->error('Image convert failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image convert failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -37,23 +37,23 @@ class ConvertImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'format' => 'image/jpeg',
       'quality' => \Drupal::config('imagick.config')->get('jpeg_quality'),
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['format'] = array(
+    $form['format'] = [
       '#title' => $this->t("File format"),
       '#type' => 'select',
       '#default_value' => $this->configuration['format'],
       '#options' => ImagickConst::imagick_file_formats(),
-    );
-    $form['quality'] = array(
+    ];
+    $form['quality'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Quality'),
       '#description' => $this->t('Override the default image quality. Works for Imagemagick only. Ranges from 0 to 100. Higher values mean better image quality but bigger files.'),
@@ -66,7 +66,7 @@ class ConvertImageEffect extends ConfigurableImageEffectBase {
           ':input[name="data[format]"]' => ['value' => 'image/jpeg'],
         ],
       ],
-    );
+    ];
 
     return $form;
   }

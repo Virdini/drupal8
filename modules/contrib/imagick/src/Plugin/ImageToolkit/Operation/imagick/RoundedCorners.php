@@ -23,30 +23,30 @@ class RoundedCorners extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'x_rounding' => array(
+    return [
+      'x_rounding' => [
         'description' => 'The x rounding of the corners.',
-      ),
-      'y_rounding' => array(
+      ],
+      'y_rounding' => [
         'description' => 'The y rounding of the corners.',
-      ),
-      'stroke_width' => array(
+      ],
+      'stroke_width' => [
         'description' => 'The stroke width of the corners.',
-      ),
-      'displace' => array(
+      ],
+      'displace' => [
         'description' => 'The displace of the corners.',
-      ),
-      'size_correction' => array(
+      ],
+      'size_correction' => [
         'description' => 'The size correction of the corners.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->roundCorners($arguments['x_rounding'], $arguments['y_rounding'], $arguments['stroke_width'], $arguments['displace'], $arguments['size_correction']);
+    return $resource->roundCorners($arguments['x_rounding'], $arguments['y_rounding'], $arguments['stroke_width'], $arguments['displace'], $arguments['size_correction']);
   }
 
 }

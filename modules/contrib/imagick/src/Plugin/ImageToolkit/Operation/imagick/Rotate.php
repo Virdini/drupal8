@@ -34,7 +34,7 @@ class Rotate extends GdRotate {
       $background->setColor('none');
     }
 
-    $resource->rotateImage($background, $arguments['degrees']);
+    return $resource->rotateImage($background, $arguments['degrees']);
   }
 
 }

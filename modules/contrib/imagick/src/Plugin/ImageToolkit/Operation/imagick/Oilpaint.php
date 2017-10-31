@@ -23,18 +23,18 @@ class Oilpaint extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'radius' => array(
+    return [
+      'radius' => [
         'description' => 'The threshold of the oilpaint effect.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->oilPaintImage($arguments['radius']);
+    return $resource->oilPaintImage($arguments['radius']);
   }
 
 }

@@ -23,7 +23,7 @@ class Inverse extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array();
+    return [];
   }
 
   /**

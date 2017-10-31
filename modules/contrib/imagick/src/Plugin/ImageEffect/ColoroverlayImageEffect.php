@@ -22,11 +22,11 @@ class ColoroverlayImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('coloroverlay', $this->configuration)) {
-      $this->logger->error('Image coloroverlay failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image coloroverlay failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,52 +36,52 @@ class ColoroverlayImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'HEX' => '#E2DB6A',
       'alpha' => 50,
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = array(
+    $form = [
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorform'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorform'],
+      ],
+    ];
 
-    $form['HEX'] = array(
+    $form['HEX'] = [
       '#type' => 'textfield',
       '#title' => $this->t('HEX'),
       '#default_value' => $this->configuration['HEX'],
-      '#attributes' => array(
-        'class' => array('colorentry'),
-      ),
-    );
-    $form['colorpicker'] = array(
+      '#attributes' => [
+        'class' => ['colorentry'],
+      ],
+    ];
+    $form['colorpicker'] = [
       '#weight' => -1,
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorpicker'),
-        'style' => array('float:right'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorpicker'],
+        'style' => ['float:right'],
+      ],
+    ];
 
     // Add Farbtastic color picker.
-    $form['matte_color']['#attached'] = array(
-      'library' => array('imagick/colorpicker'),
-    );
-    $form['alpha'] = array(
+    $form['matte_color']['#attached'] = [
+      'library' => ['imagick/colorpicker'],
+    ];
+    $form['alpha'] = [
       '#type' => 'number',
       '#title' => $this->t('Opacity'),
       '#description' => $this->t('Opacity of the color overlay in percents.'),
       '#default_value' => $this->configuration['alpha'],
       '#min' => 0,
       '#max' => 100,
-    );
+    ];
 
     return $form;
   }

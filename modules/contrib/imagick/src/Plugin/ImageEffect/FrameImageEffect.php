@@ -22,11 +22,11 @@ class FrameImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('frame', $this->configuration)) {
-      $this->logger->error('Image frame failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image frame failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,71 +36,71 @@ class FrameImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'matte_color' => '#707070',
       'width' => '20',
       'height' => '20',
       'inner_bevel' => '5',
       'outer_bevel' => '5',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = array(
+    $form = [
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorform'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorform'],
+      ],
+    ];
 
-    $form['matte_color'] = array(
+    $form['matte_color'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Color of the shadow'),
       '#default_value' => $this->configuration['matte_color'],
-      '#attributes' => array(
-        'class' => array('colorentry'),
-      ),
-    );
-    $form['colorpicker'] = array(
+      '#attributes' => [
+        'class' => ['colorentry'],
+      ],
+    ];
+    $form['colorpicker'] = [
       '#weight' => -1,
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorpicker'),
-        'style' => array('float:right'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorpicker'],
+        'style' => ['float:right'],
+      ],
+    ];
 
     // Add Farbtastic color picker.
-    $form['matte_color']['#attached'] = array(
-      'library' => array('imagick/colorpicker'),
-    );
-    $form['width'] = array(
+    $form['matte_color']['#attached'] = [
+      'library' => ['imagick/colorpicker'],
+    ];
+    $form['width'] = [
       '#type' => 'number',
       '#title' => $this->t('Width'),
       '#description' => $this->t('The width of the frame'),
       '#default_value' => $this->configuration['width'],
-    );
-    $form['height'] = array(
+    ];
+    $form['height'] = [
       '#type' => 'number',
       '#title' => $this->t('Height'),
       '#description' => $this->t('The height of the frame'),
       '#default_value' => $this->configuration['height'],
-    );
-    $form['inner_bevel'] = array(
+    ];
+    $form['inner_bevel'] = [
       '#type' => 'number',
       '#title' => $this->t('Inner bevel'),
       '#description' => $this->t('The inner bevel of the frame'),
       '#default_value' => $this->configuration['inner_bevel'],
-    );
-    $form['outer_bevel'] = array(
+    ];
+    $form['outer_bevel'] = [
       '#type' => 'number',
       '#title' => $this->t('Outer bevel'),
       '#description' => $this->t('The outer bevel of the frame'),
       '#default_value' => $this->configuration['outer_bevel'],
-    );
+    ];
 
     return $form;
   }

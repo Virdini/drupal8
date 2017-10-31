@@ -23,18 +23,18 @@ class Edge extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'radius' => array(
+    return [
+      'radius' => [
         'description' => 'The radius of the edge operation.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->edgeImage($arguments['radius']);
+    return $resource->edgeImage($arguments['radius']);
   }
 
 }

@@ -22,20 +22,20 @@ class Convert extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'format' => array(
+    return [
+      'format' => [
         'description' => 'Image format.',
-      ),
-      'quality' => array(
+      ],
+      'quality' => [
         'description' => 'Image quality.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function execute(array $arguments = array()) {
+  protected function execute(array $arguments = []) {
     /* @var $resource \Imagick */
     $resource = $this->getToolkit()->getResource();
     $formats = ImagickConst::imagick_file_formats();
@@ -52,10 +52,10 @@ class Convert extends ImagickOperationBase {
       $resource->compositeImage($background, Imagick::COMPOSITE_DSTOVER, 0, 0);
     }
 
-    $resource->setImageFormat($formats[$format]);
-    $resource->setImageProperty('quality', (int) $quality);
+    $formatSuccess = $resource->setImageFormat($formats[$format]);
+    $qualitySuccess = $resource->setImageProperty('quality', (int) $quality);
 
-    return $resource;
+    return ($formatSuccess && $qualitySuccess);
   }
 
 }

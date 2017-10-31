@@ -37,17 +37,27 @@ class ImagickToolkit extends GDToolkit {
       return FALSE;
     }
 
-    try {
-      $source = $this->getSource();
-      $path = \Drupal::service('file_system')->realpath($source);
+    // Get path and remote boolean
+    list($path, $isRemoteUri) = $this->getPath();
 
+    if (!$path) {
+      return FALSE;
+    }
+
+    $success = FALSE;
+    try {
       $resource = new Imagick($path);
       $this->setResource($resource);
 
-      return TRUE;
-    } catch (ImagickException $e) {
-      return FALSE;
+      $success = TRUE;
+    } catch (ImagickException $e) {}
+
+    // cleanup local file if the original was remote
+    if ($isRemoteUri) {
+      file_unmanaged_delete($path);
     }
+
+    return $success;
   }
 
   /**
@@ -105,11 +115,11 @@ class ImagickToolkit extends GDToolkit {
     // If not this will throw a ImagickException exception
     try {
       $image_format = strtolower($resource->getImageFormat());
-      $destination = implode(':', array($image_format, $destination));
+      $destination = implode(':', [$image_format, $destination]);
     } catch (ImagickException $e) {}
 
     // Only compress JPEG files because other filetypes will increase in filesize
-    if (isset($image_format) && in_array($image_format, array('jpeg', 'jpg'))) {
+    if (isset($image_format) && in_array($image_format, ['jpeg', 'jpg'])) {
       // Get image quality from effect or global setting
       $quality = $resource->getImageProperty('quality') ?: $this->configFactory->get('imagick.config')->get('jpeg_quality');
       // Set image compression quality
@@ -117,7 +127,7 @@ class ImagickToolkit extends GDToolkit {
     }
 
     // Write image to destination
-    if (isset($image_format) && in_array($image_format, array('gif'))) {
+    if (isset($image_format) && in_array($image_format, ['gif'])) {
       if (!$resource->writeImages($destination, TRUE)) {
         return FALSE;
       }
@@ -171,10 +181,46 @@ class ImagickToolkit extends GDToolkit {
   }
 
   /**
+   * ensure that we have a local filepath since Imagick does not support remote stream wrappers
+   *
+   * @return string
+   */
+  protected function getPath() {
+    $source = $this->getSource();
+    $isRemoteUri = $this->isRemoteUri($source);
+    $path = ($isRemoteUri ? $this->copyRemoteFileToLocalTemp($source) : \Drupal::service('file_system')->realpath($source));
+
+    return [$path, $isRemoteUri];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function parseFile() {
+    $valid = FALSE;
+
+    // Get path and remote boolean
+    list($path, $isRemoteUri) = $this->getPath();
+
+    $data = @getimagesize($path);
+    if ($data && in_array($data[2], static::supportedTypes())) {
+      $this->setType($data[2]);
+      $this->preLoadInfo = $data;
+      $valid = TRUE;
+    }
+
+    if ($isRemoteUri) {
+      file_unmanaged_delete($path);
+    }
+
+    return $valid;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['image_jpeg_quality'] = array(
+    $form['image_jpeg_quality'] = [
       '#type' => 'number',
       '#title' => $this->t('JPEG quality'),
       '#description' => $this->t('Define the image quality for JPEG manipulations. Ranges from 0 to 100. Higher values mean better image quality but bigger files.'),
@@ -183,13 +229,13 @@ class ImagickToolkit extends GDToolkit {
       '#default_value' => $this->configFactory->get('imagick.config')
         ->get('jpeg_quality'),
       '#field_suffix' => $this->t('%'),
-    );
+    ];
 
-    $form['image_resize_filter'] = array(
+    $form['image_resize_filter'] = [
       '#type' => 'select',
       '#title' => t('Imagic resize filter'),
       '#description' => t('Define the resize filter for image manipulations. If you\'re not sure what you should enter here, leave the default settings.'),
-      '#options' => array(
+      '#options' => [
         -1 => t('- None -'),
         imagick::FILTER_UNDEFINED => 'FILTER_UNDEFINED',
         imagick::FILTER_POINT => 'FILTER_POINT',
@@ -207,10 +253,10 @@ class ImagickToolkit extends GDToolkit {
         imagick::FILTER_LANCZOS => 'FILTER_LANCZOS',
         imagick::FILTER_BESSEL => 'FILTER_BESSEL',
         imagick::FILTER_SINC => 'FILTER_SINC',
-      ),
+      ],
       '#default_value' => $this->configFactory->get('imagick.config')
         ->get('resize_filter'),
-    );
+    ];
 
     return $form;
   }
@@ -244,6 +290,44 @@ class ImagickToolkit extends GDToolkit {
    */
   public static function isAvailable() {
     return _imagick_is_available();
+  }
+
+  /**
+   * Returns TRUE if the $uri points to a remote location, FALSE otherwise.
+   *
+   * @param $uri
+   * @return bool
+   */
+  private function isRemoteUri($uri) {
+    $scheme = \Drupal::service('file_system')->uriScheme($uri);
+    if (!$scheme || !\Drupal::service('file_system')->validScheme($scheme)) {
+      return FALSE;
+    }
+
+    $local_wrappers = \Drupal::service('stream_wrapper_manager')
+      ->getWrappers(StreamWrapperInterface::LOCAL);
+    return !isset($local_wrappers[$scheme]);
+  }
+
+  /**
+   * Given a remote source it will copy its contents to a local temporary file.
+   *
+   * @param $source
+   * @return bool
+   */
+  private function copyRemoteFileToLocalTemp($source) {
+    // use FILE_EXISTS_REPLACE otherwise file_unmanaged_copy will create a
+    // duplicate file
+    $tmp_file = file_unmanaged_copy(
+      $source,
+      \Drupal::service('file_system')->tempnam('temporary://', 'imagick_'),
+      FILE_EXISTS_REPLACE
+    );
+
+    if (!$tmp_file) {
+      return FALSE;
+    }
+    return \Drupal::service('file_system')->realpath($tmp_file);
   }
 
 }

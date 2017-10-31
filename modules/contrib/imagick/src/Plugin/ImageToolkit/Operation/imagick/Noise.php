@@ -23,18 +23,18 @@ class Noise extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'type' => array(
+    return [
+      'type' => [
         'description' => 'The type of noise being used.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->addNoiseImage($arguments['type']);
+    return $resource->addNoiseImage($arguments['type']);
   }
 
 }

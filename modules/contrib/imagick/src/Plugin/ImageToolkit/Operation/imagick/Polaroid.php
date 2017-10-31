@@ -24,11 +24,11 @@ class Polaroid extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'angle' => array(
+    return [
+      'angle' => [
         'description' => 'The angle of the polaroid effect.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
@@ -41,7 +41,7 @@ class Polaroid extends ImagickOperationBase {
       $angle = mt_rand(-30, 30);
     }
 
-    $resource->polaroidImage(new ImagickDraw(), $angle);
+    return $resource->polaroidImage(new ImagickDraw(), $angle);
   }
 
 }

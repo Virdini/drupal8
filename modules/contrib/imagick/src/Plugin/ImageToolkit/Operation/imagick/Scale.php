@@ -44,10 +44,10 @@ class Scale extends Resize {
 
     // Fail when width or height are 0 or negative.
     if ($arguments['width'] <= 0) {
-      throw new \InvalidArgumentException($this->t("Invalid width (@value) specified for the image 'scale' operation", array('@value' => $arguments['width'])));
+      throw new \InvalidArgumentException($this->t("Invalid width (@value) specified for the image 'scale' operation", ['@value' => $arguments['width']]));
     }
     if ($arguments['height'] <= 0) {
-      throw new \InvalidArgumentException($this->t("Invalid height (@value) specified for the image 'scale' operation", array('@value' => $arguments['height'])));
+      throw new \InvalidArgumentException($this->t("Invalid height (@value) specified for the image 'scale' operation", ['@value' => $arguments['height']]));
     }
 
     return $arguments;
@@ -56,15 +56,16 @@ class Scale extends Resize {
   /**
    * {@inheritdoc}
    */
-  protected function execute(array $arguments = array()) {
-    if ($arguments['width'] !== $this->getToolkit()
-        ->getWidth() || $arguments['height'] !== $this->getToolkit()
-        ->getHeight()
-    ) {
-      return parent::execute($arguments);
+  protected function execute(array $arguments = []) {
+    // Don't scale if we don't change the dimensions at all.
+    if ($arguments['width'] !== $this->getToolkit()->getWidth() || $arguments['height'] !== $this->getToolkit()->getHeight()) {
+      // Don't upscale if the option isn't enabled.
+      if ($arguments['upscale'] || ($arguments['width'] <= $this->getToolkit()->getWidth() && $arguments['height'] <= $this->getToolkit()->getHeight())) {
+        return parent::execute($arguments);
+      }
     }
 
-    return NULL;
+    return TRUE;
   }
 
 }

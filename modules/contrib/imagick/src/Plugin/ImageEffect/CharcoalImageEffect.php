@@ -22,11 +22,11 @@ class CharcoalImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('charcoal', $this->configuration)) {
-      $this->logger->error('Image charcoal failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image charcoal failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,28 +36,28 @@ class CharcoalImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'radius' => '16',
       'sigma' => '16',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['radius'] = array(
+    $form['radius'] = [
       '#type' => 'number',
       '#title' => $this->t('Radius'),
       '#description' => $this->t('The radius of the Gaussian, in pixels, not counting the center pixel.'),
       '#default_value' => $this->configuration['radius'],
-    );
-    $form['sigma'] = array(
+    ];
+    $form['sigma'] = [
       '#type' => 'number',
       '#title' => $this->t('Sigma'),
       '#description' => $this->t('The standard deviation of the Gaussian, in pixels'),
       '#default_value' => $this->configuration['sigma'],
-    );
+    ];
 
     return $form;
   }

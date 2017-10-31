@@ -22,11 +22,11 @@ class SketchImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('sketch', $this->configuration)) {
-      $this->logger->error('Image sketch failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image sketch failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,35 +36,35 @@ class SketchImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'radius' => '8',
       'sigma' => '8',
       'angle' => '0',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['radius'] = array(
+    $form['radius'] = [
       '#type' => 'number',
       '#title' => $this->t('Radius'),
       '#description' => $this->t('The radius of the Gaussian, in pixels, not counting the center pixel.'),
       '#default_value' => $this->configuration['radius'],
-    );
-    $form['sigma'] = array(
+    ];
+    $form['sigma'] = [
       '#type' => 'number',
       '#title' => $this->t('Sigma'),
       '#description' => $this->t('The standard deviation of the Gaussian, in pixels'),
       '#default_value' => $this->configuration['sigma'],
-    );
-    $form['angle'] = array(
+    ];
+    $form['angle'] = [
       '#type' => 'number',
       '#title' => $this->t('Angle'),
       '#description' => $this->t('Apply the effect along this angle.'),
       '#default_value' => $this->configuration['angle'],
-    );
+    ];
 
     return $form;
   }

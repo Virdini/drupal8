@@ -23,18 +23,18 @@ class Solarize extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'threshold' => array(
+    return [
+      'threshold' => [
         'description' => 'The threshold of the solarize effect.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->solarizeImage($arguments['threshold']);
+    return $resource->solarizeImage($arguments['threshold']);
   }
 
 }

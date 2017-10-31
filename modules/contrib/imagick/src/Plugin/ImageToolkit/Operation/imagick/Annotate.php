@@ -25,14 +25,14 @@ class Annotate extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'text_fieldset' => array(
+    return [
+      'text_fieldset' => [
         'description' => 'Text settings.',
-      ),
-      'position_fieldset' => array(
+      ],
+      'position_fieldset' => [
         'description' => 'Position settings.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
@@ -42,10 +42,10 @@ class Annotate extends ImagickOperationBase {
     $text = $arguments['text_fieldset'];
     $position = $arguments['position_fieldset'];
 
-    $padding = array(
+    $padding = [
       'x' => $position['padding_x'],
       'y' => $position['padding_y'],
-    );
+    ];
 
     // Check if percent is used
     $percent_x = explode('%', $padding['x']);
@@ -94,7 +94,7 @@ class Annotate extends ImagickOperationBase {
       $y += $lineHeight;
     }
 
-    $resource->compositeImage($text_layer, Imagick::COMPOSITE_OVER, $padding['x'], $padding['y']);
+    return $resource->compositeImage($text_layer, Imagick::COMPOSITE_OVER, $padding['x'], $padding['y']);
   }
 
   /**
@@ -111,7 +111,7 @@ class Annotate extends ImagickOperationBase {
     $text = trim($text);
 
     $words = preg_split('%\s%', $text, -1, PREG_SPLIT_NO_EMPTY);
-    $lines = array();
+    $lines = [];
     $i = 0;
     $lineHeight = 0;
 
@@ -132,7 +132,7 @@ class Annotate extends ImagickOperationBase {
       }
     }
 
-    return array($lines, $lineHeight);
+    return [$lines, $lineHeight];
   }
 
 }

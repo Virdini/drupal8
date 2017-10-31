@@ -22,11 +22,11 @@ class ShadowImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('shadow', $this->configuration)) {
-      $this->logger->error('Image shadow failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image shadow failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,67 +36,67 @@ class ShadowImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'color' => '#454545',
       'opacity' => '100',
       'sigma' => '25',
       'x' => '0',
       'y' => '0',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = array(
+    $form = [
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorform'),
-      ),
-    );
-    $form['color'] = array(
+      '#attributes' => [
+        'class' => ['colorform'],
+      ],
+    ];
+    $form['color'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Color of the shadow'),
       '#default_value' => $this->configuration['color'],
-      '#attributes' => array('class' => array('colorentry')),
-    );
-    $form['colorpicker'] = array(
+      '#attributes' => ['class' => ['colorentry']],
+    ];
+    $form['colorpicker'] = [
       '#weight' => -1,
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorpicker'),
-        'style' => array('float:right'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorpicker'],
+        'style' => ['float:right'],
+      ],
+    ];
     // Add Farbtastic color picker.
-    $form['color']['#attached'] = array(
-      'library' => array('imagick/colorpicker'),
-    );
-    $form['opacity'] = array(
+    $form['color']['#attached'] = [
+      'library' => ['imagick/colorpicker'],
+    ];
+    $form['opacity'] = [
       '#type' => 'number',
       '#title' => $this->t('Opacity'),
       '#description' => $this->t('The opacity of the shadow'),
       '#default_value' => $this->configuration['opacity'],
-    );
-    $form['sigma'] = array(
+    ];
+    $form['sigma'] = [
       '#type' => 'number',
       '#title' => $this->t('Sigma'),
       '#description' => $this->t('The sigma of the shadow'),
       '#default_value' => $this->configuration['sigma'],
-    );
-    $form['x'] = array(
+    ];
+    $form['x'] = [
       '#type' => 'number',
       '#title' => $this->t('X'),
       '#description' => $this->t('The X value of the shadow'),
       '#default_value' => $this->configuration['x'],
-    );
-    $form['y'] = array(
+    ];
+    $form['y'] = [
       '#type' => 'number',
       '#title' => $this->t('Y'),
       '#description' => $this->t('The Y value of the shadow'),
       '#default_value' => $this->configuration['y'],
-    );
+    ];
 
     return $form;
   }

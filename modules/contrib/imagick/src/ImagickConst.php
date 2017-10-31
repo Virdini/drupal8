@@ -13,11 +13,11 @@ class ImagickConst {
 
   public static function imagick_file_formats() {
     // @TODO use imagick::queryFormats() to generate full format list
-    return array(
+    return [
       'image/jpeg' => 'jpg',
       'image/gif' => 'gif',
       'image/png' => 'png'
-    );
+    ];
   }
 
 }

@@ -22,11 +22,11 @@ class ColorshiftImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('colorshift', $this->configuration)) {
-      $this->logger->error('Image colorshift failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image colorshift failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,43 +36,43 @@ class ColorshiftImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'HEX' => '#FF2E2E',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = array(
+    $form = [
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorform'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorform'],
+      ],
+    ];
 
-    $form['HEX'] = array(
+    $form['HEX'] = [
       '#type' => 'textfield',
       '#title' => $this->t('HEX'),
       '#default_value' => $this->configuration['HEX'],
-      '#attributes' => array(
-        'class' => array('colorentry'),
-      ),
-    );
-    $form['colorpicker'] = array(
+      '#attributes' => [
+        'class' => ['colorentry'],
+      ],
+    ];
+    $form['colorpicker'] = [
       '#weight' => -1,
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorpicker'),
-        'style' => array('float:right'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorpicker'],
+        'style' => ['float:right'],
+      ],
+    ];
 
     // Add Farbtastic color picker.
-    $form['matte_color']['#attached'] = array(
-      'library' => array('imagick/colorpicker'),
-    );
+    $form['matte_color']['#attached'] = [
+      'library' => ['imagick/colorpicker'],
+    ];
 
     return $form;
   }

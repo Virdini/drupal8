@@ -23,11 +23,11 @@ class Decipher extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'password' => array(
+    return [
+      'password' => [
         'description' => 'The password to decrypt the image with.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**

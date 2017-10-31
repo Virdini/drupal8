@@ -24,23 +24,23 @@ class Shadow extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'color' => array(
+    return [
+      'color' => [
         'description' => 'The color of the shadow.',
-      ),
-      'opacity' => array(
+      ],
+      'opacity' => [
         'description' => 'The opacity of the shadow.',
-      ),
-      'sigma' => array(
+      ],
+      'sigma' => [
         'description' => 'The sigma of the shadow.',
-      ),
-      'x' => array(
+      ],
+      'x' => [
         'description' => 'The angle of the shadow.',
-      ),
-      'y' => array(
+      ],
+      'y' => [
         'description' => 'The angle of the shadow.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
@@ -58,9 +58,11 @@ class Shadow extends ImagickOperationBase {
     $shadow = clone $resource;
     $shadow->setImageBackgroundColor(new ImagickPixel($color));
     $shadow->shadowImage($opacity, $sigma, $x, $y);
-    $shadow->compositeImage($resource, Imagick::COMPOSITE_OVER, -$x + ($sigma * 2), -$y + ($sigma * 2));
+    $success = $shadow->compositeImage($resource, Imagick::COMPOSITE_OVER, -$x + ($sigma * 2), -$y + ($sigma * 2));
 
     $resource = $shadow;
+
+    return $success;
   }
 
 }

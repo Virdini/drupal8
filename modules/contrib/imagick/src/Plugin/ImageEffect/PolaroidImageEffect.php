@@ -22,11 +22,11 @@ class PolaroidImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('polaroid', $this->configuration)) {
-      $this->logger->error('Image polaroid failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image polaroid failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,21 +36,21 @@ class PolaroidImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'angle' => '10',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['angle'] = array(
+    $form['angle'] = [
       '#type' => 'number',
       '#title' => $this->t('angle'),
       '#description' => $this->t('The angle of the polaroid image. Leave this field empty to generate a random angle between -30 and 30 degrees.'),
       '#default_value' => $this->configuration['angle'],
-    );
+    ];
 
     return $form;
   }

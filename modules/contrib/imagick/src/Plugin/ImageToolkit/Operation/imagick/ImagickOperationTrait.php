@@ -23,21 +23,27 @@ trait ImagickOperationTrait {
       $image_format = strtolower($resource->getImageFormat());
     } catch (ImagickException $e) {}
 
+    $success = TRUE;
     if (isset($image_format) && in_array($image_format, ['gif'])) {
       // Get each frame in the GIF
       $resource = $resource->coalesceImages();
       do {
-        $this->process($resource, $arguments);
+        if (!$this->process($resource, $arguments)) {
+          $success = FALSE;
+          break;
+        }
       } while ($resource->nextImage());
 
       $resource->deconstructImages();
     }
     else {
-      $this->process($resource, $arguments);
+      $success = $this->process($resource, $arguments);
     }
 
     // Set the processed resource
     $this->getToolkit()->setResource($resource);
+
+    return $success;
   }
 
 }

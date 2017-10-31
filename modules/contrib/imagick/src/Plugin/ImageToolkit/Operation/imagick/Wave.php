@@ -23,21 +23,21 @@ class Wave extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'amplitude' => array(
+    return [
+      'amplitude' => [
         'description' => 'The amplitude of the wave.',
-      ),
-      'length' => array(
+      ],
+      'length' => [
         'description' => 'The length of the wave.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->waveImage($arguments['amplitude'], $arguments['length']);
+    return $resource->waveImage($arguments['amplitude'], $arguments['length']);
   }
 
 }

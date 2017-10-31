@@ -23,24 +23,24 @@ class Modulate extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'brightness' => array(
+    return [
+      'brightness' => [
         'description' => 'Brightness in percentage.',
-      ),
-      'saturation' => array(
+      ],
+      'saturation' => [
         'description' => 'Saturation in percentage.',
-      ),
-      'hue' => array(
+      ],
+      'hue' => [
         'description' => 'Hue in percentage.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->modulateImage($arguments['brightness'], $arguments['saturation'], $arguments['hue']);
+    return $resource->modulateImage($arguments['brightness'], $arguments['saturation'], $arguments['hue']);
   }
 
 }

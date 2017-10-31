@@ -23,14 +23,14 @@ class Coloroverlay extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'HEX' => array(
+    return [
+      'HEX' => [
         'description' => 'The color used to create the overlay.',
-      ),
-      'alpha' => array(
+      ],
+      'alpha' => [
         'description' => 'The transparency of the overlay layer.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
@@ -42,7 +42,7 @@ class Coloroverlay extends ImagickOperationBase {
     $color->setImageFormat('png');
     $color->setImageOpacity($arguments['alpha'] / 100);
 
-    $resource->compositeImage($color, Imagick::COMPOSITE_DEFAULT, 0, 0);
+    return $resource->compositeImage($color, Imagick::COMPOSITE_DEFAULT, 0, 0);
   }
 
 }

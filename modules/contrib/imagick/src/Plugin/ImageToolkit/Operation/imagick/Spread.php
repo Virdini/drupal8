@@ -23,18 +23,18 @@ class Spread extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'radius' => array(
+    return [
+      'radius' => [
         'description' => 'The color of the shadow.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->spreadImage($arguments['radius']);
+    return $resource->spreadImage($arguments['radius']);
   }
 
 }

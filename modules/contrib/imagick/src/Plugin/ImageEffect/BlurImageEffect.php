@@ -23,11 +23,11 @@ class BlurImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('blur', $this->configuration)) {
-      $this->logger->error('Image blur failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image blur failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -37,71 +37,71 @@ class BlurImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'type' => ImagickConst::NORMAL_BLUR,
       'radius' => '16',
       'sigma' => '16',
       'angle' => '0',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['help'] = array('#value' => $this->t('The intensity of the blur effect. For reasonable results, the radius should be larger than sigma.'));
-    $form['type'] = array(
+    $form['help'] = ['#value' => $this->t('The intensity of the blur effect. For reasonable results, the radius should be larger than sigma.')];
+    $form['type'] = [
       '#type' => 'select',
       '#title' => $this->t('Blur type'),
-      '#options' => array(
+      '#options' => [
         ImagickConst::NORMAL_BLUR => $this->t('Normal'),
         ImagickConst::ADAPTIVE_BLUR => $this->t('Adaptive'),
         ImagickConst::GAUSSIAN_BLUR => $this->t('Gaussian'),
         ImagickConst::MOTION_BLUR => $this->t('Motion'),
         ImagickConst::RADIAL_BLUR => $this->t('Radial'),
-      ),
+      ],
       '#default_value' => $this->configuration['type'],
-    );
-    $form['radius'] = array(
+    ];
+    $form['radius'] = [
       '#type' => 'number',
       '#title' => $this->t('Radius'),
       '#description' => $this->t('The radius of the Gaussian, in pixels, not counting the center pixel.'),
-      '#states' => array(
-        'invisible' => array(
-          ':input[name="data[type]"]' => array(
+      '#states' => [
+        'invisible' => [
+          ':input[name="data[type]"]' => [
             'value' => ImagickConst::RADIAL_BLUR,
-          ),
-        ),
-      ),
+          ],
+        ],
+      ],
       '#default_value' => $this->configuration['radius'],
-    );
-    $form['sigma'] = array(
+    ];
+    $form['sigma'] = [
       '#type' => 'number',
       '#title' => $this->t('Sigma'),
       '#description' => $this->t('The standard deviation of the Gaussian, in pixels'),
-      '#states' => array(
-        'invisible' => array(
-          ':input[name="data[type]"]' => array(
+      '#states' => [
+        'invisible' => [
+          ':input[name="data[type]"]' => [
             'value' => ImagickConst::RADIAL_BLUR,
-          ),
-        ),
-      ),
+          ],
+        ],
+      ],
       '#default_value' => $this->configuration['sigma'],
-    );
-    $form['angle'] = array(
+    ];
+    $form['angle'] = [
       '#type' => 'number',
       '#title' => $this->t('Angle'),
       '#description' => $this->t('The angle of the blur'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="data[type]"]' => array(
-            array('value' => ImagickConst::MOTION_BLUR),
-            array('value' => ImagickConst::RADIAL_BLUR),
-          ),
-        ),
-      ),
+      '#states' => [
+        'visible' => [
+          ':input[name="data[type]"]' => [
+            ['value' => ImagickConst::MOTION_BLUR],
+            ['value' => ImagickConst::RADIAL_BLUR],
+          ],
+        ],
+      ],
       '#default_value' => $this->configuration['angle'],
-    );
+    ];
 
     return $form;
   }

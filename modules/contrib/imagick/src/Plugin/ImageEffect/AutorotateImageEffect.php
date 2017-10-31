@@ -21,11 +21,11 @@ class AutorotateImageEffect extends ImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('autorotate')) {
-      $this->logger->error('Image autorotate failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image autorotate failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;

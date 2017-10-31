@@ -22,11 +22,11 @@ class DefineCanvasImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('define_canvas', $this->configuration)) {
-      $this->logger->error('Image define canvas failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image define canvas failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,99 +36,99 @@ class DefineCanvasImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'HEX' => '#FFFFFF',
       'under' => TRUE,
       'exact_measurements' => TRUE,
-      'exact' => array(
+      'exact' => [
         'width' => '100',
         'height' => '100',
         'anchor' => 'center-center',
-      ),
-      'relative' => array(
+      ],
+      'relative' => [
         'leftdiff' => '20',
         'rightdiff' => '20',
         'topdiff' => '20',
         'bottomdiff' => '20',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = array(
+    $form = [
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorform'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorform'],
+      ],
+    ];
 
-    $form['HEX'] = array(
+    $form['HEX'] = [
       '#type' => 'textfield',
       '#title' => $this->t('HEX'),
       '#default_value' => $this->configuration['HEX'],
-      '#attributes' => array(
-        'class' => array('colorentry'),
-      ),
-    );
-    $form['colorpicker'] = array(
+      '#attributes' => [
+        'class' => ['colorentry'],
+      ],
+    ];
+    $form['colorpicker'] = [
       '#weight' => -1,
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorpicker'),
-        'style' => array('float:right'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorpicker'],
+        'style' => ['float:right'],
+      ],
+    ];
 
     // Add Farbtastic color picker.
-    $form['matte_color']['#attached'] = array(
-      'library' => array('imagick/colorpicker'),
-    );
+    $form['matte_color']['#attached'] = [
+      'library' => ['imagick/colorpicker'],
+    ];
 
-    $form['under'] = array(
+    $form['under'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Resize canvas <em>under</em> image (possibly cropping)'),
       '#default_value' => $this->configuration['under'],
       '#description' => $this->t('If <em>not</em> set, this will create a solid flat layer, probably totally obscuring the source image'),
-    );
+    ];
 
-    $form['info'] = array('#value' => $this->t('Enter values in ONLY ONE of the below options. Either exact or relative. Most values are optional - you can adjust only one dimension as needed. If no useful values are set, the current base image size will be used.'));
+    $form['info'] = ['#value' => $this->t('Enter values in ONLY ONE of the below options. Either exact or relative. Most values are optional - you can adjust only one dimension as needed. If no useful values are set, the current base image size will be used.')];
 
-    $form['exact_measurements'] = array(
+    $form['exact_measurements'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Exact measurements'),
       '#default_value' => $this->configuration['exact_measurements'],
-    );
+    ];
 
-    $form['exact'] = array(
+    $form['exact'] = [
       '#type' => 'details',
       '#open' => TRUE,
       '#title' => $this->t('Exact size'),
-      'help' => array(
+      'help' => [
         '#markup' => $this->t('Set the canvas to a precise size, possibly cropping the image. Use to start with a known size.'),
         '#prefix' => '<p>',
         '#suffix' => '</p>',
-      ),
-      'width' => array(
+      ],
+      'width' => [
         '#type' => 'textfield',
         '#title' => $this->t('Width'),
         '#default_value' => $this->configuration['exact']['width'],
         '#description' => $this->t('Enter a value in pixels or percent'),
         '#size' => 5,
-      ),
-      'height' => array(
+      ],
+      'height' => [
         '#type' => 'textfield',
         '#title' => $this->t('Height'),
         '#default_value' => $this->configuration['exact']['height'],
         '#description' => $this->t('Enter a value in pixels or percent'),
         '#size' => 5,
-      ),
-      'anchor' => array(
+      ],
+      'anchor' => [
         '#type' => 'radios',
         '#title' => $this->t('Anchor'),
-        '#options' => array(
+        '#options' => [
           'left-top' => $this->t('Top left'),
           'center-top' => $this->t('Top center'),
           'right-top' => $this->t('Top right'),
@@ -138,59 +138,59 @@ class DefineCanvasImageEffect extends ConfigurableImageEffectBase {
           'left-bottom' => $this->t('Bottom left'),
           'center-bottom' => $this->t('Bottom center'),
           'right-bottom' => $this->t('Bottom right'),
-        ),
+        ],
         '#theme' => 'image_anchor',
         '#default_value' => $this->configuration['exact']['anchor'],
-      ),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="data[exact_measurements]"]' => array('checked' => TRUE),
-        ),
-      ),
-    );
-    $form['relative'] = array(
+      ],
+      '#states' => [
+        'visible' => [
+          ':input[name="data[exact_measurements]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+    $form['relative'] = [
       '#type' => 'details',
       '#open' => TRUE,
       '#title' => $this->t('Relative size'),
-      'help' => array(
+      'help' => [
         '#markup' => $this->t('Set the canvas to a relative size, based on the current image dimensions. Use to add simple borders or expand by a fixed amount. Negative values may crop the image.'),
         '#prefix' => '<p>',
         '#suffix' => '</p>',
-      ),
-      'leftdiff' => array(
+      ],
+      'leftdiff' => [
         '#type' => 'textfield',
         '#title' => $this->t('left difference'),
         '#default_value' => $this->configuration['relative']['leftdiff'],
         '#size' => 6,
         '#description' => $this->t('Enter an offset in pixels.'),
-      ),
-      'rightdiff' => array(
+      ],
+      'rightdiff' => [
         '#type' => 'textfield',
         '#title' => $this->t('right difference'),
         '#default_value' => $this->configuration['relative']['rightdiff'],
         '#size' => 6,
         '#description' => $this->t('Enter an offset in pixels.'),
-      ),
-      'topdiff' => array(
+      ],
+      'topdiff' => [
         '#type' => 'textfield',
         '#title' => $this->t('top difference'),
         '#default_value' => $this->configuration['relative']['topdiff'],
         '#size' => 6,
         '#description' => $this->t('Enter an offset in pixels.'),
-      ),
-      'bottomdiff' => array(
+      ],
+      'bottomdiff' => [
         '#type' => 'textfield',
         '#title' => $this->t('bottom difference'),
         '#default_value' => $this->configuration['relative']['bottomdiff'],
         '#size' => 6,
         '#description' => $this->t('Enter an offset in pixels.'),
-      ),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="data[exact_measurements]"]' => array('checked' => FALSE),
-        ),
-      ),
-    );
+      ],
+      '#states' => [
+        'visible' => [
+          ':input[name="data[exact_measurements]"]' => ['checked' => FALSE],
+        ],
+      ],
+    ];
 
     return $form;
   }

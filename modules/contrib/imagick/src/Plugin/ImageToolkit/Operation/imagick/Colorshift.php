@@ -24,11 +24,11 @@ class Colorshift extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'HEX' => array(
+    return [
+      'HEX' => [
         'description' => 'The color used to shift.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
@@ -38,7 +38,7 @@ class Colorshift extends ImagickOperationBase {
     $color = $arguments['HEX'];
     $color = empty($color) ? 'none' : $color;
 
-    $resource->colorizeImage(new ImagickPixel($color), 1);
+    return $resource->colorizeImage(new ImagickPixel($color), 1);
   }
 
 }

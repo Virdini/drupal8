@@ -24,7 +24,7 @@ class Desaturate extends GdDesaturate {
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->setImageType(Imagick::IMGTYPE_GRAYSCALEMATTE);
+    return $resource->setImageType(Imagick::IMGTYPE_GRAYSCALEMATTE);
   }
 
 }

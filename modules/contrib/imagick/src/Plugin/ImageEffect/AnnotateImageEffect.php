@@ -23,11 +23,11 @@ class AnnotateImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('annotate', $this->configuration)) {
-      $this->logger->error('Image annotate failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image annotate failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -37,89 +37,89 @@ class AnnotateImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
-      'text_fieldset' => array(
+    return [
+      'text_fieldset' => [
         'text' => 'Annotation',
         'font' => 'Helvetica',
         'size' => 20,
         'HEX' => '#000000',
-      ),
-      'position_fieldset' => array(
+      ],
+      'position_fieldset' => [
         'anchor' => 'right-bottom',
         'padding_x' => 20,
         'padding_y' => 20,
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form = array(
+    $form = [
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorform'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorform'],
+      ],
+    ];
 
     // Get fonts
     $imagick = new Imagick();
     $available_fonts = $imagick->queryFonts();
 
-    $form['text_fieldset'] = array(
+    $form['text_fieldset'] = [
       '#type' => 'details',
       '#open' => TRUE,
       '#title' => $this->t('Text'),
-      'text' => array(
+      'text' => [
         '#type' => 'textfield',
         '#title' => $this->t('Text'),
         '#description' => $this->t('Text to annotate the image with.'),
         '#default_value' => $this->configuration['text_fieldset']['text'],
-      ),
-      'font' => array(
+      ],
+      'font' => [
         '#type' => 'select',
         '#options' => array_combine($available_fonts, $available_fonts),
         '#title' => $this->t('Font'),
         '#description' => $this->t('Fonts that ImageMagick knows about.'),
         '#default_value' => $this->configuration['text_fieldset']['font'],
-      ),
-      'size' => array(
+      ],
+      'size' => [
         '#type' => 'textfield',
         '#title' => $this->t('Font size'),
         '#default_value' => $this->configuration['text_fieldset']['size'],
         '#size' => 3,
-      ),
-    );
-    $form['text_fieldset']['HEX'] = array(
+      ],
+    ];
+    $form['text_fieldset']['HEX'] = [
       '#type' => 'textfield',
       '#title' => $this->t('HEX'),
       '#default_value' => $this->configuration['text_fieldset']['HEX'],
-      '#attributes' => array(
-        'class' => array('colorentry'),
-      ),
-    );
-    $form['text_fieldset']['colorpicker'] = array(
+      '#attributes' => [
+        'class' => ['colorentry'],
+      ],
+    ];
+    $form['text_fieldset']['colorpicker'] = [
       '#weight' => -1,
       '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('colorpicker'),
-        'style' => array('float:right'),
-      ),
-    );
+      '#attributes' => [
+        'class' => ['colorpicker'],
+        'style' => ['float:right'],
+      ],
+    ];
 
     // Add Farbtastic color picker.
-    $form['text_fieldset']['matte_color']['#attached'] = array(
-      'library' => array('imagick/colorpicker'),
-    );
-    $form['position_fieldset'] = array(
+    $form['text_fieldset']['matte_color']['#attached'] = [
+      'library' => ['imagick/colorpicker'],
+    ];
+    $form['position_fieldset'] = [
       '#type' => 'details',
       '#open' => TRUE,
       '#title' => $this->t('Position'),
-      'anchor' => array(
+      'anchor' => [
         '#type' => 'radios',
         '#title' => $this->t('Anchor'),
-        '#options' => array(
+        '#options' => [
           'left-top' => $this->t('Top left'),
           'center-top' => $this->t('Top center'),
           'right-top' => $this->t('Top right'),
@@ -129,25 +129,25 @@ class AnnotateImageEffect extends ConfigurableImageEffectBase {
           'left-bottom' => $this->t('Bottom left'),
           'center-bottom' => $this->t('Bottom center'),
           'right-bottom' => $this->t('Bottom right'),
-        ),
+        ],
         '#theme' => 'image_anchor',
         '#default_value' => $this->configuration['position_fieldset']['anchor'],
-      ),
-      'padding_x' => array(
+      ],
+      'padding_x' => [
         '#type' => 'textfield',
         '#title' => $this->t('Padding X'),
         '#default_value' => $this->configuration['position_fieldset']['padding_x'],
         '#description' => $this->t('Enter a value in pixels or percent'),
         '#size' => 3,
-      ),
-      'padding_y' => array(
+      ],
+      'padding_y' => [
         '#type' => 'textfield',
         '#title' => $this->t('Padding Y'),
         '#default_value' => $this->configuration['position_fieldset']['padding_y'],
         '#description' => $this->t('Enter a value in pixels or percent'),
         '#size' => 3,
-      ),
-    );
+      ],
+    ];
 
     return $form;
   }

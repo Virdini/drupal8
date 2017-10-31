@@ -21,11 +21,11 @@ class InverseImageEffect extends ImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('inverse')) {
-      $this->logger->error('Image inverse failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image inverse failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;

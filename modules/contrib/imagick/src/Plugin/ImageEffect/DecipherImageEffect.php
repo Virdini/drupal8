@@ -22,11 +22,11 @@ class DecipherImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('decipher', $this->configuration)) {
-      $this->logger->error('Image decipher failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image decipher failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,20 +36,20 @@ class DecipherImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'password' => '',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['password'] = array(
+    $form['password'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Password to decrypt the image'),
       '#default_value' => $this->configuration['password'],
-    );
+    ];
 
     return $form;
   }

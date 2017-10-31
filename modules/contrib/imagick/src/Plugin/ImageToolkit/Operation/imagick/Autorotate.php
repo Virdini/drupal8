@@ -24,7 +24,7 @@ class Autorotate extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array();
+    return [];
   }
 
   /**
@@ -46,7 +46,7 @@ class Autorotate extends ImagickOperationBase {
     }
 
     // Now that it's auto-rotated, make sure the EXIF data is correct in case the EXIF gets saved with the image!
-    $resource->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
+    return $resource->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
   }
 
 }

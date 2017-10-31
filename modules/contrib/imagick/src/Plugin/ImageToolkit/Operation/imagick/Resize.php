@@ -28,10 +28,10 @@ class Resize extends GdResize {
       ->get('resize_filter');
 
     if ($filter == -1) {
-      $resource->scaleImage($arguments['width'], $arguments['height']);
+      return $resource->scaleImage($arguments['width'], $arguments['height']);
     }
     else {
-      $resource->resizeImage($arguments['width'], $arguments['height'], $filter, 1);
+      return $resource->resizeImage($arguments['width'], $arguments['height'], $filter, 1);
     }
   }
 

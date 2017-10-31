@@ -23,11 +23,11 @@ class NoiseImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('noise', $this->configuration)) {
-      $this->logger->error('Image noise failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image noise failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -37,19 +37,19 @@ class NoiseImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'type' => imagick::NOISE_UNIFORM,
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['type'] = array(
+    $form['type'] = [
       '#type' => 'select',
       '#title' => $this->t('Noise type'),
-      '#options' => array(
+      '#options' => [
         imagick::NOISE_UNIFORM => $this->t('Uniform'),
         imagick::NOISE_GAUSSIAN => $this->t('Gaussian'),
         imagick::NOISE_MULTIPLICATIVEGAUSSIAN => $this->t('Multiplicative gaussian'),
@@ -57,9 +57,9 @@ class NoiseImageEffect extends ConfigurableImageEffectBase {
         imagick::NOISE_LAPLACIAN => $this->t('Laplacian'),
         imagick::NOISE_POISSON => $this->t('Poisson'),
         imagick::NOISE_RANDOM => $this->t('Random'),
-      ),
+      ],
       '#default_value' => $this->configuration['type'],
-    );
+    ];
 
     return $form;
   }

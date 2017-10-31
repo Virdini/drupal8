@@ -23,22 +23,24 @@ class Trim extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'fuzz' => array(
+    return [
+      'fuzz' => [
         'description' => 'The fuzz tolerance.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->trimImage($arguments['fuzz']);
+    $success = $resource->trimImage($arguments['fuzz']);
 
     // Reset image dimensions
     $dimensions = $resource->getImageGeometry();
     $resource->setImagePage($dimensions['width'], $dimensions['height'], 0, 0);
+
+    return $success;
   }
 
 }

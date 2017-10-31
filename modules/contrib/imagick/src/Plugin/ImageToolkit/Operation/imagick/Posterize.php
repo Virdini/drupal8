@@ -23,18 +23,18 @@ class Posterize extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'colors' => array(
+    return [
+      'colors' => [
         'description' => 'Color levels per channel.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->posterizeImage($arguments['colors'], TRUE);
+    return $resource->posterizeImage($arguments['colors'], TRUE);
   }
 
 }

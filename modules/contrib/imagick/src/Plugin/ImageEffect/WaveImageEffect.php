@@ -22,11 +22,11 @@ class WaveImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('wave', $this->configuration)) {
-      $this->logger->error('Image wave failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image wave failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,28 +36,28 @@ class WaveImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'amplitude' => '8',
       'length' => '64',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['amplitude'] = array(
+    $form['amplitude'] = [
       '#type' => 'number',
       '#title' => $this->t('Amplitude'),
       '#description' => $this->t('The amplitude of the wave effect.'),
       '#default_value' => $this->configuration['amplitude'],
-    );
-    $form['length'] = array(
+    ];
+    $form['length'] = [
       '#type' => 'number',
       '#title' => $this->t('Length'),
       '#description' => $this->t('The length of the wave effect.'),
       '#default_value' => $this->configuration['length'],
-    );
+    ];
 
     return $form;
   }

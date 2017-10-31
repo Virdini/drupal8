@@ -23,21 +23,21 @@ class Emboss extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'radius' => array(
+    return [
+      'radius' => [
         'description' => 'The radius of the emboss effect.',
-      ),
-      'sigma' => array(
+      ],
+      'sigma' => [
         'description' => 'The sigma of the emboss effect.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->embossImage($arguments['radius'], $arguments['sigma']);
+    return $resource->embossImage($arguments['radius'], $arguments['sigma']);
   }
 
 }

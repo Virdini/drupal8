@@ -24,20 +24,20 @@ class Blur extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'type' => array(
+    return [
+      'type' => [
         'description' => 'The type of blur used',
-      ),
-      'radius' => array(
+      ],
+      'radius' => [
         'description' => 'The radius of the Gaussian, in pixels, not counting the center pixel.',
-      ),
-      'sigma' => array(
+      ],
+      'sigma' => [
         'description' => 'The standard deviation of the Gaussian, in pixels',
-      ),
-      'angle' => array(
+      ],
+      'angle' => [
         'description' => 'The angle of the blur',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
@@ -46,19 +46,19 @@ class Blur extends ImagickOperationBase {
   protected function process(Imagick $resource, array $arguments) {
     switch ($arguments['type']) {
       case ImagickConst::NORMAL_BLUR:
-        $resource->blurImage($arguments['radius'], $arguments['sigma']);
+        return $resource->blurImage($arguments['radius'], $arguments['sigma']);
         break;
       case ImagickConst::ADAPTIVE_BLUR:
-        $resource->adaptiveBlurImage($arguments['radius'], $arguments['sigma']);
+        return $resource->adaptiveBlurImage($arguments['radius'], $arguments['sigma']);
         break;
       case ImagickConst::GAUSSIAN_BLUR:
-        $resource->gaussianBlurImage($arguments['radius'], $arguments['sigma']);
+        return $resource->gaussianBlurImage($arguments['radius'], $arguments['sigma']);
         break;
       case ImagickConst::MOTION_BLUR:
-        $resource->motionBlurImage($arguments['radius'], $arguments['sigma'], $arguments['angle']);
+        return $resource->motionBlurImage($arguments['radius'], $arguments['sigma'], $arguments['angle']);
         break;
       case ImagickConst::RADIAL_BLUR:
-        $resource->radialBlurImage($arguments['angle']);
+        return $resource->radialBlurImage($arguments['angle']);
         break;
     }
   }

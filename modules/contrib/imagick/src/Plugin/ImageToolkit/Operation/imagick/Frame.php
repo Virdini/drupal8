@@ -24,23 +24,23 @@ class Frame extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'matte_color' => array(
+    return [
+      'matte_color' => [
         'description' => 'The string representing the matte color',
-      ),
-      'width' => array(
+      ],
+      'width' => [
         'description' => 'The width of the border',
-      ),
-      'height' => array(
+      ],
+      'height' => [
         'description' => 'The height of the border',
-      ),
-      'inner_bevel' => array(
+      ],
+      'inner_bevel' => [
         'description' => 'The angle of the blur',
-      ),
-      'outer_bevel' => array(
+      ],
+      'outer_bevel' => [
         'description' => 'The angle of the blur',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
@@ -49,7 +49,7 @@ class Frame extends ImagickOperationBase {
   protected function process(Imagick $resource, array $arguments) {
     $color = new ImagickPixel($arguments['matte_color']);
 
-    $resource->frameImage($color, $arguments['width'], $arguments['height'], $arguments['inner_bevel'], $arguments['outer_bevel']);
+    return $resource->frameImage($color, $arguments['width'], $arguments['height'], $arguments['inner_bevel'], $arguments['outer_bevel']);
   }
 
 }

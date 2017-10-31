@@ -23,14 +23,14 @@ class Charcoal extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'radius' => array(
+    return [
+      'radius' => [
         'description' => 'The radius of the charcoal effect.',
-      ),
-      'sigma' => array(
+      ],
+      'sigma' => [
         'description' => 'The sigma of the charcoal effect.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**

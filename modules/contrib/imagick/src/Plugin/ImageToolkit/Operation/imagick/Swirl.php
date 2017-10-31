@@ -23,18 +23,18 @@ class Swirl extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'degrees' => array(
+    return [
+      'degrees' => [
         'description' => 'The amplitude of the wave effect.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->swirlImage($arguments['degrees']);
+    return $resource->swirlImage($arguments['degrees']);
   }
 
 }

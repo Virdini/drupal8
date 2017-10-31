@@ -23,24 +23,24 @@ class Sketch extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'radius' => array(
+    return [
+      'radius' => [
         'description' => 'The radius of the sketch.',
-      ),
-      'sigma' => array(
+      ],
+      'sigma' => [
         'description' => 'The sigma of the sketch.',
-      ),
-      'angle' => array(
+      ],
+      'angle' => [
         'description' => 'The angle of the sketch.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->sketchImage($arguments['radius'], $arguments['sigma'], $arguments['angle']);
+    return $resource->sketchImage($arguments['radius'], $arguments['sigma'], $arguments['angle']);
   }
 
 }

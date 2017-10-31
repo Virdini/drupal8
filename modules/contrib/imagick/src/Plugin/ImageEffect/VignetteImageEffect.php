@@ -22,11 +22,11 @@ class VignetteImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('vignette', $this->configuration)) {
-      $this->logger->error('Image vignette failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image vignette failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,42 +36,42 @@ class VignetteImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'blackpoint' => '0.5',
       'whitepoint' => '0.5',
       'x' => '5',
       'y' => '5',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['blackpoint'] = array(
+    $form['blackpoint'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Blackpoint'),
       '#description' => $this->t('The black point'),
       '#default_value' => $this->configuration['blackpoint'],
-    );
-    $form['whitepoint'] = array(
+    ];
+    $form['whitepoint'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Whitepoint'),
       '#description' => $this->t('The white point'),
       '#default_value' => $this->configuration['whitepoint'],
-    );
-    $form['x'] = array(
+    ];
+    $form['x'] = [
       '#type' => 'number',
       '#title' => $this->t('X'),
       '#description' => $this->t('The X offset of the ellipse'),
       '#default_value' => $this->configuration['x'],
-    );
-    $form['y'] = array(
+    ];
+    $form['y'] = [
       '#type' => 'number',
       '#title' => $this->t('Y'),
       '#description' => $this->t('The Y offset of the ellipse'),
       '#default_value' => $this->configuration['y'],
-    );
+    ];
 
     return $form;
   }

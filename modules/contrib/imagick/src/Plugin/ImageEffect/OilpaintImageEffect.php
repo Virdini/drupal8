@@ -22,11 +22,11 @@ class OilpaintImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('oilpaint', $this->configuration)) {
-      $this->logger->error('Image oilpaint failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image oilpaint failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,21 +36,21 @@ class OilpaintImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'radius' => '5',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['radius'] = array(
+    $form['radius'] = [
       '#type' => 'number',
       '#title' => $this->t('Radius'),
       '#description' => $this->t('The radius of the oilpaint effect.'),
       '#default_value' => $this->configuration['radius'],
-    );
+    ];
 
     return $form;
   }

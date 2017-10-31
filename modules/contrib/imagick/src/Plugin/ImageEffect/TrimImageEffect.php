@@ -22,11 +22,11 @@ class TrimImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('trim', $this->configuration)) {
-      $this->logger->error('Image trim failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image trim failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -43,21 +43,21 @@ class TrimImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'fuzz' => '0',
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['fuzz'] = array(
+    $form['fuzz'] = [
       '#type' => 'number',
       '#title' => $this->t('Fuzz'),
       '#description' => $this->t('The fuzz tolerance.'),
       '#default_value' => $this->configuration['fuzz'],
-    );
+    ];
 
     return $form;
   }

@@ -24,23 +24,23 @@ class DefineCanvas extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'HEX' => array(
+    return [
+      'HEX' => [
         'description' => 'The color of the canvas',
-      ),
-      'under' => array(
+      ],
+      'under' => [
         'description' => 'This will create a solid flat layer, probably totally obscuring the source image',
-      ),
-      'exact_measurements' => array(
+      ],
+      'exact_measurements' => [
         'description' => 'Do we have to use exact measurements',
-      ),
-      'exact' => array(
+      ],
+      'exact' => [
         'description' => 'Exact measurements',
-      ),
-      'relative' => array(
+      ],
+      'relative' => [
         'description' => 'Relative measurements',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
@@ -73,12 +73,13 @@ class DefineCanvas extends ImagickOperationBase {
       $y = $relative['topdiff'];
     }
 
-    $canvas->newImage($width, $height, new ImagickPixel($color));
+    $success = $canvas->newImage($width, $height, new ImagickPixel($color));
     if ($under) {
-      $canvas->compositeImage($resource, Imagick::COMPOSITE_DEFAULT, $x, $y);
+      $success = $canvas->compositeImage($resource, Imagick::COMPOSITE_DEFAULT, $x, $y);
     }
 
     $resource = $canvas->clone();
+    return $success;
   }
 
   /**

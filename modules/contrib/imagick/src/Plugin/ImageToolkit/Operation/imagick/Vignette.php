@@ -23,27 +23,27 @@ class Vignette extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function arguments() {
-    return array(
-      'blackpoint' => array(
+    return [
+      'blackpoint' => [
         'description' => 'The black point.',
-      ),
-      'whitepoint' => array(
+      ],
+      'whitepoint' => [
         'description' => 'The white point.',
-      ),
-      'x' => array(
+      ],
+      'x' => [
         'description' => 'The X offset of the ellipse.',
-      ),
-      'y' => array(
+      ],
+      'y' => [
         'description' => 'The Y offset of the ellipse.',
-      ),
-    );
+      ],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $resource->vignetteImage($arguments['blackpoint'], $arguments['whitepoint'], $arguments['x'], $arguments['y']);
+    return $resource->vignetteImage($arguments['blackpoint'], $arguments['whitepoint'], $arguments['x'], $arguments['y']);
   }
 
 }

@@ -22,11 +22,11 @@ class ModulateImageEffect extends ConfigurableImageEffectBase {
    */
   public function applyEffect(ImageInterface $image) {
     if (!$image->apply('modulate', $this->configuration)) {
-      $this->logger->error('Image modulate failed using the %toolkit toolkit on %path (%mimetype)', array(
+      $this->logger->error('Image modulate failed using the %toolkit toolkit on %path (%mimetype)', [
         '%toolkit' => $image->getToolkitId(),
         '%path' => $image->getSource(),
         '%mimetype' => $image->getMimeType()
-      ));
+      ]);
       return FALSE;
     }
     return TRUE;
@@ -36,32 +36,32 @@ class ModulateImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array(
+    return [
       'brightness' => 100,
       'saturation' => 100,
       'hue' => 100,
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['brightness'] = array(
+    $form['brightness'] = [
       '#type' => 'number',
       '#title' => $this->t('Brightness in percentage'),
       '#default_value' => $this->configuration['brightness'],
-    );
-    $form['saturation'] = array(
+    ];
+    $form['saturation'] = [
       '#type' => 'number',
       '#title' => $this->t('Saturation in percentage'),
       '#default_value' => $this->configuration['saturation'],
-    );
-    $form['hue'] = array(
+    ];
+    $form['hue'] = [
       '#type' => 'number',
       '#title' => $this->t('Hue in percentage'),
       '#default_value' => $this->configuration['hue'],
-    );
+    ];
 
     return $form;
   }
