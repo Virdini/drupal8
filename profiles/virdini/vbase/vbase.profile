@@ -5,19 +5,19 @@
  */
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
-
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Template\Attribute;
 
 /**
  * Implements hook_ENTITY_TYPE_access() for node.
  */
 function vbase_node_access(EntityInterface $entity, $op, AccountInterface $account) {
-
   switch ($op) {
     case 'view':
       $config = \Drupal::config('vbase.settings.cp');
@@ -28,7 +28,6 @@ function vbase_node_access(EntityInterface $entity, $op, AccountInterface $accou
       return AccessResult::neutral()->addCacheableDependency($config)->cachePerPermissions();
       break;
   }
-
   return AccessResult::neutral();
 }
 
@@ -36,7 +35,6 @@ function vbase_node_access(EntityInterface $entity, $op, AccountInterface $accou
  * Implements hook_ENTITY_TYPE_access() for taxonomy_term.
  */
 function vbase_taxonomy_term_access(EntityInterface $entity, $op, AccountInterface $account) {
-
   switch ($op) {
     case 'view':
       $config = \Drupal::config('vbase.settings.cp');
@@ -47,7 +45,6 @@ function vbase_taxonomy_term_access(EntityInterface $entity, $op, AccountInterfa
       return AccessResult::neutral()->addCacheableDependency($config)->cachePerPermissions();
       break;
   }
-
   return AccessResult::neutral();
 }
 
@@ -55,7 +52,6 @@ function vbase_taxonomy_term_access(EntityInterface $entity, $op, AccountInterfa
  * Implements hook_ENTITY_TYPE_access() for user.
  */
 function vbase_user_access(EntityInterface $entity, $op, AccountInterface $account) {
-
   switch ($op) {
     case 'update':
       // Protect Root
@@ -64,10 +60,8 @@ function vbase_user_access(EntityInterface $entity, $op, AccountInterface $accou
       }
       break;
   }
-
   return AccessResult::neutral();
 }
-
 
 /**
  * Implements hook_form_FORM_ID_alter() for install_configure_form().
@@ -131,12 +125,7 @@ function vbase_theme($existing, $type, $theme, $path) {
       'render element' => '',
     ],
     'developers' => [
-      'variables' => [
-        'logo' => NULL,
-        'width' => NULL,
-        'label' => NULL,
-        'title' => NULL,
-      ],
+      'variables' => [],
     ],
   ];
 }
@@ -146,11 +135,14 @@ function vbase_theme($existing, $type, $theme, $path) {
  */
 function template_preprocess_developers(array &$variables) {
   $config = \Drupal::config('vbase.settings.developers');
-  $variables['logo'] = $config->get('logo');
-  if (!$variables['logo']) {
+  vbase_add_cacheable_dependency($variables, $config);
+  if (!($variables['logo'] = $config->get('logo'))) {
     $variables['logo'] = 'logo.svg';
   }
   $variables['width'] = $config->get('width');
+  if ($variables['width'] < 70) {
+    $variables['width'] = 70;
+  }
   $variables['label_display'] = $config->get('label');
   $key = (int)$config->get('developed') .'-'. (int)$config->get('maintained');
   switch ($key) {
@@ -167,34 +159,10 @@ function template_preprocess_developers(array &$variables) {
       $variables['label'] = t('Developed and maintained');
       break;
   }
-  if (isset($variables['#title'])) {
-    $variables['title'] = $variables['#title'];
-  }
-  if (isset($variables['#label'])) {
-    $variables['label'] = $variables['#label'];
-  }
-  if (isset($variables['#logo'])) {
-    $variables['logo'] = $variables['#logo'];
-  }
-  if (isset($variables['#width'])) {
-    $variables['width'] = $variables['#width'];
-  }
-  if ($variables['width'] < 70) {
-    $variables['width'] = 70;
-  }
-
-
-  if (!isset($variables['#cache'])) {
-    $variables['#cache'] = [];
-  }
-  $variables['#cache']['tags'] = Cache::mergeContexts(isset($variables['#cache']['contexts']) ? $variables['#cache']['contexts'] : [], ['languages:language_interface']);
-  $variables['#cache']['tags'] = Cache::mergeTags(isset($variables['#cache']['tags']) ? $variables['#cache']['tags'] : [], $config->getCacheTags());
 }
 
 /**
  * Implements hook_preprocess_page().
- *
- * @see template_preprocess_page()
  */
 function vbase_preprocess_page(array &$variables) {
   $variables['developers'] = [
@@ -207,6 +175,8 @@ function vbase_preprocess_page(array &$variables) {
  */
 function vbase_page_attachments(array &$attachments) {
   $config = \Drupal::config('vbase.settings.tags');
+  vbase_add_cacheable_dependency($attachments, $config);
+  $attachments['#cache']['contexts'] = Cache::mergeContexts($attachments['#cache']['contexts'], ['url.path.is_front']);
   if ($config->get('telephone')) {
     $attachments['#attached']['html_head'][] = [[
       '#type' => 'html_tag',
@@ -259,16 +229,15 @@ function vbase_page_attachments(array &$attachments) {
       }
     }
   }
-  // Add profile cache tags.
-  $attachments['#cache']['tags'] = Cache::mergeTags(isset($attachments['#cache']['tags']) ? $attachments['#cache']['tags'] : [], $config->getCacheTags());
 }
 
 /**
  * Implements hook_page_attachments_alter().
  */
-function vbase_page_attachments_alter(array &$page) {
+function vbase_page_attachments_alter(array &$attachments) {
   // Hide metatags
   $config = \Drupal::config('vbase.settings.tags');
+  vbase_add_cacheable_dependency($attachments, $config);
   $keys = [];
   if (!$config->get('generator')) {
     $keys[] = 'system_meta_generator';
@@ -280,20 +249,20 @@ function vbase_page_attachments_alter(array &$page) {
   if (!$config->get('viewport')) {
     $keys[] = 'viewport';
   }
-  if (!empty($keys) && !empty($page['#attached']['html_head'])) {
-    foreach ($page['#attached']['html_head'] as $key => $value) {
+  if (!empty($keys) && !empty($attachments['#attached']['html_head'])) {
+    foreach ($attachments['#attached']['html_head'] as $key => $value) {
       if (in_array($value[1], $keys)) {
-        unset($page['#attached']['html_head'][$key]);
+        unset($attachments['#attached']['html_head'][$key]);
       }
     }
   }
   // Hide links
   $keys = ['delete-form', 'edit-form', 'version-history', 'revision'];
-  if (!empty($keys) && isset($page['#attached']['html_head_link'])) {
+  if (!empty($keys) && isset($attachments['#attached']['html_head_link'])) {
     //print_r($page['#attached']['html_head_link']);
-    foreach ($page['#attached']['html_head_link'] as $key => $value) {
+    foreach ($attachments['#attached']['html_head_link'] as $key => $value) {
       if (isset($value[0]['rel']) && in_array($value[0]['rel'], $keys)) {
-        unset($page['#attached']['html_head_link'][$key]);
+        unset($attachments['#attached']['html_head_link'][$key]);
       }
     }
   }
@@ -325,8 +294,17 @@ function vbase_entity_view_alter(array &$build) {
  */
 function vbase_preprocess_html(array &$variables) {
   if (!isset($variables['head_attributes'])) {
-    $variables['head_attributes'] = new Drupal\Core\Template\Attribute();
+    $variables['head_attributes'] = new Attribute();
   }
+}
+
+function vbase_add_cacheable_dependency(array &$build, $object) {
+  if (!isset($build['#cache'])) {
+    $build['#cache'] = [];
+  }
+  $meta_a = CacheableMetadata::createFromRenderArray($build);
+  $meta_b = CacheableMetadata::createFromObject($object);
+  $meta_a->merge($meta_b)->applyTo($build);
 }
 
 /**
