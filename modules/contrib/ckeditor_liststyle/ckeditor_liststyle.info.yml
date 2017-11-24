@@ -3,11 +3,11 @@ type: module
 description: This plugin adds numbered list and ordered list properties dialogs (available in context menu) in CKEditor.
 package: CKEditor
 dependencies:
-  - ckeditor
+  - drupal:ckeditor
 # core: 8.x
 
-# Information added by Drupal.org packaging script on 2017-01-01
-version: '8.x-1.1'
+# Information added by Drupal.org packaging script on 2017-11-22
+version: '8.x-1.2'
 core: '8.x'
 project: 'ckeditor_liststyle'
-datestamp: 1483281846
+datestamp: 1511388186

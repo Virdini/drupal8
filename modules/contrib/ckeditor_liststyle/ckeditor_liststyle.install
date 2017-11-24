@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * Implements hook_requirements().
+ */
+function ckeditor_liststyle_requirements($phase) {
+  $requirements = [];
+
+  if ($phase == 'install' || $phase == 'runtime') {
+    $plugin = '/libraries/liststyle/plugin.js';
+    $plugin_detected = file_exists(DRUPAL_ROOT . $plugin);
+
+    if ($plugin_detected) {
+      $requirements['ckeditor_liststyle'] = [
+        'title' => t('CKEditor List Style'),
+        'value' => t('Plugin detected'),
+        'severity' => REQUIREMENT_OK,
+        'description' => t('The plugin is installed at <code>:plugin</code>', [':plugin' => $plugin]),
+      ];
+    } else {
+      $requirements['ckeditor_liststyle'] = [
+        'title' => t('CKEditor List Style'),
+        'value' => t('n/a'),
+        'severity' => REQUIREMENT_ERROR,
+        'description' => t('Download the <a href=":plugin_url">CKEditor List Style</a> plugin and copy into the <em>libraries</em> folder before enabling this module.<br>i.e. <code>:plugin</code><br><br>', [
+          ':plugin_url' => 'http://ckeditor.com/addon/liststyle',
+          ':plugin' => $plugin,
+        ]),
+      ];
+    }
+  }
+
+  return $requirements;
+}

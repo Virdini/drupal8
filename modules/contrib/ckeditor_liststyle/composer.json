@@ -16,5 +16,8 @@
   "support": {
     "issues": "http://drupal.org/project/issues/ckeditor_liststyle",
     "source": "http://cgit.drupalcode.org/ckeditor_liststyle"
+  },
+  "require": {
+    "drupal/ckeditor": "*"
   }
 }
