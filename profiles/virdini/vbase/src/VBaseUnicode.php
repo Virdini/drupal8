@@ -9,9 +9,14 @@ namespace Drupal\vbase;
 use Drupal\Component\Utility\Unicode;
 
 class VBaseUnicode extends Unicode {
-  public static function mimeHeaderEncode($string) {
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function mimeHeaderEncode($string, $shorten = FALSE) {
     if (preg_match('/[^\x20-\x7E]/', $string)) {
-      $chunk_size = 47; // floor((75 - strlen("=?UTF-8?B??=")) * 0.75);
+      // floor((75 - strlen("=?UTF-8?B??=")) * 0.75);
+      $chunk_size = 47;
 
       $suffix = FALSE;
       if (preg_match('/ <([^>]*)>$/', $string, $match) &&
@@ -26,11 +31,14 @@ class VBaseUnicode extends Unicode {
       while ($len > 0) {
         $chunk = static::truncateBytes($string, $chunk_size);
         $output .= ' =?UTF-8?B?' . base64_encode($chunk) . "?=\n";
+        if ($shorten) {
+          break;
+        }
         $c = strlen($chunk);
         $string = substr($string, $c);
         $len -= $c;
       }
-      
+
       if ($suffix && $suffix_len + $c > $chunk_size) {
         $suffix = "\n" . $suffix;
       }
@@ -40,4 +48,5 @@ class VBaseUnicode extends Unicode {
     }
     return $string;
   }
+
 }
