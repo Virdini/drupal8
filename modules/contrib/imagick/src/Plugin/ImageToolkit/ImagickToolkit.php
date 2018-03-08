@@ -78,7 +78,7 @@ class ImagickToolkit extends GDToolkit {
 
   /** Retrieves the Imagick image resource.
    *
-   * @return resource|null
+   * @return \Imagick|resource|null
    *   The Imagick image resource, or NULL if not available.
    */
   public function getResource() {
@@ -93,7 +93,6 @@ class ImagickToolkit extends GDToolkit {
    * {@inheritdoc}
    */
   public function save($destination) {
-    /* @var $resource \Imagick */
     $resource = $this->getResource();
 
     $scheme = file_uri_scheme($destination);
@@ -114,20 +113,33 @@ class ImagickToolkit extends GDToolkit {
     // If preferred format is set, use it as prefix for writeImage
     // If not this will throw a ImagickException exception
     try {
-      $image_format = strtolower($resource->getImageFormat());
+      $image_format = $resource->getImageFormat();
       $destination = implode(':', [$image_format, $destination]);
     } catch (ImagickException $e) {}
 
     // Only compress JPEG files because other filetypes will increase in filesize
-    if (isset($image_format) && in_array($image_format, ['jpeg', 'jpg'])) {
+    if (isset($image_format) && in_array($image_format, ['JPG', 'JPEG'])) {
       // Get image quality from effect or global setting
       $quality = $resource->getImageProperty('quality') ?: $this->configFactory->get('imagick.config')->get('jpeg_quality');
       // Set image compression quality
       $resource->setImageCompressionQuality($quality);
+
+      // Optimize images
+      if ($this->configFactory->get('imagick.config')->get('optimize')) {
+        // Using recommendations from Google's Page Speed docs: https://developers.google.com/speed/docs/insights/OptimizeImages
+        $resource->setSamplingFactors(['2x2', '1x1', '1x1']);
+        $resource->setColorspace(Imagick::COLORSPACE_RGB);
+        $resource->setInterlaceScheme(Imagick::INTERLACE_JPEG);
+      }
+    }
+
+    // Strip metadata
+    if ($this->configFactory->get('imagick.config')->get('strip_metadata')) {
+      $resource->stripImage();
     }
 
     // Write image to destination
-    if (isset($image_format) && in_array($image_format, ['gif'])) {
+    if (isset($image_format) && in_array($image_format, ['GIF'])) {
       if (!$resource->writeImages($destination, TRUE)) {
         return FALSE;
       }
@@ -220,15 +232,28 @@ class ImagickToolkit extends GDToolkit {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['image_jpeg_quality'] = [
+    $form['jpeg'] = array(
+      '#type' => 'fieldset',
+      '#title' => $this->t('JPEG specific settings'),
+      '#description' => $this->t('<strong>Tip: </strong>Generated images can be converted to the JPEG format using the Convert effect.'),
+    );
+    $form['jpeg']['image_jpeg_quality'] = [
       '#type' => 'number',
-      '#title' => $this->t('JPEG quality'),
-      '#description' => $this->t('Define the image quality for JPEG manipulations. Ranges from 0 to 100. Higher values mean better image quality but bigger files.'),
+      '#title' => $this->t('Quality'),
+      '#description' => $this->t('Higher values mean better image quality but bigger files. Quality level below 80% is not advisable when using ImageMagick.'),
       '#min' => 0,
       '#max' => 100,
       '#default_value' => $this->configFactory->get('imagick.config')
         ->get('jpeg_quality'),
       '#field_suffix' => $this->t('%'),
+    ];
+
+    $form['jpeg']['image_optimize'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Use Google Pagespeed Insights image optimization.'),
+      '#description' => t('See the <a href=":url" target="_blank">guidelines</a> for further information.', [':url' => 'https://developers.google.com/speed/docs/insights/OptimizeImages']),
+      '#default_value' => $this->configFactory->get('imagick.config')
+        ->get('optimize'),
     ];
 
     $form['image_resize_filter'] = [
@@ -258,6 +283,14 @@ class ImagickToolkit extends GDToolkit {
         ->get('resize_filter'),
     ];
 
+    $form['image_strip_metadata'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Strip images of all metadata.'),
+      '#description' => t('Eg. profiles, comments, ...'),
+      '#default_value' => $this->configFactory->get('imagick.config')
+        ->get('strip_metadata'),
+    ];
+
     return $form;
   }
 
@@ -267,21 +300,19 @@ class ImagickToolkit extends GDToolkit {
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $form_state->cleanValues();
 
-    // Check if the quality value has changed
-    $jpeg_quality = $this->configFactory->get('imagick.config')
-      ->get('jpeg_quality');
-    if ($jpeg_quality !== $form_state->getValue(['imagick', 'image_jpeg_quality'])) {
-      // Flush image style images
-      $styles = ImageStyle::loadMultiple();
-      /** @var ImageStyle $style */
-      foreach ($styles as $style) {
-        $style->flush();
-      }
+    // Flush image styles
+    $styles = ImageStyle::loadMultiple();
+
+    /** @var ImageStyle $style */
+    foreach ($styles as $style) {
+      $style->flush();
     }
 
     $this->configFactory->getEditable('imagick.config')
-      ->set('jpeg_quality', $form_state->getValue(['imagick', 'image_jpeg_quality']))
+      ->set('jpeg_quality', $form_state->getValue(['imagick', 'jpeg', 'image_jpeg_quality']))
+      ->set('optimize', $form_state->getValue(['imagick', 'jpeg', 'image_optimize']))
       ->set('resize_filter', $form_state->getValue(['imagick', 'image_resize_filter']))
+      ->set('strip_metadata', $form_state->getValue(['imagick', 'image_strip_metadata']))
       ->save();
   }
 
@@ -306,6 +337,7 @@ class ImagickToolkit extends GDToolkit {
 
     $local_wrappers = \Drupal::service('stream_wrapper_manager')
       ->getWrappers(StreamWrapperInterface::LOCAL);
+
     return !isset($local_wrappers[$scheme]);
   }
 
@@ -327,6 +359,7 @@ class ImagickToolkit extends GDToolkit {
     if (!$tmp_file) {
       return FALSE;
     }
+
     return \Drupal::service('file_system')->realpath($tmp_file);
   }
 

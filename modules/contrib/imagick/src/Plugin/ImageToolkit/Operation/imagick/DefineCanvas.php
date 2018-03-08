@@ -54,7 +54,7 @@ class DefineCanvas extends ImagickOperationBase {
     $relative = $arguments['relative'];
 
     $canvas = new Imagick();
-    $canvas->setFormat('jpg');
+    $canvas->setFormat('JPG');
 
     $color = empty($color) ? 'none' : $color;
     if ($exact_size) {

@@ -8,3 +8,9 @@ imagick.config:
     resize_filter:
       type: integer
       label: 'Resize filter'
+    optimize:
+      type: boolean
+      label: 'Optimize'
+    strip_metadata:
+      type: boolean
+      label: 'Strip metadata'

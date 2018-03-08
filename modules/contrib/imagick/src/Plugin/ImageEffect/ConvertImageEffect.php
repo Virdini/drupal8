@@ -5,7 +5,7 @@ namespace Drupal\imagick\Plugin\ImageEffect;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Image\ImageInterface;
 use Drupal\image\ConfigurableImageEffectBase;
-use Drupal\imagick\ImagickConst;
+use Imagick;
 
 /**
  * Blurs an image resource.
@@ -38,7 +38,7 @@ class ConvertImageEffect extends ConfigurableImageEffectBase {
    */
   public function defaultConfiguration() {
     return [
-      'format' => 'image/jpeg',
+      'format' => 'JPG',
       'quality' => \Drupal::config('imagick.config')->get('jpeg_quality'),
     ];
   }
@@ -47,25 +47,23 @@ class ConvertImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    // Load all available formats
+    $formats = Imagick::queryFormats();
+
     $form['format'] = [
       '#title' => $this->t("File format"),
       '#type' => 'select',
       '#default_value' => $this->configuration['format'],
-      '#options' => ImagickConst::imagick_file_formats(),
+      '#options' => array_combine($formats, $formats),
     ];
     $form['quality'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Quality'),
-      '#description' => $this->t('Override the default image quality. Works for Imagemagick only. Ranges from 0 to 100. Higher values mean better image quality but bigger files.'),
+      '#description' => $this->t('Override the default image quality. Higher values mean better image quality but bigger files.'),
       '#size' => 3,
       '#maxlength' => 3,
       '#default_value' => $this->configuration['quality'],
       '#field_suffix' => '%',
-      '#states' => [
-        'visible' => [
-          ':input[name="data[format]"]' => ['value' => 'image/jpeg'],
-        ],
-      ],
     ];
 
     return $form;
@@ -79,6 +77,13 @@ class ConvertImageEffect extends ConfigurableImageEffectBase {
 
     $this->configuration['format'] = $form_state->getValue('format');
     $this->configuration['quality'] = $form_state->getValue('quality');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDerivativeExtension($extension) {
+    return strtolower($this->configuration['format']);
   }
 
 }

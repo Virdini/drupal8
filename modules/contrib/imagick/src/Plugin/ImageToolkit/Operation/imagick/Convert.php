@@ -38,21 +38,20 @@ class Convert extends ImagickOperationBase {
   protected function execute(array $arguments = []) {
     /* @var $resource \Imagick */
     $resource = $this->getToolkit()->getResource();
-    $formats = ImagickConst::imagick_file_formats();
 
     $format = $arguments['format'];
     $quality = $arguments['quality'];
 
     // Set a white background color when converting to JPG because this file
     // format does not support transparency
-    if ($format == 'image/jpeg') {
+    if (in_array($format, ['JPG', 'JPEG'])) {
       $background = new Imagick();
       $background->newImage($resource->getImageWidth(), $resource->getImageHeight(), 'white');
 
       $resource->compositeImage($background, Imagick::COMPOSITE_DSTOVER, 0, 0);
     }
 
-    $formatSuccess = $resource->setImageFormat($formats[$format]);
+    $formatSuccess = $resource->setImageFormat($format);
     $qualitySuccess = $resource->setImageProperty('quality', (int) $quality);
 
     return ($formatSuccess && $qualitySuccess);
