@@ -14,7 +14,7 @@
 function vbase_install() {
   // Disable the user pictures on nodes.
   \Drupal::configFactory()->getEditable('system.theme.global')->set('features.node_user_picture', FALSE)->save(TRUE);
-  
+
   /**
    * Error: Mismatched entity and/or field definitions (Pathauto)
    * https://www.drupal.org/node/2661178
@@ -27,3 +27,20 @@ function vbase_install() {
     print_r($e);
   }
 }
+
+/**
+ * Remove Virdini Optimize effect
+ */
+function vbase_update_8001() {
+  if (\Drupal::service('module_handler')->moduleExists('imagick')){
+    foreach (\Drupal::entityTypeManager()->getStorage('image_style')->loadMultiple() as $style) {
+      foreach ($style->getEffects() as $id => $effect) {
+        if ($effect->getPluginId() == 'image_voptimize') {
+          $style->deleteImageEffect($effect);
+        }
+      }
+    }
+  }
+}
+
+
