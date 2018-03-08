@@ -13,50 +13,29 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Template\Attribute;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\FileInterface;
+use Drupal\Component\Utility\Unicode;
 
 /**
- * Implements hook_ENTITY_TYPE_access() for node.
+ * Implements hook_entity_access().
  */
-function vbase_node_access(EntityInterface $entity, $op, AccountInterface $account) {
-  switch ($op) {
+function vbase_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  switch ($operation) {
     case 'view':
-      $config = \Drupal::config('vbase.settings.cp');
-      $bundles = $config->get('node_bundles');
-      if (!empty($bundles) && in_array($entity->bundle(), $bundles) && !$account->hasPermission('vbase view protected content', $account)) {
-        return AccessResult::forbidden()->addCacheableDependency($config)->cachePerPermissions();
+      if (in_array($entity->getEntityTypeId(), ['node', 'taxonomy_term'])) {
+        $config = \Drupal::config('vbase.settings.cp');
+        $bundles = $config->get($entity->getEntityTypeId() == 'node' ? 'node_bundles' : '');
+        return AccessResult::forbiddenIf(!empty($bundles) && in_array($entity->bundle(), $bundles)
+                                         && !$account->hasPermission('vbase view protected content'))
+                ->addCacheableDependency($config)
+                ->cachePerPermissions();
       }
-      return AccessResult::neutral()->addCacheableDependency($config)->cachePerPermissions();
       break;
-  }
-  return AccessResult::neutral();
-}
-
-/**
- * Implements hook_ENTITY_TYPE_access() for taxonomy_term.
- */
-function vbase_taxonomy_term_access(EntityInterface $entity, $op, AccountInterface $account) {
-  switch ($op) {
-    case 'view':
-      $config = \Drupal::config('vbase.settings.cp');
-      $bundles = $config->get('taxonomy_vocabularies');
-      if (!empty($bundles) && in_array($entity->bundle(), $bundles) && !$account->hasPermission('vbase view protected content', $account)) {
-        return AccessResult::forbidden()->addCacheableDependency($config)->cachePerPermissions();
-      }
-      return AccessResult::neutral()->addCacheableDependency($config)->cachePerPermissions();
-      break;
-  }
-  return AccessResult::neutral();
-}
-
-/**
- * Implements hook_ENTITY_TYPE_access() for user.
- */
-function vbase_user_access(EntityInterface $entity, $op, AccountInterface $account) {
-  switch ($op) {
     case 'update':
-      // Protect Root
-      if ($entity->id() == 1 && $account->id() != 1) {
-        return AccessResult::forbidden()->cachePerPermissions();
+      if ($entity->getEntityTypeId() == 'user') {
+        return AccessResult::forbiddenIf($entity->id() == 1 && $account->id() != 1)
+                ->cachePerPermissions();
       }
       break;
   }
@@ -68,7 +47,7 @@ function vbase_user_access(EntityInterface $entity, $op, AccountInterface $accou
  *
  * Allows the profile to alter the site configuration form.
  */
-function vbase_form_install_configure_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+function vbase_form_install_configure_form_alter(&$form, FormStateInterface $form_state) {
   $form['site_information']['site_name']['#default_value'] = 'Virdini Drupal 8';
   $form['site_information']['site_mail']['#default_value'] = 'dev@virdini.net';
   $form['admin_account']['account']['name']['#default_value'] = 'admin';
@@ -81,7 +60,7 @@ function vbase_form_install_configure_form_alter(&$form, \Drupal\Core\Form\FormS
 /**
  * Submission handler to disable unnecessary views.
  */
-function vbase_form_install_configure_submit($form, \Drupal\Core\Form\FormStateInterface $form_state) {
+function vbase_form_install_configure_submit($form, FormStateInterface $form_state) {
   // Disable unnecessary views
   \Drupal::configFactory()->getEditable('views.view.who_s_new')->set('status', FALSE)->save(TRUE);
   \Drupal::configFactory()->getEditable('views.view.who_s_online')->set('status', FALSE)->save(TRUE);
@@ -96,7 +75,7 @@ function vbase_form_install_configure_submit($form, \Drupal\Core\Form\FormStateI
  *
  * Temporary fix for https://www.drupal.org/node/2492171
  */
-function vbase_file_validate(\Drupal\file\FileInterface $file) {
+function vbase_file_validate(FileInterface $file) {
   $errors = array();
   $filename = $file->getFilename();
   // Transliterate and sanitize the destination filename.
@@ -108,7 +87,7 @@ function vbase_file_validate(\Drupal\file\FileInterface $file) {
   // Remove multiple consecutive non-alphabetical characters.
   $filename_fixed = preg_replace('/(_)_+|(\.)\.+|(-)-+/', '\\1\\2\\3', $filename_fixed);
   // Force lowercase to prevent issues on case-insensitive file systems.
-  $filename_fixed = \Drupal\Component\Utility\Unicode::strtolower($filename_fixed);
+  $filename_fixed = Unicode::strtolower($filename_fixed);
   if ($filename != $filename_fixed) {
     $directory = drupal_dirname($file->destination);
     $file->destination = file_create_filename($filename_fixed, $directory);
@@ -199,7 +178,7 @@ function vbase_page_attachments(array &$attachments) {
     $attachments['#attached']['html_head'][] = [[
       '#type' => 'html_tag',
       '#tag' => 'meta',
-      //'#browsers' => ['!IE' => FALSE], // Temporarily disabled due to bug https://www.drupal.org/node/2914058
+      '#browsers' => ['!IE' => FALSE],
       '#weight' => -1000,
       '#attributes' => [
         'http-equiv' => 'X-UA-Compatible',
@@ -259,7 +238,6 @@ function vbase_page_attachments_alter(array &$attachments) {
   // Hide links
   $keys = ['delete-form', 'edit-form', 'version-history', 'revision'];
   if (!empty($keys) && isset($attachments['#attached']['html_head_link'])) {
-    //print_r($page['#attached']['html_head_link']);
     foreach ($attachments['#attached']['html_head_link'] as $key => $value) {
       if (isset($value[0]['rel']) && in_array($value[0]['rel'], $keys)) {
         unset($attachments['#attached']['html_head_link'][$key]);
