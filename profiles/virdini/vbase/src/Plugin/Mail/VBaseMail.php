@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\vbase\Plugin\Mail\VBaseMail.
- */
 namespace Drupal\vbase\Plugin\Mail;
 
 use Drupal\vbase\VBaseUnicode;
@@ -16,12 +12,15 @@ use Drupal\Core\Site\Settings;
  *
  * @Mail(
  *   id = "vbase_mail",
- *   label = @Translation("VBase mailer"),
+ *   label = @Translation("Virdini base mailer"),
  *   description = @Translation("Sends the message, using PHP's native mail() function.")
  * )
  */
-class VBaseMail extends PHPMail {
-  
+class VBaseMail extends PhpMail {
+
+  /**
+   * {@inheritdoc}
+   */
   public function mail(array $message) {
     // If 'Return-Path' isn't already set in php.ini, we pass it separately
     // as an additional parameter instead of in the header.
@@ -32,7 +31,7 @@ class VBaseMail extends PHPMail {
         unset($message['headers']['Return-Path']);
       }
     }
-    $mimeheaders = array();
+    $mimeheaders = [];
     foreach ($message['headers'] as $name => $value) {
       $mimeheaders[] = $name . ': ' . VBaseUnicode::mimeHeaderEncode($value);
     }
@@ -46,7 +45,7 @@ class VBaseMail extends PHPMail {
     $mail_body = preg_replace('@\r?\n@', $line_endings, $message['body']);
     // For headers, PHP's API suggests that we use CRLF normally,
     // but some MTAs incorrectly replace LF with CRLF. See #234403.
-    $mail_headers = join("\n", $mimeheaders);
+    $mail_headers = implode("\n", $mimeheaders);
 
     $request = \Drupal::request();
 
@@ -82,4 +81,5 @@ class VBaseMail extends PHPMail {
 
     return $mail_result;
   }
+
 }
