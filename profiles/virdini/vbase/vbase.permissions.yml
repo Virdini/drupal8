@@ -12,3 +12,6 @@ vbase content protection settings:
   title: 'Administer Content Protection Settings'
   description: ''
   restrict access: true
+vbase antispam settings:
+  title: 'Administer anti spam settings'
+  description: ''

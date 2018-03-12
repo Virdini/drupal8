@@ -30,6 +30,14 @@ vbase.content_protection:
   requirements:
     _permission: 'vbase content protection settings'
 
+vbase.settings.antispam:
+  path: '/admin/config/system/site-settings/antispam'
+  defaults:
+    _form: 'Drupal\vbase\Form\AntiSpamSettings'
+    _title: 'Anti Spam Settings'
+  requirements:
+    _permission: 'vbase antispam settings'
+
 vbase.adjustment:
   path: '/virdini-adjustment'
   defaults:

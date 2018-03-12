@@ -22,3 +22,9 @@ vbase.content_protection:
   parent: vbase.site_settings
   description: ''
   route_name: vbase.content_protection
+
+vbase.settings.antispam:
+  title: 'Anti Spam'
+  parent: vbase.site_settings
+  description: ''
+  route_name: vbase.settings.antispam

@@ -19,3 +19,9 @@ FlexSlider:
     /libraries/FlexSlider/jquery.flexslider-min.js: {minified: true}
   dependencies:
     - core/jquery
+
+antispam:
+  js:
+    js/antispam.js: {}
+  dependencies:
+    - core/jquery

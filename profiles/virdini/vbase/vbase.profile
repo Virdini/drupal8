@@ -53,8 +53,61 @@ function vbase_form_install_configure_form_alter(&$form, FormStateInterface $for
   $form['admin_account']['account']['name']['#default_value'] = 'admin';
   $form['admin_account']['account']['mail']['#default_value'] = 'dev@virdini.net';
   $form['regional_settings']['site_default_country']['#default_value'] = 'UA';
-  $form['update_notifications']['update_status_module']['#default_value'] = array();
+  $form['update_notifications']['update_status_module']['#default_value'] = [];
   $form['#submit'][] = 'vbase_form_install_configure_submit';
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vbase_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $config = \Drupal::config('vbase.settings.antispam');
+  vbase_add_cacheable_dependency($form, $config);
+  if ($config->get('site_key') && $config->get('secret_key')
+       && in_array($form_id, $config->get('forms') ?: [])) {
+    $form['vbase_antispam'] = [
+      '#type' => 'hidden',
+      '#default_value' => '',
+    ];
+    $attributes = [
+      'class' => ['g-recaptcha'],
+      'data-size' => 'invisible',
+      'data-sitekey' => $config->get('site_key'),
+      'data-callback' => 'vBaseAntiSpamSubmit',
+    ];
+    $form['vbase_antispam_widget'] = [
+      '#markup' => '<div' . new Attribute($attributes) . '></div>',
+    ];
+    $form['#attached']['library'][] = 'vbase/antispam';
+    $form['#attached']['html_head'][] = [[
+      '#tag' => 'script',
+      '#attributes' => [
+        'src' => 'https://www.google.com/recaptcha/api.js?onload=vBaseAntiSpamLoad&hl='. \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
+        'async' => TRUE,
+        'defer' => TRUE,
+      ],
+    ], 'recaptcha_api'];
+    if ($form_id == 'user_login_form') {
+      $form['vbase_antispam']['#element_validate'] = ['vbase_antispam_element_validate'];
+    }
+    else {
+      $form['#validate'][] = 'vbase_antispam_form_validate';
+    }
+  }
+}
+
+function vbase_antispam_element_validate(&$element, FormStateInterface $form_state, &$form) {
+  if (!\Drupal::service('vbase.antispam')->verify($form_state->getValue('vbase_antispam'),  \Drupal::request()->getClientIp())) {
+    $form_state->setError($element, t('You did not pass the spam test ;('));
+    $form['#validate'] = [];
+  }
+}
+
+function vbase_antispam_form_validate(&$form, FormStateInterface $form_state) {
+  if (!\Drupal::service('vbase.antispam')->verify($form_state->getValue('vbase_antispam'),  \Drupal::request()->getClientIp())) {
+    $form_state->clearErrors();
+    $form_state->setError($form['vbase_antispam'], t('You did not pass the spam test ;('));
+  }
 }
 
 /**

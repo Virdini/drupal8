@@ -1,0 +1,4 @@
+services:
+  vbase.antispam:
+    class: Drupal\vbase\reCAPTCHA
+    arguments: ['@config.factory', '@cache.default']

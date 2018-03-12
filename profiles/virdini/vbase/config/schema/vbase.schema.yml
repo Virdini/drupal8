@@ -68,3 +68,20 @@ vbase.settings.developers:
     logo:
       type: string
       label: 'Logo'
+
+vbase.settings.antispam:
+  type: config_object
+  label: 'Anti spam settings'
+  mapping:
+    site_key:
+      type: string
+      label: 'Site Key'
+    secret_key:
+      type: string
+      label: 'Secret Key'
+    forms:
+      label: 'Forms'
+      type: sequence
+      sequence:
+        type: string
+        label: 'Form Id'
