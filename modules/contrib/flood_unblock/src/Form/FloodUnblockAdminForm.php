@@ -57,13 +57,13 @@ class FloodUnblockAdminForm extends FormBase {
     $flood_user_entries = $this->floodUnblockManager->get_blocked_user_entries();
     $entries = $flood_ip_entries + $flood_user_entries;
 
-    $blocks = array();
+    $blocks = [];
     foreach ($entries as $identifier => $entry) {
-      $blocks[$identifier] = array(
+      $blocks[$identifier] = [
         'identifier' => $identifier,
-        'type'       => $entry['type'],
-        'count'      => $entry['count'],
-      );
+        'type' => $entry['type'],
+        'count' => $entry['count'],
+      ];
       if ($entry['type'] == 'ip') {
         $blocks[$identifier]['ip'] = $entry['ip'] . $entry['location'];
         $blocks[$identifier]['uid'] = '';
@@ -76,48 +76,40 @@ class FloodUnblockAdminForm extends FormBase {
       }
     }
 
-    $header = array(
+    $header = [
       'blocked' => $this->t('Blocked'),
-      'type'    => $this->t('Type of block'),
-      'count'   => $this->t('Count'),
-      'uid'     => $this->t('Account name'),
-      'ip'      => $this->t('IP Address'),
-    );
+      'type' => $this->t('Type of block'),
+      'count' => $this->t('Count'),
+      'uid' => $this->t('Account name'),
+      'ip' => $this->t('IP Address'),
+    ];
 
-    $options = array();
+    $options = [];
     foreach ($blocks as $block) {
-      $options[$block['identifier']] = array(
+      $options[$block['identifier']] = [
         'blocked' => $block['blocked'],
-        'type'    => $block['type'],
-        'count'   => $block['count'],
-        'uid'     => $block['uid'],
-        'ip'      => $block['ip'],
-      );
+        'type' => $block['type'],
+        'count' => $block['count'],
+        'uid' => $block['uid'],
+        'ip' => $block['ip'],
+      ];
     }
 
-    $prefix = 'Drupal has two types of blocks available:<br />' .
-      '<ul><li>One where the incorrect password of an existing user account is being used. The user account being used and the IP address is logged.' .
-      '<li>One where an incorrect user name is being used. The IP address is logged.</ul>';
+    $form['top_markup'] = [
+      '#markup' => $this->t('<p>Use the table below to view the available flood entries. You can clear seperate items.</p>'),
+    ];
 
-    $prefix .= '<br />';
-
-    if (!function_exists('smart_ip_get_location')) {
-      $prefix .= 'If the ' . \Drupal::l('Smart IP', Url::fromUri('http://drupal.org/project/smart_ip')) . ' module is loaded, the physical location of the IP address will be shown.<br />';
-      $prefix .= '<br />';
-    }
-
-    $form['table'] = array(
-      '#type'    => 'tableselect',
-      '#header'  => $header,
+    $form['table'] = [
+      '#type' => 'tableselect',
+      '#header' => $header,
       '#options' => $options,
-      '#empty'   => $this->t('There are no failed logins at this time.'),
-      '#prefix'  => $this->t($prefix),
-    );
+      '#empty' => $this->t('There are no failed logins at this time.'),
+    ];
 
-    $form['submit'] = array(
-      '#type'  => 'submit',
+    $form['submit'] = [
+      '#type' => 'submit',
       '#value' => $this->t('Clear flood'),
-    );
+    ];
 
     if (count($entries) == 0) {
       $form['submit']['#disabled'] = TRUE;
@@ -133,7 +125,7 @@ class FloodUnblockAdminForm extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
     $entries = $form_state->getValue('table');
-    $selected_entries = array_filter($entries, function($selected) {
+    $selected_entries = array_filter($entries, function ($selected) {
       return $selected !== 0;
     });
     if (empty($selected_entries)) {

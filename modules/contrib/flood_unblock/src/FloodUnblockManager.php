@@ -54,7 +54,7 @@ class FloodUnblockManager {
    *   Ip blocked entries in the flood table.
    */
   public function get_blocked_ip_entries() {
-    $entries = array();
+    $entries = [];
 
     if (db_table_exists('flood')) {
       $query = $this->database->select('flood', 'f');
@@ -76,13 +76,13 @@ class FloodUnblockManager {
 
         $blocked = !$this->flood->isAllowed('user.failed_login_ip', $this->config->get('ip_limit'), $this->config->get('ip_window'), $result->ip);
 
-        $entries[$result->identifier] = array(
-          'type'     => 'ip',
-          'ip'       => $result->ip,
-          'count'    => $result->count,
+        $entries[$result->identifier] = [
+          'type' => 'ip',
+          'ip' => $result->ip,
+          'count' => $result->count,
           'location' => $location_string,
-          'blocked'  => $blocked,
-        );
+          'blocked' => $blocked,
+        ];
       }
     }
 
@@ -96,7 +96,7 @@ class FloodUnblockManager {
    *   User blocked entries in the flood table.
    */
   public function get_blocked_user_entries() {
-    $entries = array();
+    $entries = [];
 
     if (db_table_exists('flood')) {
       $query = $this->database->select('flood', 'f');
@@ -122,16 +122,23 @@ class FloodUnblockManager {
 
         /** @var \Drupal\user\Entity\User $user */
         $user = $this->entityTypeManager->getStorage('user')
-                                        ->load($result->uid);
-        $entries[$result->identifier] = array(
-          'type'     => 'user',
-          'uid'      => $result->uid,
-          'ip'       => $result->ip,
-          'username' => $user->toLink($user->getUsername()),
-          'count'    => $result->count,
+          ->load($result->uid);
+
+        if (isset($user)) {
+          $user_link = $user->toLink($user->getUsername());
+        } else {
+          $user_link = $this->t('Deleted user: @user', ['@user' => $result->uid]);
+        }
+
+        $entries[$result->identifier] = [
+          'type' => 'user',
+          'uid' => $result->uid,
+          'ip' => $result->ip,
+          'username' => $user_link,
+          'count' => $result->count,
           'location' => $location_string,
-          'blocked'  => $blocked,
-        );
+          'blocked' => $blocked,
+        ];
       }
     }
 
@@ -153,8 +160,7 @@ class FloodUnblockManager {
       if ($success) {
         drupal_set_message($this->t('Flood entries cleared.'), 'status', FALSE);
       }
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       // Something went wrong somewhere, so roll back now.
       $txn->rollback();
       // Log the exception to watchdog.

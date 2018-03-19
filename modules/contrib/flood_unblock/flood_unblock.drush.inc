@@ -4,14 +4,14 @@
  * Implements hook_drush_command().
  */
 function flood_unblock_drush_command() {
-  $items['flood_unblock'] = array(
-    'callback'    => 'flood_unblock_clear_drush',
+  $items['flood_unblock'] = [
+    'callback' => 'flood_unblock_clear_drush',
     'description' => dt('Empty flood for a certain event.'),
-    'arguments'   => array(
+    'arguments' => [
       'path' => dt('The particular flood to clear. Omit this argument to choose from available floods.'),
-    ),
-    'aliases'     => array('flun'),
-  );
+    ],
+    'aliases' => ['flun'],
+  ];
 
   return $items;
 }
@@ -32,11 +32,11 @@ function flood_unblock_drush_help($section) {
  * Command callback for drush flood-unblock.
  */
 function flood_unblock_clear_drush($type = NULL) {
-  $types = array(
-    'all'  => 'flood_unblock_drush_clear',
-    'ip'   => 'flood_unblock_drush_clear',
+  $types = [
+    'all' => 'flood_unblock_drush_clear',
+    'ip' => 'flood_unblock_drush_clear',
     'user' => 'flood_unblock_drush_clear',
-  );
+  ];
 
   if (!isset($type)) {
     $type = drush_choice($types, 'Enter a number to choose which flood to clear.', '!key');
@@ -71,7 +71,7 @@ function flood_unblock_drush_clear($type) {
   }
 
   if ($type != 'all') {
-    drush_print(dt('Flood cleared for the !event event.', array('!event' => $type)));
+    drush_print(dt('Flood cleared for the !event event.', ['!event' => $type]));
   }
   else {
     drush_print(dt('Flood cleared for all events.'));
