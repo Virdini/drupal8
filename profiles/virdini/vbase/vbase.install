@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Install, update and uninstall functions for the vbase installation profile.
- */
 
 /**
  * Implements hook_install().
@@ -12,20 +8,10 @@
  * @see system_install()
  */
 function vbase_install() {
-  // Disable the user pictures on nodes.
-  \Drupal::configFactory()->getEditable('system.theme.global')->set('features.node_user_picture', FALSE)->save(TRUE);
-
-  /**
-   * Error: Mismatched entity and/or field definitions (Pathauto)
-   * https://www.drupal.org/node/2661178
-   * #24 https://www.drupal.org/node/2601762#comment-10835098
-   */
-  try {
-    \Drupal::entityDefinitionUpdateManager()->applyUpdates();
-  }
-  catch (EntityStorageException $e) {
-    print_r($e);
-  }
+  \Drupal::configFactory()->getEditable('system.theme.global')
+    ->set('features.node_user_picture', FALSE)
+    ->set('features.toggle_comment_user_verification', FALSE)
+    ->save(TRUE);
 }
 
 /**
@@ -42,5 +28,3 @@ function vbase_update_8001() {
     }
   }
 }
-
-

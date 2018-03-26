@@ -1,7 +1,7 @@
 generator: false
 mobile: true
 viewport: true
-ie_chrome: true
+ie_chrome: false
 telephone: true
 google_verification: {  }
 yandex_verification: {  }

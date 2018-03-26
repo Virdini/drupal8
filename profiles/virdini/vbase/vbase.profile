@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Enables modules and site configuration for a Virdini Base site installation.
- */
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
@@ -115,12 +111,14 @@ function vbase_antispam_form_validate(&$form, FormStateInterface $form_state) {
  */
 function vbase_form_install_configure_submit($form, FormStateInterface $form_state) {
   // Disable unnecessary views
-  \Drupal::configFactory()->getEditable('views.view.who_s_new')->set('status', FALSE)->save(TRUE);
-  \Drupal::configFactory()->getEditable('views.view.who_s_online')->set('status', FALSE)->save(TRUE);
-  \Drupal::configFactory()->getEditable('views.view.content_recent')->set('status', FALSE)->save(TRUE);
-  \Drupal::configFactory()->getEditable('views.view.frontpage')->set('status', FALSE)->save(TRUE);
-  \Drupal::configFactory()->getEditable('views.view.taxonomy_term')->set('status', FALSE)->save(TRUE);
-  \Drupal::configFactory()->getEditable('views.settings')->set('ui.always_live_preview', FALSE)->save(TRUE);
+  $config = \Drupal::configFactory();
+  $config->getEditable('views.view.content_recent')->set('status', FALSE)->save(TRUE);
+  $config->getEditable('views.view.frontpage')->set('status', FALSE)->save(TRUE);
+  $config->getEditable('views.view.taxonomy_term')->set('status', FALSE)->save(TRUE);
+  $config->getEditable('views.view.watchdog')->set('display.default.display_options.empty.area.content.format', 'full_html')->save(TRUE);
+  $config->getEditable('views.view.who_s_new')->set('status', FALSE)->save(TRUE);
+  $config->getEditable('views.view.who_s_online')->set('status', FALSE)->save(TRUE);
+  $config->getEditable('views.settings')->set('ui.always_live_preview', FALSE)->save(TRUE);
 }
 
 /**
@@ -197,9 +195,7 @@ function template_preprocess_developers(array &$variables) {
  * Implements hook_preprocess_page().
  */
 function vbase_preprocess_page(array &$variables) {
-  $variables['developers'] = [
-    '#theme' => 'developers',
-  ];
+  $variables['developers'] = ['#theme' => 'developers'];
 }
 
 /**

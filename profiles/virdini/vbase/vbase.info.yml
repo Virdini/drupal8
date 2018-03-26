@@ -1,13 +1,15 @@
 name: Virdini Base
 type: profile
 description: 'Install with commonly used features pre-configured by Virdini.'
-version: 8.x-1.0.11
 core: 8.x
-'interface translation project': vbase
-'interface translation server pattern': profiles/virdini/vbase/translations/vbase.%language.po
+
+version: 8.x-1.0.12
+
 distribution:
   name: Virdini
+
 dependencies:
+  # from standard profile
   - node
   - block
   - breakpoint
@@ -33,21 +35,23 @@ dependencies:
   - views
   - views_ui
   - automated_cron
-  - google_analytics
-  - token
+
+  # contrib modules
+  - admin_toolbar_tools
+  - ckeditor_videodetector
   - editor_advanced_link
   - editor_file
+  - google_analytics
   - linkit
-  - admin_toolbar
-  - admin_toolbar_tools
-  - metatag
-  - ckeditor_videodetector
-  - ctools
-  - pathauto
-  - simple_sitemap
-  - redirect
-  - redirect_404
   - mailsystem
+  - metatag
+  - pathauto
+  - redirect_404
+  - simple_sitemap
+
 themes:
   - vadmin
   - vcurrent
+
+interface translation project: vbase
+interface translation server pattern: https://s1.virdini.com/projects/virdini/translations/vbase.%language.po
