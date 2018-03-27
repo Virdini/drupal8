@@ -3,7 +3,7 @@ type: profile
 description: 'Install with commonly used features pre-configured by Virdini.'
 core: 8.x
 
-version: 8.x-1.0.12
+version: 8.x-1.0.13
 
 distribution:
   name: Virdini
@@ -48,6 +48,7 @@ dependencies:
   - pathauto
   - redirect_404
   - simple_sitemap
+  - imagick
 
 themes:
   - vadmin
