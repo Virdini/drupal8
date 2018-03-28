@@ -49,8 +49,8 @@ function vbase_form_install_configure_form_alter(&$form, FormStateInterface $for
   $form['admin_account']['account']['name']['#default_value'] = 'admin';
   $form['admin_account']['account']['mail']['#default_value'] = 'dev@virdini.net';
   $form['regional_settings']['site_default_country']['#default_value'] = 'UA';
-  $form['update_notifications']['update_status_module']['#default_value'] = [];
-  $form['#submit'][] = 'vbase_form_install_configure_submit';
+  $form['update_notifications']['enable_update_status_module']['#default_value'] = 0;
+  $form['update_notifications']['enable_update_status_emails']['#default_value'] = 0;
 }
 
 /**
@@ -104,21 +104,6 @@ function vbase_antispam_form_validate(&$form, FormStateInterface $form_state) {
     $form_state->clearErrors();
     $form_state->setError($form['vbase_antispam'], t('You did not pass the spam test ;('));
   }
-}
-
-/**
- * Submission handler to disable unnecessary views.
- */
-function vbase_form_install_configure_submit($form, FormStateInterface $form_state) {
-  // Disable unnecessary views
-  $config = \Drupal::configFactory();
-  $config->getEditable('views.view.content_recent')->set('status', FALSE)->save(TRUE);
-  $config->getEditable('views.view.frontpage')->set('status', FALSE)->save(TRUE);
-  $config->getEditable('views.view.taxonomy_term')->set('status', FALSE)->save(TRUE);
-  $config->getEditable('views.view.watchdog')->set('display.default.display_options.empty.area.content.format', 'full_html')->save(TRUE);
-  $config->getEditable('views.view.who_s_new')->set('status', FALSE)->save(TRUE);
-  $config->getEditable('views.view.who_s_online')->set('status', FALSE)->save(TRUE);
-  $config->getEditable('views.settings')->set('ui.always_live_preview', FALSE)->save(TRUE);
 }
 
 /**

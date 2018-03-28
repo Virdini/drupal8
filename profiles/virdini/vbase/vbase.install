@@ -2,15 +2,72 @@
 
 /**
  * Implements hook_install().
- *
- * Performs actions to set up the site for this profile.
- *
- * @see system_install()
  */
 function vbase_install() {
-  \Drupal::configFactory()->getEditable('system.theme.global')
+
+}
+
+/**
+ * Implements hook_install_tasks().
+ */
+function vbase_install_tasks(&$install_state) {
+  return [
+    'vbase_final_setup' => [],
+  ];
+}
+
+function vbase_final_setup(&$install_state) {
+  $config = \Drupal::configFactory();
+  // Locally cache google analytics tracking code file
+  $config->getEditable('google_analytics.settings')
+    ->set('cache', TRUE)
+    ->save(TRUE);
+  // Disable detailed cron logging
+  $config->getEditable('system.cron')
+    ->set('logging', FALSE)
+    ->save(TRUE);
+  // Disable the user pictures on nodes.
+  $config->getEditable('system.theme.global')
     ->set('features.node_user_picture', FALSE)
-    ->set('features.toggle_comment_user_verification', FALSE)
+    ->save(TRUE);
+  // Disable gzip compression
+  $config->getEditable('system.performance')
+    ->set('css.gzip', FALSE)
+    ->set('js.gzip', FALSE)
+    ->save(TRUE);
+  // Disable advagg brotli compression
+  $config->getEditable('advagg.settings')
+    ->set('css.brotli', FALSE)
+    ->set('js.brotli', FALSE)
+    ->save(TRUE);
+  // Set advagg js minifer to JSqueeze and hide licensing comments
+  $config->getEditable('advagg_js_minify.settings')
+    ->set('add_license', FALSE)
+    ->set('minifier', 5)
+    ->save(TRUE);
+  // Disable views live preview
+  $config->getEditable('views.settings')
+    ->set('ui.always_live_preview', FALSE)
+    ->save(TRUE);
+  // Fix watchdog empty text format
+  $config->getEditable('views.view.watchdog')
+    ->set('display.default.display_options.empty.area.content.format', 'full_html')
+    ->save(TRUE);
+  // Disable unnecessary views
+  $config->getEditable('views.view.content_recent')
+    ->set('status', FALSE)
+    ->save(TRUE);
+  $config->getEditable('views.view.frontpage')
+    ->set('status', FALSE)
+    ->save(TRUE);
+  $config->getEditable('views.view.taxonomy_term')
+    ->set('status', FALSE)
+    ->save(TRUE);
+  $config->getEditable('views.view.who_s_new')
+    ->set('status', FALSE)
+    ->save(TRUE);
+  $config->getEditable('views.view.who_s_online')
+    ->set('status', FALSE)
     ->save(TRUE);
 }
 

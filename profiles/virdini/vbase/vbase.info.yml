@@ -3,7 +3,7 @@ type: profile
 description: 'Install with commonly used features pre-configured by Virdini.'
 core: 8.x
 
-version: 8.x-1.0.13
+version: 8.x-1.0.14
 
 distribution:
   name: Virdini
@@ -49,6 +49,8 @@ dependencies:
   - redirect_404
   - simple_sitemap
   - imagick
+  - advagg_css_minify
+  - advagg_js_minify
 
 themes:
   - vadmin
