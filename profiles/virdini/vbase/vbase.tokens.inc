@@ -115,14 +115,12 @@ function vbase_tokens_alter(array &$replacements, array $context, BubbleableMeta
     }
   }
   elseif ($context['type'] == 'current-page' && isset($context['tokens']['title'])) {
-    $route_match = \Drupal::routeMatch();
-    $route_name = $route_match->getRouteName();
-    if ($route_name == 'contact.site_page') {
-      $config = \Drupal::config('contact.settings');
-      $contact_form = \Drupal::entityTypeManager()
-        ->getStorage('contact_form')
-        ->load($config->get('default_form'));
-        $replacements[$context['tokens']['title']] = $contact_form->label();
+    $route = \Drupal::routeMatch();
+    $route_name = $route->getRouteName();
+    if (substr($route_name, 0, 5) == 'view.') {
+      $view = \Drupal::entityTypeManager()->getStorage('view')->load($route->getParameter('view_id'))->getExecutable();
+      $view->setDisplay($route->getParameter('display_id'));
+      $replacements[$context['tokens']['title']] = $view->getTitle();
     }
     else {
       $matches = array();
@@ -130,17 +128,14 @@ function vbase_tokens_alter(array &$replacements, array $context, BubbleableMeta
       if(!$replacements[$context['tokens']['title']] && !empty($matches[1]) && $matches[1] == 'node' && !empty($matches[2])) {
         switch ($matches[2]) {
           case 'edit_form':
-            $node = $route_match->getParameter('node');
+            $node = $route->getParameter('node');
             $replacements[$context['tokens']['title']] = t('<em>Edit @type</em> @title', array('@type' => node_get_type_label($node), '@title' => $node->label()));
             break;
           case 'content_translation_overview':
-            $node = $route_match->getParameter('node');
+            $node = $route->getParameter('node');
             $replacements[$context['tokens']['title']] = t('Translations of %label', array('%label' => $node->label()));
             break;
         }
-      }
-      elseif(!empty($matches[1]) && $matches[1] == 'contact_form' && !empty($matches[2])) {
-        // TODO: $replacements[$context['tokens']['title']] = $route_name;
       }
     }
   }
