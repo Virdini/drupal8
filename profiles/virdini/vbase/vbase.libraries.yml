@@ -7,10 +7,10 @@ developers.settings:
 
 FlexSlider:
   remote: https://github.com/woocommerce/FlexSlider
-  version: "2.6.4"
+  version: "2.7.0"
   license:
     name: GNU-GPL-2.0
-    url: https://github.com/woocommerce/FlexSlider/blob/2.6.4/LICENSE.md
+    url: https://github.com/woocommerce/FlexSlider/blob/2.7.0/LICENSE.md
     gpl-compatible: true
   css:
     component:
