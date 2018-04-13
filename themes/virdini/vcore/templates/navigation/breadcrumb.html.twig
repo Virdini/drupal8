@@ -8,8 +8,8 @@
  */
 #}
 {% if breadcrumb %}
-  <nav class="breadcrumb" role="navigation" aria-labelledby="system-breadcrumb">
-    <h2 id="system-breadcrumb" class="visually-hidden">{{ 'Breadcrumb'|t }}</h2>
+  <div class="breadcrumb" role="navigation" aria-labelledby="system-breadcrumb">
+    <div id="system-breadcrumb" class="visually-hidden">{{ 'Breadcrumb'|t }}</div>
     <ol vocab="http://schema.org/" typeof="BreadcrumbList" itemtype="http://schema.org/BreadcrumbList" itemscope>
     {% for key, item in breadcrumb %}
       {% if item.url %}
@@ -22,5 +22,5 @@
       {% endif %}
     {% endfor %}
     </ol>
-  </nav>
+  </div>
 {% endif %}
