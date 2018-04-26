@@ -18,8 +18,6 @@ use ImagickPixel;
  */
 class Autorotate extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

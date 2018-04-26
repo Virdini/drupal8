@@ -17,8 +17,6 @@ use Imagick;
  */
 class Sketch extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

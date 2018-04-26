@@ -17,8 +17,6 @@ use Imagick;
  */
 class Wave extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

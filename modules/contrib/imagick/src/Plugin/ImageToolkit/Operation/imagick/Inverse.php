@@ -17,8 +17,6 @@ use Imagick;
  */
 class Inverse extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

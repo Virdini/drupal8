@@ -18,8 +18,6 @@ use Imagick;
  */
 class Blur extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

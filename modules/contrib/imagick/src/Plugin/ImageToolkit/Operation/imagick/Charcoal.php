@@ -17,8 +17,6 @@ use Imagick;
  */
 class Charcoal extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

@@ -17,8 +17,6 @@ use Imagick;
  */
 class Swirl extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

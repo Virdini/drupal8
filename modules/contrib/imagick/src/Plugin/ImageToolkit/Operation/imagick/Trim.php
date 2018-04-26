@@ -17,8 +17,6 @@ use Imagick;
  */
 class Trim extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

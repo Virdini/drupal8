@@ -17,8 +17,6 @@ use Imagick;
  */
 class Spread extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

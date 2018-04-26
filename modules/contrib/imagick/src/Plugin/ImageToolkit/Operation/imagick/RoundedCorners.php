@@ -17,8 +17,6 @@ use Imagick;
  */
 class RoundedCorners extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

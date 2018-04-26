@@ -17,8 +17,6 @@ use Imagick;
  */
 class Mirror extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

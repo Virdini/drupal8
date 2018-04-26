@@ -17,8 +17,6 @@ use Imagick;
  */
 class Edge extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

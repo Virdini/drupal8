@@ -17,8 +17,6 @@ use Imagick;
  */
 class Decipher extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

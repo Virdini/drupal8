@@ -18,8 +18,6 @@ use ImagickPixel;
  */
 class DefineCanvas extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

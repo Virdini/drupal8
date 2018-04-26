@@ -18,8 +18,6 @@ use ImagickPixel;
  */
 class Shadow extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

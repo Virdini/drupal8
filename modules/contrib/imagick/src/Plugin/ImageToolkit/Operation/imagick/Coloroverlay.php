@@ -17,8 +17,6 @@ use Imagick;
  */
 class Coloroverlay extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

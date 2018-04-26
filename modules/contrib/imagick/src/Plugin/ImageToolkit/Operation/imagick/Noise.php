@@ -17,8 +17,6 @@ use Imagick;
  */
 class Noise extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

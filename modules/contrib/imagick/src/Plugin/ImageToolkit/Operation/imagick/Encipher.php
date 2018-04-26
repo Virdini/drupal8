@@ -17,8 +17,6 @@ use Imagick;
  */
 class Encipher extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

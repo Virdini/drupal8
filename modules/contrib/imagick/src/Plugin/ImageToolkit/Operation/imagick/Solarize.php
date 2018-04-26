@@ -17,8 +17,6 @@ use Imagick;
  */
 class Solarize extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

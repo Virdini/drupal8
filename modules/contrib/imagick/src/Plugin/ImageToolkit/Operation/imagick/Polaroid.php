@@ -18,8 +18,6 @@ use ImagickDraw;
  */
 class Polaroid extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

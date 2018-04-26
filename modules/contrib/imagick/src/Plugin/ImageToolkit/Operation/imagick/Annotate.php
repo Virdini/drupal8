@@ -19,8 +19,6 @@ use ImagickPixel;
  */
 class Annotate extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

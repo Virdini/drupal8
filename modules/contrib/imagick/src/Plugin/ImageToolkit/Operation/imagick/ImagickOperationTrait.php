@@ -13,7 +13,17 @@ trait ImagickOperationTrait {
   /**
    * {@inheritdoc}
    */
-  protected function execute(array $arguments = []) {
+  protected function execute(array $arguments) {
+    $this->processFrames($arguments);
+  }
+
+  /**
+   * Process image frames for GIFs
+   *
+   * @param array $arguments
+   * @return bool
+   */
+  protected function processFrames(array $arguments = []) {
     /* @var $resource Imagick */
     $resource = $this->getToolkit()->getResource();
 

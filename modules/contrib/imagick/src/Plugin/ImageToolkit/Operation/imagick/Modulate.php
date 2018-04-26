@@ -17,8 +17,6 @@ use Imagick;
  */
 class Modulate extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

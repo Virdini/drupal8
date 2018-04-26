@@ -18,8 +18,6 @@ use ImagickPixel;
  */
 class Colorshift extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

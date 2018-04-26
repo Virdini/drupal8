@@ -17,8 +17,6 @@ use Imagick;
  */
 class Vignette extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

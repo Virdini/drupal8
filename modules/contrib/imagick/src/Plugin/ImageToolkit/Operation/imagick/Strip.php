@@ -17,8 +17,6 @@ use Imagick;
  */
 class Strip extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

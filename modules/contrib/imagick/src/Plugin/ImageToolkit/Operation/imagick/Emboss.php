@@ -17,8 +17,6 @@ use Imagick;
  */
 class Emboss extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

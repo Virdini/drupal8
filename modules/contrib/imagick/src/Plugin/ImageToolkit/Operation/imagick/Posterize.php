@@ -17,8 +17,6 @@ use Imagick;
  */
 class Posterize extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

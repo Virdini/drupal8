@@ -19,8 +19,6 @@ use Drupal\Component\Utility\UrlHelper;
  */
 class Composite extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

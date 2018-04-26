@@ -18,8 +18,6 @@ use ImagickPixel;
  */
 class Frame extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */

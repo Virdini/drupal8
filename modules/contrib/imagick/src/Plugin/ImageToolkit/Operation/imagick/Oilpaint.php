@@ -17,8 +17,6 @@ use Imagick;
  */
 class Oilpaint extends ImagickOperationBase {
 
-  use ImagickOperationTrait;
-
   /**
    * {@inheritdoc}
    */
