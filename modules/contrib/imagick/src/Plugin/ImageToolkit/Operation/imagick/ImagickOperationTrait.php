@@ -14,7 +14,7 @@ trait ImagickOperationTrait {
    * {@inheritdoc}
    */
   protected function execute(array $arguments) {
-    $this->processFrames($arguments);
+    return $this->processFrames($arguments);
   }
 
   /**
