@@ -12,6 +12,7 @@ use Drupal\Core\Template\Attribute;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\FileInterface;
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Entity\ContentEntityInterface;
 
 /**
  * Implements hook_entity_access().
@@ -368,11 +369,24 @@ function vbase_module_implements_alter(&$implementations, $hook) {
 }
 
 /**
+ * Temporary. Invalidate bundle based cache tags
+ *
+ * @see https://www.drupal.org/project/drupal/issues/2145751
+ */
+function _vbase_invalidate_bundle_list_cache(EntityInterface $entity) {
+  if ($entity instanceof ContentEntityInterface) {
+    $tags = [$entity->getEntityTypeId() .'_list:'. $entity->bundle()];
+    \Drupal::service('cache_tags.invalidator')->invalidateTags($tags);
+  }
+}
+
+/**
  * This is an edited copy of function editor_entity_insert()
  * that uses _vbase_editor_get_file_uuids_by_field()
  * Implements hook_entity_insert().
  */
 function vbase_entity_insert(EntityInterface $entity) {
+  _vbase_invalidate_bundle_list_cache($entity);
   // Only act on content entities.
   if (!($entity instanceof FieldableEntityInterface)) {
     return;
@@ -389,6 +403,7 @@ function vbase_entity_insert(EntityInterface $entity) {
  * Implements hook_entity_update().
  */
 function vbase_entity_update(EntityInterface $entity) {
+  _vbase_invalidate_bundle_list_cache($entity);
   // Only act on content entities.
   if (!($entity instanceof FieldableEntityInterface)) {
     return;
@@ -428,6 +443,7 @@ function vbase_entity_update(EntityInterface $entity) {
  * Implements hook_entity_delete().
  */
 function vbase_entity_delete(EntityInterface $entity) {
+  _vbase_invalidate_bundle_list_cache($entity);
   // Only act on content entities.
   if (!($entity instanceof FieldableEntityInterface)) {
     return;
