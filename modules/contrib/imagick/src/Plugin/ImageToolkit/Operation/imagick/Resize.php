@@ -23,6 +23,13 @@ class Resize extends GdResize {
   /**
    * {@inheritdoc}
    */
+  protected function execute(array $arguments = []) {
+    return $this->processFrames($arguments);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function process(Imagick $resource, array $arguments) {
     $filter = \Drupal::config('imagick.config')
       ->get('resize_filter');

@@ -13,7 +13,7 @@ trait ImagickOperationTrait {
   /**
    * {@inheritdoc}
    */
-  protected function execute(array $arguments = []) {
+  protected function execute(array $arguments) {
     return $this->processFrames($arguments);
   }
 
