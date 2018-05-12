@@ -1,26 +1,29 @@
-{#
-/**
- * @file
- * Theme override for a breadcrumb trail.
- *
- * Available variables:
- * - breadcrumb: Breadcrumb trail items.
- */
-#}
+{% spaceless %}
 {% if breadcrumb %}
-  <div class="breadcrumb" role="navigation" aria-labelledby="system-breadcrumb">
-    <div id="system-breadcrumb" class="visually-hidden">{{ 'Breadcrumb'|t }}</div>
-    <ol vocab="http://schema.org/" typeof="BreadcrumbList" itemtype="http://schema.org/BreadcrumbList" itemscope>
+<div class="breadcrumb">
+  {% if breadcrumb|length > 2 %}
+      <ol itemtype="http://schema.org/BreadcrumbList" itemscope{{ attributes|without('itemtype', 'itemscope') }}>
+      {% for key, item in breadcrumb %}
+        {% if item.url %}
+          <li itemprop="itemListElement" itemtype="http://schema.org/ListItem" itemscope>
+            <a itemprop="item" href="{{ item.url }}"><span itemprop="name">{{ item.text }}</span></a>
+            <meta itemprop="position" content="{{ key + 1 }}">
+          </li>
+        {% else %}
+          <li class="breadcrumb-nolink">{{ item.text }}</li>
+        {% endif %}
+      {% endfor %}
+  {% else %}
+    <ol{{ attributes|without('itemprop') }}>
     {% for key, item in breadcrumb %}
       {% if item.url %}
-        <li property="itemListElement" typeof="ListItem" itemprop="itemListElement" itemtype="http://schema.org/ListItem" itemscope>
-          <a property="item" typeof="WebPage" itemprop="item" href="{{ item.url }}"><span property="name" itemprop="name">{{ item.text }}</span></a>
-          <meta property="position" itemprop="position" content="{{ key + 1 }}">
-        </li>
+        <li><a href="{{ item.url }}">{{ item.text }}</a></li>
       {% else %}
         <li class="breadcrumb-nolink">{{ item.text }}</li>
       {% endif %}
     {% endfor %}
+  {% endif %}
     </ol>
-  </div>
+</div>
 {% endif %}
+{% endspaceless %}
