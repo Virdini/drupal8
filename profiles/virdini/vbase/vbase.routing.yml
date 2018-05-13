@@ -34,9 +34,17 @@ vbase.settings.antispam:
   path: '/admin/config/system/site-settings/antispam'
   defaults:
     _form: 'Drupal\vbase\Form\AntiSpamSettings'
-    _title: 'Anti Spam Settings'
+    _title: 'Anti Spam'
   requirements:
     _permission: 'vbase antispam settings'
+
+vbase.settings.browsers:
+  path: '/admin/config/system/site-settings/browsers'
+  defaults:
+    _form: 'Drupal\vbase\Form\BrowsersSupport'
+    _title: 'Browsers Support'
+  requirements:
+    _permission: 'vbase site settings'
 
 vbase.adjustment:
   path: '/virdini-adjustment'

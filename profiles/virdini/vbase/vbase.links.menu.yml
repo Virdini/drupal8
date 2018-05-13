@@ -28,3 +28,9 @@ vbase.settings.antispam:
   parent: vbase.site_settings
   description: ''
   route_name: vbase.settings.antispam
+
+vbase.settings.browsers:
+  title: 'Browsers Support'
+  parent: vbase.site_settings
+  description: ''
+  route_name: vbase.settings.browsers

@@ -214,6 +214,11 @@ function vbase_preprocess_page(array &$variables) {
  * Implements hook_page_attachments().
  */
 function vbase_page_attachments(array &$attachments) {
+  $config = \Drupal::config('vbase.settings.browsers');
+  if ($ie = $config->get('ie')) {
+    $attachments['#attached']['library'][] = 'vbase/ie.'. $ie;
+  }
+  vbase_add_cacheable_dependency($attachments, $config);
   $config = \Drupal::config('vbase.settings.tags');
   vbase_add_cacheable_dependency($attachments, $config);
   $attachments['#cache']['contexts'] = Cache::mergeContexts($attachments['#cache']['contexts'], ['url.path.is_front']);

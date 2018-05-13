@@ -1,8 +1,6 @@
-# Schema for the configuration files of the VBase profile.
-
 vbase.settings.tags:
   type: config_object
-  label: 'VBase tags settings'
+  label: 'Tags Settings'
   mapping:
     generator:
       type: boolean
@@ -34,7 +32,7 @@ vbase.settings.tags:
 
 vbase.settings.cp:
   type: config_object
-  label: 'VBase content protection settings'
+  label: 'Content Protection'
   mapping:
     node_bundles:
       label: 'Node Bundles'
@@ -51,7 +49,7 @@ vbase.settings.cp:
 
 vbase.settings.developers:
   type: config_object
-  label: 'VBase developers settings'
+  label: 'Developers Settings'
   mapping:
     developed:
       type: boolean
@@ -71,7 +69,7 @@ vbase.settings.developers:
 
 vbase.settings.antispam:
   type: config_object
-  label: 'Anti spam settings'
+  label: 'Anti Spam'
   mapping:
     site_key:
       type: string
@@ -85,3 +83,11 @@ vbase.settings.antispam:
       sequence:
         type: string
         label: 'Form Id'
+
+vbase.settings.browsers:
+  type: config_object
+  label: 'Browsers Support'
+  mapping:
+    ie:
+      type: string
+      label: 'Internet Explorer'

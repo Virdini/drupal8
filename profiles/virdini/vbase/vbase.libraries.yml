@@ -25,3 +25,35 @@ antispam:
     js/antispam.js: {}
   dependencies:
     - core/jquery
+
+ie.unsupported:
+  css:
+    component:
+      css/ie/all.css: {minified: true}
+      css/ie/_all.css: {browsers: { IE: 'IE', '!IE': false }, minified: true}
+
+ie.11:
+  css:
+    component:
+      css/ie/11.css: {minified: true}
+      css/ie/_11.css: {browsers: { IE: 'IE', '!IE': false }, minified: true}
+
+ie.10:
+  css:
+    component:
+      css/ie/10.css: { browsers: { IE: 'IE', '!IE': false }, minified: true }
+
+ie.9:
+  css:
+    component:
+      css/ie/9.css: { browsers: { IE: 'lt IE 9', '!IE': false }, minified: true }
+
+ie.8:
+  css:
+    component:
+      css/ie/8.css: { browsers: { IE: 'lt IE 8', '!IE': false }, minified: true }
+
+ie.7:
+  css:
+    component:
+      css/ie/7.css: { browsers: { IE: 'lt IE 7', '!IE': false }, minified: true }
