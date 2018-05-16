@@ -41,7 +41,7 @@ dependencies:
   - ckeditor_videodetector
   - editor_advanced_link
   - editor_file
-  - google_analytics
+  - google_tag
   - linkit
   - mailsystem
   - metatag
