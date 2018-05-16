@@ -1,0 +1,23 @@
+{%
+  set classes = [
+    'bl-menu',
+    'm--' ~ derivative_plugin_id|clean_class,
+  ]
+%}
+{{ attach_library('vmcore/mmenu') }}
+<nav{{ attributes.addClass(classes)|without('id', 'role', 'aria-labelledby') }}>
+  {# Label. If not displayed, we still provide it for screen readers. #}
+  {% if not configuration.label_display %}
+    {% set title_attributes = title_attributes.addClass('visually-hidden') %}
+  {% endif %}
+  {{ title_prefix }}
+  <h3{{ title_attributes.addClass('mm') }}>
+    {{ configuration.label }}
+    <i class="mm-h"></i>
+  </h3>
+  {{ title_suffix }}
+  {# Menu. #}
+  {% block content %}
+    {{ content }}
+  {% endblock %}
+</nav>

@@ -1,0 +1,15 @@
+{%
+  set classes = [
+    data.preview ? 'with-preview',
+  ]
+%}
+{{ attach_library('vmcore/image-widget') }}
+<div{{ attributes.addClass(classes) }}>
+  {{ data.preview }}
+  <div>
+    {{ data.title }}
+    {{ data.alt }}
+  </div>
+  <div class="image-widget-data">{{ data|without('preview', 'alt', 'title') }}</div>
+</div>
+

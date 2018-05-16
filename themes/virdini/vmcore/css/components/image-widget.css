@@ -1,0 +1,25 @@
+.image-widget.with-preview {
+  display: grid;
+  grid-template-columns: 100px 190px;
+  grid-gap: 10px 10px;
+}
+.image-widget .form-item {
+  padding: 0;
+}
+.image-widget .js-form-type-textfield .description {
+  display: none;
+}
+.image-widget.with-preview .image-widget-data {
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+.image-widget .file--image {
+  display: inline-block;
+  width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.image-widget .file-size {
+  display: none;
+}

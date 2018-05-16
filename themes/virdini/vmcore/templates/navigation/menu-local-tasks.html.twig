@@ -1,0 +1,12 @@
+{{ attach_library('vmcore/drupal.nav-tabs') }}
+{% if primary %}
+  <div class="is-horizontal is-collapsible" data-drupal-nav-tabs>
+    <ul class="tabs primary clearfix" data-drupal-nav-tabs-target>{{ primary }}</ul>
+    <button class="reset-appearance tabs__tab tabs__trigger" aria-label="{{ 'Primary tabs display toggle'|t }}" data-drupal-nav-tabs-trigger>&bull;&bull;&bull;</button>
+  </div>
+{% endif %}
+{% if secondary %}
+  <div class="is-horizontal" data-drupal-nav-tabs>
+    <ul class="tabs secondary clearfix">{{ secondary }}</ul>
+  </div>
+{% endif %}

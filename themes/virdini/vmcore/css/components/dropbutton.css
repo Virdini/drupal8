@@ -1,0 +1,474 @@
+/**
+ * When a dropbutton has only one option, it is simply a button.
+ */
+.dropbutton-wrapper,
+.dropbutton-wrapper div {
+  box-sizing: border-box;
+}
+.js .dropbutton-wrapper,
+.js .dropbutton-widget {
+  display: block;
+  position: relative;
+}
+/* Splitbuttons */
+.form-actions .dropbutton-wrapper {
+  float: left; /* LTR */
+}
+[dir="rtl"] .form-actions .dropbutton-wrapper {
+  float: right;
+}
+
+.js .form-actions .dropbutton-widget {
+  position: static;
+}
+.js td .dropbutton-widget {
+  position: absolute;
+}
+.js td .dropbutton-wrapper {
+  min-height: 2em;
+}
+.js td .dropbutton-multiple {
+  padding-right: 10em; /* LTR */
+  margin-right: 2em; /* LTR */
+  max-width: 100%;
+}
+[dir="rtl"].js td .dropbutton-multiple {
+  padding-right: 0;
+  margin-right: 0;
+  padding-left: 10em;
+  margin-left: 2em;
+}
+.js td .dropbutton-multiple .dropbutton-action a,
+.js td .dropbutton-multiple .dropbutton-action input,
+.js td .dropbutton-multiple .dropbutton-action button {
+  width: auto;
+}
+
+/* UL styles are over-scoped in core, so this selector needs weight parity. */
+.js .dropbutton-widget .dropbutton {
+  list-style-image: none;
+  list-style-type: none;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+.js .dropbutton li,
+.js .dropbutton a {
+  display: block;
+  outline: none;
+}
+
+.js .dropbutton li:hover,
+.js .dropbutton li:focus,
+.js .dropbutton a:hover,
+.js .dropbutton a:focus {
+  outline: initial;
+}
+
+/**
+ * The dropbutton styling.
+ *
+ * A dropbutton is a widget that displays a list of action links as a button
+ * with a primary action. Secondary actions are hidden behind a click on a
+ * twisty arrow.
+ *
+ * The arrow is created using border on a zero-width, zero-height span.
+ * The arrow inherits the link color, but can be overridden with border colors.
+ */
+.js .dropbutton-multiple .dropbutton-widget {
+  padding-right: 2em; /* LTR */
+}
+.js[dir="rtl"] .dropbutton-multiple .dropbutton-widget {
+  padding-left: 2em;
+  padding-right: 0;
+}
+.dropbutton-multiple.open,
+.dropbutton-multiple.open .dropbutton-widget {
+  max-width: none;
+}
+.dropbutton-multiple.open {
+  z-index: 100;
+}
+.dropbutton-multiple .dropbutton .secondary-action {
+  display: none;
+}
+.dropbutton-multiple.open .dropbutton .secondary-action {
+  display: block;
+}
+.dropbutton-toggle {
+  bottom: 0;
+  display: block;
+  position: absolute;
+  right: 0; /* LTR */
+  text-indent: 110%;
+  top: 0;
+  white-space: nowrap;
+  width: 2em;
+}
+[dir="rtl"] .dropbutton-toggle {
+  left: 0;
+  right: auto;
+}
+.dropbutton-toggle button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  display: block;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.dropbutton-toggle button:hover,
+.dropbutton-toggle button:focus {
+  outline: initial;
+}
+.dropbutton-arrow {
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-style: solid;
+  border-width: 0.3333em 0.3333em 0;
+  display: block;
+  height: 0;
+  line-height: 0;
+  position: absolute;
+  right: 40%; /* 0.6667em; */ /* LTR */
+  top: 50%;
+  margin-top: -0.1666em;
+  width: 0;
+  overflow: hidden;
+}
+[dir="rtl"] .dropbutton-arrow {
+  left: 0.6667em;
+  right: auto;
+}
+.dropbutton-multiple.open .dropbutton-arrow {
+  border-bottom: 0.3333em solid;
+  border-top-color: transparent;
+  top: 0.6667em;
+}
+
+/**
+ * @file
+ * Styling dropbuttons.
+ */
+
+/**
+ * Reset styling for all elements.
+ */
+.js .dropbutton .dropbutton-action > input,
+.js .dropbutton .dropbutton-action > a,
+.js .dropbutton .dropbutton-action > button {
+  color: #333;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  font-weight: 600;
+  line-height: normal;
+  -webkit-font-smoothing: antialiased;
+  text-align: left; /* LTR */
+}
+[dir="rtl"].js .dropbutton .dropbutton-action > input,
+[dir="rtl"].js .dropbutton .dropbutton-action > a,
+[dir="rtl"].js .dropbutton .dropbutton-action > button {
+  text-align: right;
+  margin-left: 0; /* This is required to win over specificity of [dir="rtl"] .dropbutton-multiple .dropbutton .dropbutton-action > * */
+}
+.js .dropbutton-action.last {
+  border-radius: 0 0 0 1em; /* LTR */
+}
+[dir="rtl"] .js .dropbutton-action.last {
+  border-radius: 0 0 1em 0;
+}
+
+/**
+ * Overwrite Sevens button styling.
+ */
+.js .dropbutton-widget .button {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.js .dropbutton-multiple .dropbutton {
+  border-right: 0; /* LTR */
+}
+[dir="rtl"].js .dropbutton-multiple .dropbutton {
+  border-left: 0;
+}
+
+/**
+ * Show dropbutton elements as buttons when javascript is disabled
+ */
+.dropbutton {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.dropbutton li + li {
+  margin-top: 10px;
+}
+.js .dropbutton li {
+  margin-bottom: 0;
+  margin-right: 0;
+}
+.js .dropbutton li + li {
+  margin-top: 0;
+}
+
+@media screen and (min-width: 37.5625em) { /* 601px */
+  .dropbutton li {
+    display: inline-block;
+  }
+  .dropbutton li + li {
+    margin-left: 1em;
+    margin-top: 0;
+  }
+  .js .dropbutton li + li {
+    margin-left: 0;
+  }
+}
+
+/**
+ * Copied styling for .button.
+ */
+.js .dropbutton-multiple .dropbutton-widget {
+  border: 1px solid #a6a6a6;
+  border-radius: 20em;
+  background-color: #f2f1eb;
+  background-image: linear-gradient(to bottom, #f6f6f3, #e7e7df);
+  text-shadow: 0 1px hsla(0, 0%, 100%, 0.6);
+}
+.dropbutton-multiple.open .dropbutton-widget {
+  border-radius: 1em;
+}
+.js .dropbutton-widget .dropbutton-action a,
+.js .dropbutton-widget .dropbutton-action input,
+.js .dropbutton-widget .dropbutton-action button {
+  border-radius: 20em 0 0 20em; /* LTR */
+  padding: 4px 1.5em;
+  display: block;
+  width: 100%;
+}
+[dir="rtl"].js .dropbutton-widget .dropbutton-action a,
+[dir="rtl"].js .dropbutton-widget .dropbutton-action input,
+[dir="rtl"].js .dropbutton-widget .dropbutton-action button {
+  border-radius: 0 20em 20em 0;
+}
+.js .dropbutton-widget .dropbutton-action a:focus,
+.js .dropbutton-widget .dropbutton-action input:focus,
+.js .dropbutton-widget .dropbutton-action button:focus {
+  text-decoration: underline;
+}
+.js .dropbutton-multiple.open .dropbutton-action a,
+.js .dropbutton-multiple.open .dropbutton-action .button {
+  border-radius: 0;
+}
+.js .dropbutton-multiple.open .dropbutton-action:first-child a,
+.js .dropbutton-multiple.open .dropbutton-action:first-child .button {
+  border-radius: 0.9em 0 0 0; /* LTR */
+}
+[dir="rtl"].js .dropbutton-multiple.open .dropbutton-action:first-child a,
+[dir="rtl"].js .dropbutton-multiple.open .dropbutton-action:first-child .button {
+  border-radius: 0 0.9em 0 0;
+}
+.js .dropbutton-multiple.open .dropbutton-action:last-child a,
+.js .dropbutton-multiple.open .dropbutton-action:last-child .button {
+  border-radius: 0 0 0 0.9em; /* LTR */
+}
+[dir="rtl"].js .dropbutton-multiple.open .dropbutton-action:last-child a,
+[dir="rtl"].js .dropbutton-multiple.open .dropbutton-action:last-child .button {
+  border-radius: 0 0 0.9em 0;
+}
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-action a:hover,
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-action button:hover,
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-action input:hover,
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-action a:focus,
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-action button:focus,
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-action input:focus {
+  background-color: #f9f8f6;
+  background-image: linear-gradient(to bottom, #fcfcfa, #e9e9dd);
+  color: #1a1a1a;
+  box-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.125);
+  z-index: 3;
+}
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-action a:active,
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-action input:active,
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-action button:active {
+  text-decoration: none;
+  background-color: #dfdfd9;
+  background-image: linear-gradient(to bottom, #f6f6f3, #e7e7df);
+  box-shadow: inset 0 1px 3px hsla(0, 0%, 0%, 0.2);
+}
+.dropbutton .secondary-action {
+  border-top: 1px solid #bfbfba;
+}
+
+/**
+ * Rare instances when a dropbutton is actually just a button.
+ * Copied from Seven's buttons.css.
+ */
+.dropbutton-single .dropbutton-widget {
+  border: 0;
+  position: static;
+  display: inline-block;
+}
+.dropbutton-single .dropbutton-action a {
+  padding: 4px 1.5em;
+  border: 1px solid #a6a6a6;
+  border-radius: 20em !important;
+  background-color: #f2f1eb;
+  background-image: linear-gradient(to bottom, #f6f6f3, #e7e7df);
+  color: #333;
+  text-decoration: none;
+  text-shadow: 0 1px hsla(0, 0%, 100%, 0.6);
+  font-weight: 600;
+  -webkit-transition: all 0.1s;
+  transition: all 0.1s;
+  -webkit-font-smoothing: antialiased;
+  width: auto !important;
+}
+.dropbutton-single .dropbutton-action a:hover,
+.dropbutton-single .dropbutton-action a:focus {
+  background-color: #f9f8f6;
+  background-image: linear-gradient(to bottom, #fcfcfa, #e9e9dd);
+  color: #1a1a1a;
+  text-decoration: none;
+  outline: none;
+}
+.dropbutton-single .dropbutton-action a:hover,
+.dropbutton-single .dropbutton-action a:focus {
+  box-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.125);
+}
+.dropbutton-single .dropbutton-action a:active {
+  background-color: #dfdfd9;
+  background-image: linear-gradient(to bottom, #f6f6f3, #e7e7df);
+  box-shadow: inset 0 1px 3px hsla(0, 0%, 0%, 0.2);
+  -webkit-transition: none;
+  transition: none;
+}
+.dropbutton .dropbutton-action .ajax-progress {
+  position: absolute;
+  z-index: 2;
+  top: 0.2em;
+  right: 0.2em;
+  padding: 0 0 0 0.1em;
+}
+.dropbutton-multiple .dropbutton-action .ajax-progress {
+  right: 2.2em;
+  top: 0.15em;
+  margin-right: 0;
+}
+.dropbutton-multiple .secondary-action .ajax-progress {
+  top: auto;
+  bottom: 0.3em;
+}
+
+/**
+ * The dropdown trigger.
+ */
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button {
+  border-left: 1px solid #a6a6a6; /* LTR */
+  outline: none;
+}
+[dir="rtl"].js .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button {
+  border-right: 1px solid #a6a6a6;
+  border-left: 0;
+}
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button {
+  border-radius: 0 20em 20em 0; /* LTR */
+}
+[dir="rtl"].js .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button {
+  border-radius: 20em 0 0 20em;
+}
+.dropbutton-multiple.open .dropbutton-widget .dropbutton-toggle button {
+  border-radius: 0 1em 1em 0; /* LTR */
+}
+[dir="rtl"] .dropbutton-multiple.open .dropbutton-widget .dropbutton-toggle button {
+  border-radius: 1em 0 0 1em;
+}
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button:hover,
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button:focus {
+  background-color: #f9f8f6;
+  background-image: linear-gradient(to bottom, #fcfcfa, #e9e9dd);
+  color: #1a1a1a;
+  text-decoration: none;
+  box-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.125);
+  z-index: 3;
+}
+.js .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button:active {
+  background-color: #dfdfd9;
+  background-image: linear-gradient(to bottom, #f6f6f3, #e7e7df);
+  box-shadow: inset 0 1px 3px hsla(0, 0%, 0%, 0.2);
+}
+.dropbutton-arrow {
+  border-top-color: #333;
+  right: 35%; /* LTR */
+  top: 54%;
+}
+[dir="rtl"] .dropbutton-arrow {
+  left: 35%;
+  right: auto;
+}
+.dropbutton-multiple.open .dropbutton-arrow {
+  border-bottom: 0.3333em solid #333;
+  border-top-color: transparent;
+  top: 0.6667em;
+}
+
+/**
+ * Form edit action theming.
+ * Copied styling from .button--primary.
+ */
+.js .form-actions .dropbutton .dropbutton-action > * {
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 0 1px hsla(0, 0%, 0%, 0.5);
+}
+.js .form-actions .dropbutton-widget {
+  border-color: #1e5c90;
+  background-color: #0071b8;
+  background-image: linear-gradient(to bottom, #007bc6, #0071b8);
+  text-shadow: 0 1px hsla(0, 0%, 0%, 0.5);
+  position: relative;
+}
+.form-actions .dropbutton-multiple.open .dropbutton-widget {
+  background-image: linear-gradient(to bottom, #007bc6, #0071b8);
+}
+.js .form-actions .dropbutton-wrapper .dropbutton-widget .dropbutton-action .button:hover,
+.js .form-actions .dropbutton-wrapper .dropbutton-widget .dropbutton-action .button:focus {
+  background-color: #2369a6;
+  background-image: linear-gradient(to bottom, #0c97ed, #1f86c7);
+  box-shadow: 0 1px 2px hsla(203, 10%, 10%, 0.25);
+  color: #fff;
+}
+.js .form-actions .dropbutton-wrapper .dropbutton-widget .dropbutton-action .button:active {
+  background-image: linear-gradient(to bottom, #08639b, #0071b8);
+  border-color: #144b78;
+  box-shadow: inset 0 1px 3px hsla(0, 0%, 0%, 0.2);
+}
+.js .form-actions .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button,
+.form-actions .dropbutton .secondary-action {
+  border-color: #1e5c90;
+}
+.js .form-actions .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button {
+  background-image: linear-gradient(to bottom, #007bc6, #0071b8);
+}
+.js .form-actions .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button:hover,
+.js .form-actions .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button:focus {
+  background-color: #2369a6;
+  background-image: linear-gradient(to bottom, #0c97ed, #1f86c7);
+}
+.js .form-actions .dropbutton-wrapper .dropbutton-widget .dropbutton-toggle button:active {
+  background-image: linear-gradient(to bottom, #08639b, #0071b8);
+  border-color: #144b78;
+  box-shadow: inset 0 1px 3px hsla(0, 0%, 0%, 0.2);
+}
+.form-actions .dropbutton-arrow {
+  border-top-color: #fff;
+}
+.form-actions .dropbutton-multiple.open .dropbutton-arrow {
+  border-bottom: 0.3333em solid white;
+}
+

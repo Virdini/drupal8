@@ -1,0 +1,62 @@
+name: Virdini Minimal Core
+type: theme
+description: 'Virdini core minimalistic theme for projects'
+package: Virdini
+# version: VERSION
+core: 8.x
+base theme: false
+hidden: true
+
+libraries:
+  - vmcore/global-styling
+
+libraries-override:
+  core/drupal.dropbutton:
+    css:
+      component:
+        misc/dropbutton/dropbutton.css: css/components/dropbutton.css
+  core/drupal.vertical-tabs:
+    css:
+      component:
+        misc/vertical-tabs.css: css/components/vertical-tabs.css
+  system/base:
+    css:
+      component:
+        css/components/ajax-progress.module.css: false
+        css/components/autocomplete-loading.module.css: false
+        css/components/details.module.css: false
+        css/components/fieldgroup.module.css: false
+        css/components/item-list.module.css: false
+        css/components/progress.module.css: false
+        css/components/resize.module.css: false
+        css/components/sticky-header.module.css: false
+        css/components/system-status-counter.css: false
+        css/components/system-status-report-counters.css: false
+        css/components/system-status-report-general-info.css: false
+        css/components/tabledrag.module.css: false
+        css/components/tree-child.module.css: false
+        css/components/tablesort.module.css: false
+
+libraries-extend:
+  toolbar/toolbar:
+    - vmcore/toolbar.fix
+  core/drupal.ajax:
+    - vmcore/drupal.ajax
+  core/drupal.autocomplete:
+    - vmcore/drupal.autocomplete
+  core/drupal.progress:
+    - vmcore/drupal.progress
+  core/drupal.tableheader:
+    - vmcore/drupal.tableheader
+  core/drupal.tabledrag:
+    - vmcore/drupal.tabledrag
+  core/drupal.tableselect:
+    - vmcore/drupal.tableselect
+
+regions:
+  header: 'Header'
+  pre_content: 'Pre-content'
+  breadcrumb: 'Breadcrumb'
+  highlighted: 'Highlighted'
+  content: 'Content'
+  footer: 'Footer'

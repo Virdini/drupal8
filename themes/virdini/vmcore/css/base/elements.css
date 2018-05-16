@@ -1,0 +1,274 @@
+body {
+  font: normal 14px/1.4 Georgia, Times, "Times New Roman", serif;
+}
+@media screen and (min-width: 960px) {
+  body {
+    font-size: 16px;
+  }
+  table {
+    font-size: .86em;
+  }
+}
+a,
+.link {
+  color: #0b64a3;
+  text-decoration: none;
+}
+a:hover,
+.link:hover,
+a:focus,
+.link:focus {
+  text-decoration: underline;
+}
+hr {
+  margin: 0;
+  padding: 0;
+  border: none;
+  height: 1px;
+  background: #0b64a3;
+}
+img {
+  max-width: 100%;
+}
+figure.align-left,
+figure.align-center,
+figure.align-right {
+  text-align: center;
+}
+/**
+ * Reusable heading classes are included to help modules change the styling of
+ * headings on a page without affecting accessibility.
+ */
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  font-weight: normal;
+  margin: 0;
+  padding: 0.5em 0;
+}
+h1,
+.h1 {
+  font-size: 2em;
+}
+h2,
+.h2 {
+  font-size: 1.385em;
+}
+h3,
+.h3 {
+  font-size: 1.231em;
+}
+h4,
+.h4 {
+  font-size: 1.154em;
+}
+h5,
+.h5 {
+  font-size: 1.077em;
+}
+h6,
+.h6 {
+  font-size: 1.077em;
+}
+p {
+  padding: 0.5em 0;
+  margin: 0;
+}
+dl {
+  margin: 0 0 20px;
+}
+dl dd,
+dl dl {
+  margin-left: 20px; /* LTR */
+  margin-bottom: 10px;
+}
+[dir="rtl"] dl dd,
+[dir="rtl"] dl dl {
+  margin-right: 20px;
+}
+blockquote {
+  padding: 1em 40px;
+  margin: 0;
+}
+address {
+  font-style: italic;
+}
+u,
+ins {
+  text-decoration: underline;
+}
+s,
+strike,
+del {
+  text-decoration: line-through;
+}
+big {
+  font-size: larger;
+}
+small {
+  font-size: smaller;
+}
+sub {
+  vertical-align: sub;
+  font-size: smaller;
+  line-height: normal;
+}
+sup {
+  vertical-align: super;
+  font-size: smaller;
+  line-height: normal;
+}
+nobr {
+  white-space: nowrap;
+}
+abbr,
+acronym {
+  border-bottom: dotted 1px;
+}
+abbr.tabledrag-changed, abbr.ajax-changed {
+  border-bottom: medium none;
+}
+ul {
+  list-style-type: square;
+  padding: 0.5em 0 0.5em 2em; /* LTR */
+  margin: 0;
+}
+[dir="rtl"] ul {
+  padding-left: 0;
+  padding-right: 2em;
+}
+ol {
+  list-style-type: decimal;
+  padding: 0.5em 0 0.5em 2em; /* LTR */
+  margin: 0;
+}
+[dir="rtl"] ol {
+  padding-left: 0;
+  padding-right: 2em;
+}
+quote,
+code {
+  padding: 0.5em 0;
+  margin: 0;
+}
+pre {
+  padding: 0.5em 0;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  margin: 0 0 1em;
+}
+caption {
+  text-align: center; /* LTR */
+}
+th,
+td {
+  text-align: left; /* LTR */
+  padding: 0.5em;
+  vertical-align: middle;
+}
+thead th {
+  background: rgba(11, 100, 163, .2);
+  border: none;
+  color: #0b64a3;
+  font-weight: normal;
+}
+tbody tr {
+  border-bottom: 1px solid #e6e4df;
+}
+tbody tr:hover,
+tbody tr:focus {
+  background: #f7fcff;
+}
+tbody tr.drag-previous {
+  background-color: #ffd;
+}
+th > a {
+  position: relative;
+  display: block;
+}
+
+/* 1. Must match negative bottom padding of the parent <th> */
+th > a:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: -10px; /* 1. */
+  left: 0;
+  right: 0;
+  border-bottom: 2px solid transparent;
+  -webkit-transition: all 0.1s;
+  transition: all 0.1s;
+}
+th.is-active > a {
+  color: #0b64a3;
+}
+th.is-active img {
+  position: absolute;
+  right: 0; /* LTR */
+  top: 50%;
+}
+[dir="rtl"] th.is-active img {
+  right: auto;
+  left: 0;
+}
+td .item-list ul {
+  margin: 0;
+}
+/* This is required to win over specificity of [dir="rtl"] .item-list ul */
+[dir="rtl"] td .item-list ul {
+  margin: 0;
+}
+td.is-active {
+  background: none;
+}
+
+/* Force browsers to calculate the width of a 'select all' TH element. */
+th.select-all {
+  width: 1px;
+}
+
+/**
+ * details
+ */
+details summary {
+  padding: 0.5em;
+  position: relative;
+  font-weight: normal;
+  background: #f5f5f2;
+  list-style-type: none;
+  cursor: pointer;
+}
+details > summary:hover,
+details[open] > summary {
+  background: #0b64a3;
+  color: #fff;
+}
+details[open] > summary:after {
+  content: '-';
+}
+details > summary:after {
+  position: absolute;
+  content: '+';
+  font-size: 30px;
+  line-height: 30px;
+  top: 50%;
+  right: 10px;
+  margin-top: -15px;
+  text-align: center;
+  width: 30px;
+  height: 30px;
+}
+details summary:focus {
+  outline: none;
+}
+
+details summary::-webkit-details-marker { display:none; }

@@ -1,0 +1,107 @@
+.block-local-tasks-block {
+  overflow: hidden;
+  clear: both;
+}
+
+li.tabs__tab {
+  display: block;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #0b64a3;
+  background: #0b64a3;
+  color: #fff;
+}
+.tabs a {
+  display: block;
+  padding: 7px 1.5em;
+  text-decoration: none;
+  color: inherit;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+ul.tabs {
+  list-style: none;
+  padding: 0;
+  clear: both;
+  margin: .5em 0;
+  font-size: 0.86em;
+  line-height: 24px;
+  overflow: hidden;
+}
+.tabs__tab.is-active,
+li.tabs__tab:hover,
+.tabs__tab:focus {
+  color: #0b64a3;
+  background: #fff;
+}
+.is-horizontal li.tabs__tab a {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.tabs__trigger {
+  display: none;
+}
+
+/* JS dependent styling */
+.tabs.is-open + .tabs__trigger {
+  border-bottom: 1px solid;
+}
+.is-collapse-enabled .tabs__trigger {
+  box-sizing: content-box;
+  display: block;
+  position: absolute;
+  z-index: 15;
+  right: 0; /* LTR */
+  top: 0px;
+  left: auto; /* LTR */
+  width: 25%;
+  letter-spacing: 0.1em;
+  text-align: center;
+  outline: 0;
+  line-height: 39px;
+  color: #0b64a3;
+}
+[dir="rtl"] .is-collapse-enabled .tabs__trigger {
+  right: auto;
+  left: 0;
+}
+.is-collapse-enabled .tabs {
+  padding-top: 40px;
+  max-height: 0;
+}
+.tabs.is-open {
+  max-height: 999em;
+}
+.is-collapse-enabled .tabs__tab.is-active {
+  position: absolute;
+  top: 0px;
+  left: 0; /* LTR */
+  width: 75%;
+  z-index: 15;
+}
+[dir="rtl"] .is-collapse-enabled .tabs__tab.is-active {
+  left: auto;
+  right: 0;
+}
+
+/* Styles for the horizontal state always take priority */
+.is-horizontal .tabs__tab {
+  float: left; /* LTR */
+}
+[dir="rtl"] .is-horizontal .tabs__tab {
+  float: right;
+  /* This is required to win over specifity of [dir="rtl"] .tabs > li */
+  margin-left: 0;
+}
+.is-horizontal .tabs__tab + .tabs__tab {
+  margin-left: -1px; /* LTR */
+}
+[dir="rtl"] .is-horizontal .tabs__tab + .tabs__tab {
+  margin-left: 0;
+  margin-right: -1px;
+}
+.is-horizontal .tabs__trigger {
+  display: none;
+}

@@ -1,0 +1,119 @@
+global-styling:
+  css:
+    base:
+      css/base/elements.css: {vcrit: true}
+      css/base/editor-classes.css: {vcrit: true}
+
+toolbar.fix:
+  css:
+    component:
+      css/components/toolbar.fix.crit.css: {vcrit: true}
+      css/components/toolbar.fix.css: {}
+
+buttons-main:
+  css:
+    component:
+      css/components/buttons-main.css: {vcrit: true}
+
+buttons:
+  css:
+    component:
+      css/components/buttons.css: {}
+  dependencies:
+    - vmcore/buttons-main
+
+mmenu:
+  css:
+    component:
+      css/components/mmenu.css: {vcrit: true}
+  js:
+    js/mmenu.js: {}
+
+image-widget:
+  css:
+    component:
+      css/components/image-widget.css: {vcrit: true}
+
+form:
+  css:
+    component:
+      css/components/form.css: {vcrit: true}
+  dependencies:
+    - vmcore/buttons
+
+messages:
+  css:
+    component:
+      css/components/messages.css: {vcrit: true}
+
+pager:
+  css:
+    component:
+      css/components/pager.css: {vcrit: true}
+
+breadcrumb:
+  css:
+    component:
+      css/components/breadcrumb.css: {}
+
+drupal.nav-tabs:
+  css:
+    component:
+      css/components/tabs.css: {vcrit: true}
+  dependencies:
+    - seven/drupal.nav-tabs
+
+drupal.ajax:
+  css:
+    component:
+      /core/modules/system/css/components/ajax-progress.module.css: { weight: -10 }
+
+drupal.autocomplete:
+  css:
+    component:
+      /core/modules/system/css/components/autocomplete-loading.module.css: { weight: -10 }
+
+drupal.twig.itemlist:
+  css:
+    component:
+      /core/modules/system/css/components/item-list.module.css: { weight: -10 }
+
+drupal.twig.systemstatus:
+  version: VERSION
+  css:
+    component:
+      /core/modules/system/css/components/system-status-counter.css: { weight: -10 }
+      /core/modules/system/css/components/system-status-report-counters.css: { weight: -10 }
+      /core/modules/system/css/components/system-status-report-general-info.css: { weight: -10 }
+
+drupal.progress:
+  css:
+    component:
+      /core/modules/system/css/components/progress.module.css: { weight: -10 }
+
+drupal.twig.resize:
+  version: VERSION
+  css:
+    component:
+      /core/modules/system/css/components/resize.module.css: { weight: -10 }
+
+drupal.tableheader:
+  css:
+    component:
+      /core/modules/system/css/components/sticky-header.module.css: { weight: -10 }
+
+drupal.tabledrag:
+  css:
+    component:
+      /core/modules/system/css/components/tree-child.module.css: { weight: -10 }
+      /core/modules/system/css/components/tabledrag.module.css: { weight: -10 }
+
+drupal.tableselect:
+  css:
+    component:
+      /core/themes/classy/css/components/tableselect.css: { weight: -10 }
+
+drupal.twig.tablesort:
+  css:
+    component:
+      /core/modules/system/css/components/tablesort.module.css: { weight: -10 }

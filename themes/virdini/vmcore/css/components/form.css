@@ -1,0 +1,276 @@
+form {
+  margin: 0;
+  padding: 0;
+}
+fieldset:not(.fieldgroup) {
+  margin: .5em 0;
+  padding: 2em 1em 1em;
+  position: relative;
+}
+fieldset > legend {
+  font-weight: bold;
+}
+fieldset:not(.fieldgroup) > legend {
+  position: absolute;
+  text-transform: uppercase;
+  top: .5em;
+}
+.js details:not([open]) .details-wrapper {
+  display: none;
+}
+.fieldgroup {
+  border-width: 0;
+  padding: 0;
+}
+.form-item {
+  padding: .5em 0;
+}
+.js-form-type-radio.form-item,
+.form-radios .form-item,
+.form-checkboxes .form-item {
+  padding: 0;
+}
+label {
+  display: table;
+  margin: 0 0 .1em;
+  padding: 0;
+  font-weight: bold;
+}
+label.error {
+  color: #a51b00;
+}
+label[for] {
+  cursor: pointer;
+}
+label.option {
+  display: inline;
+  font-weight: normal;
+}
+.form-item label.option {
+  text-transform: none;
+}
+.form-item label.option input {
+  vertical-align: middle;
+}
+.form-disabled label {
+  color: #737373;
+}
+.form-disabled input.form-text,
+.form-disabled input.form-tel,
+.form-disabled input.form-email,
+.form-disabled input.form-url,
+.form-disabled input.form-search,
+.form-disabled input.form-number,
+.form-disabled input.form-color,
+.form-disabled input.form-file,
+.form-disabled textarea.form-textarea,
+.form-disabled select.form-select {
+  border-color: #d4d4d4;
+  background-color: hsla(0, 0%, 0%, .08);
+  box-shadow: none;
+}
+.form-item input.error,
+.form-item textarea.error,
+.form-item select.error {
+  border-width: 1px;
+  border-color: #a51b00;
+  background-color: hsla(15, 75%, 97%, 1);
+  box-shadow: inset 0 5px 5px -5px #ccc;
+  color: #a51b00;
+}
+.form-item textarea.error + .cke {
+  border-width: 1px;
+  border-color: #a51b00;
+}
+.form-item input.error:focus,
+.form-item textarea.error:focus,
+.form-item select.error:focus {
+  border-color: #a51b00;
+  outline: 0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 0 8px 1px #a51b00;
+  background-color: #fcf4f2;
+}
+.form-required:after {
+  background-image: url(../../../../../core/misc/icons/ee0000/required.svg);
+  background-repeat: no-repeat;
+  background-size: 6px 6px;
+  content: '';
+  display: inline-block;
+  height: 6px;
+  margin: 0 0.3em;
+  vertical-align: super;
+  width: 6px;
+}
+.form-item--error-message {
+  margin-top: 0.15em;
+  color: #e32700;
+}
+.fieldset-wrapper > .form-item--error-message {
+  margin-top: 0;
+}
+.text-format-wrapper .form-item--error-message {
+  border: solid #ccc;
+  border-width: 0 1px;
+  margin: 0;
+  padding: 0.25em 0.666em 0;
+}
+
+/* Filter */
+ul.tips,
+div.description,
+.details-description,
+.form-item .description {
+  margin: .2em 0 0 0;
+  color: #666;
+  font-size: 0.86em;
+}
+.form-item .description.error {
+  margin-top: 0;
+  color: #a51b00;
+}
+
+ul.tips li {
+  margin: 0.25em 0 0.25em 1.5em; /* LTR */
+}
+[dir="rtl"] ul.tips li {
+  margin: 0.25em 1.5em 0.25em 0;
+}
+.form-type-radio .description,
+.form-type-checkbox .description {
+  margin-left: 1.5em; /* LTR */
+}
+[dir="rtl"] .form-type-radio .description,
+[dir="rtl"] .form-type-checkbox .description {
+  margin-left: 0;
+  margin-right: 1.5em;
+}
+.form-text,
+.form-textarea {
+  line-height: normal;
+}
+
+input.form-autocomplete,
+input.form-text,
+input.form-tel,
+input.form-email,
+input.form-url,
+input.form-search,
+input.form-number,
+input.form-color,
+input.form-file,
+input.form-date,
+input.form-time,
+select.form-select,
+textarea.form-textarea {
+  font-size: 1em;
+  box-sizing: border-box;
+  padding: .3em .5em; /* LTR */
+  max-width: 100%;
+  border: 1px solid #ccc;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .125);
+  transition: border linear 0.2s, box-shadow linear 0.2s;
+}
+.form-text:focus,
+.form-tel:focus,
+.form-email:focus,
+.form-url:focus,
+.form-search:focus,
+.form-number:focus,
+.form-color:focus,
+.form-file:focus,
+.form-textarea:focus,
+.form-date:focus,
+.form-time:focus {
+  border-color: #0b64a3;
+  outline: 0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 0 8px #0b64a3;
+}
+
+.confirm-parent,
+.password-parent {
+  overflow: visible;
+  width: auto;
+}
+
+.form-item-pass .description {
+  clear: both;
+}
+/**
+ * Improve spacing of cancel link.
+ */
+#edit-cancel {
+  margin-left: 10px; /* LTR */
+}
+[dir="rtl"] #edit-cancel {
+  margin-left: 0;
+  margin-right: 10px;
+}
+
+/* Visual styling for the Password strength indicator */
+.password-strength__meter {
+  margin-top: 0.5em;
+  background-color: #ebeae4;
+}
+.password-strength__indicator {
+  background-color: #77b259;
+  -webkit-transition: width 0.5s ease-out;
+  transition: width 0.5s ease-out;
+}
+.password-strength__indicator.is-weak {
+  background-color: #a51b00;
+}
+.password-strength__indicator.is-fair {
+  background-color: #e09600;
+}
+.password-strength__indicator.is-good {
+  background-color: #0074bd;
+}
+.password-strength__indicator.is-strong {
+  background-color: #77b259;
+}
+
+.password-confirm,
+.password-field,
+.password-strength,
+.password-confirm-match {
+  width: 55%;
+}
+
+.password-suggestions {
+  padding: 0.2em 0.5em;
+  margin: 0.7em 0;
+  max-width: 34.7em;
+  border: 1px solid #b4b4b4;
+}
+.password-suggestions ul {
+  margin-bottom: 0;
+}
+
+.confirm-parent,
+.password-parent {
+  clear: left; /* LTR */
+  margin: 0;
+  padding: 0;
+  max-width: 33em;
+  overflow: hidden;
+}
+[dir="rtl"] .confirm-parent,
+[dir="rtl"] .password-parent {
+  clear: right;
+}
+
+/* Styling for the status indicator of the passwords match test.  */
+.password-confirm .ok {
+  color: #325e1c;
+  font-weight: bold;
+}
+.password-confirm .error {
+  color: #a51b00;
+  font-weight: bold;
+}
+
+/* Exceptions */
+#diff-inline-form select,
+div.filter-options select {
+  padding: 0;
+}

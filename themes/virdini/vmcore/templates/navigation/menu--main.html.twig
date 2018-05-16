@@ -1,0 +1,38 @@
+{% spaceless %}
+{% import _self as menus %}
+{{ menus.menu_links(items, attributes, 0) }}
+
+{% macro menu_links(items, attributes, menu_level) %}
+  {% import _self as menus %}
+  {% if items %}
+    <ul class="vm-{{ menu_level }}"{{ attributes|without('class') }}>
+    {% for item in items %}
+      {% if item.in_active_trail %}
+        {% set _atr = item.attributes.setAttribute('data-a', '1') %}
+      {% endif %}
+      {% if item.is_expanded %}
+        {% set _atr = item.attributes.setAttribute('data-e', '1') %}
+      {% endif %}
+      {% if item.is_collapsed %}
+        {% set _atr = item.attributes.setAttribute('data-c', '1') %}
+      {% endif %}
+      <li{{ item.attributes }}>
+        <span class="vml">
+        {% if item.url %}
+          {{ link(item.title, item.url) }}
+        {% else %}
+          <span>{{ item.title }}</span>
+        {% endif %}
+        {% if item.is_expanded %}
+          <i class="vml-h"><i></i><i></i></i>
+        {% endif %}
+        </span>
+        {% if item.below %}
+          {{ menus.menu_links(item.below, attributes, menu_level + 1) }}
+        {% endif %}
+      </li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endmacro %}
+{% endspaceless %}

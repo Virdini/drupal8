@@ -1,0 +1,102 @@
+
+.button--primary {
+  border-color: #1e5c90;
+  background-color: #0071b8;
+  background-image: linear-gradient(to bottom, #007bc6, #0071b8);
+  color: #fff;
+  text-shadow: 0 1px hsla(0, 0%, 0%, 0.5);
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+}
+.button--primary:hover,
+.button--primary:focus {
+  background-color: #2369a6;
+  background-image: linear-gradient(to bottom, #0c97ed, #1f86c7);
+  border-color: #1e5c90;
+  color: #fff;
+}
+.button--primary:focus {
+  border: 1px solid #1280df;
+}
+.button--primary:hover {
+  box-shadow: 0 1px 2px hsla(203, 10%, 10%, 0.25);
+}
+.button--primary:active {
+  background-image: linear-gradient(to bottom, #08639b, #0071b8);
+  border-color: #144b78;
+  box-shadow: inset 0 1px 3px hsla(0, 0%, 0%, 0.2);
+}
+
+/**
+ * Overrides styling from system.theme.
+ */
+.button-action:before {
+  margin-left: -0.2em; /* LTR */
+  padding-right: 0.2em; /* LTR */
+  font-size: 1em;
+  -webkit-font-smoothing: auto;
+}
+[dir="rtl"] .button-action:before {
+  margin-right: -0.2em;
+  margin-left: 0;
+  padding-right: 0;
+  padding-left: 0.2em;
+}
+
+/**
+ * 1. Use px units to ensure button text is centered vertically.
+ */
+.no-touchevents .button--small {
+  font-size: 13px;
+  font-size: 0.813rem;
+  padding: 2px 1em;  /* 1 */
+}
+
+/**
+ * We've temporarily added the danger button here, bit of a harsh reset but we
+ * need it.
+ * @todo replace with link--danger.
+ * See https://www.drupal.org/node/2123731
+ */
+#edit-cancel,
+.button--danger {
+  display: inline;
+  cursor: pointer;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: #c72100;
+  font-weight: 400;
+  text-decoration: underline;
+}
+#edit-cancel:hover,
+#edit-cancel:focus,
+#edit-cancel:active,
+.button--danger:hover,
+.button--danger:focus,
+.button--danger:active {
+  color: #ff2a00;
+  text-decoration: underline;
+  text-shadow: none;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: none;
+}
+#edit-cancel:disabled,
+#edit-cancel.is-disabled,
+.button--danger:disabled,
+.button--danger.is-disabled {
+  color: #737373;
+  cursor: default;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: none;
+}

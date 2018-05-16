@@ -1,0 +1,28 @@
+.msg {
+  background: no-repeat 10px 1.15em;  /* LTR */
+  border-style: solid;
+  border-width: 1px 1px 1px 8px;;  /* LTR */
+  padding: 1em 1em 1em 35px; /* LTR */
+  margin: .5em 0;
+}
+[dir='rtl'] .msg {
+  border-width: 1px 8px 1px 1px;
+  background-position: right 10px top 17px;
+  padding-left: 1em;
+  padding-right: 35px;
+}
+.msg[data-t='s'] {
+  color: #325e1c;
+  background-color: #f3faef;
+  background-image: url(../../../../../core/misc/icons/73b355/check.svg);
+}
+.msg[data-t='w'] {
+  color: #734c00;
+  background-color: #fdf8ed;
+  background-image: url(../../../../../core/misc/icons/e29700/warning.svg);
+}
+.msg[data-t='e'] {
+  color: #a51b00;
+  background-color: #fcf4f2;
+  background-image: url(../../../../../core/misc/icons/e32700/error.svg);
+}

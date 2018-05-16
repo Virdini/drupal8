@@ -1,0 +1,113 @@
+.m--main {
+  text-align: center;
+}
+.m--main ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.m--main .vml {
+  position: relative;
+}
+.m--main .vml a {
+  text-decoration: none;
+  color: inherit;
+}
+@media all and (max-width: 959px) {
+  .m--main .mm {
+    display: block;
+    padding: 0 60px;
+    line-height: 60px;
+    color: #fff;
+    background: #999;
+    font-size: 2.3em;
+    position: relative;
+    margin: 0 0 1px;
+  }
+  .m--main ul {
+    display: none;
+  }
+  .m--main ul[data-s='o'] {
+    display: block;
+  }
+  .m--main .vml {
+    display: block;
+    margin-bottom: 1px;
+    background: #ccc;
+  }
+  .m--main .vml a {
+    display: block;
+    margin-bottom: 1px;
+    padding: 1.5em 0;
+  }
+  .m--main li[data-e='1'] > .vml a {
+    margin: 0 60px;
+  }
+  .m--main .mm-h,
+  .m--main .vml-h {
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+  }
+  .m--main .vml-h i {
+    border-bottom: 1px solid;
+    width: 100%;
+    height: 1px;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-top: -1px;
+  }
+  .m--main .vml-h i:nth-child(2) {
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+  }
+  .m--main .vml-h[data-s='o'] i:nth-child(2) {
+    display: none;
+  }
+}
+@media all and (min-width: 960px) {
+  .m--main .mm {
+    display: none;
+  }
+  .m--main li > ul {
+    display: none;
+  }
+  .m--main .vm-0 > li:hover > ul {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+    border: 1px solid;
+    text-align: center;
+    width: 300px;
+    padding: 0 .5em;
+    box-sizing: border-box;
+    background: #fff;
+  }
+  .m--main .vm-0 {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+  }
+  .m--main .vm-0 > li {
+    display: table-cell;
+    padding: .725em .5em;
+    position: relative;
+  }
+  .m--main li li {
+    padding: 0.5em 0;
+    line-height: 1.2;
+    border-bottom: 1px solid;
+  }
+  .m--main li li:last-child {
+    border: none;
+  }
+}

@@ -1,0 +1,109 @@
+.vertical-tabs {
+  position: relative;
+  overflow: hidden;
+  margin: .5em 0;
+  border: 1px solid #ccc;
+  background: #e6e5e1;
+}
+.vertical-tabs__menu {
+  float: left; /* LTR */
+  width: 240px;
+  margin: 0 -100% -1px 0; /* LTR */
+  padding: 0;
+  border-bottom: 1px solid #ccc;
+  line-height: 1;
+}
+[dir='rtl'] .vertical-tabs__menu {
+  float: right;
+  margin: 0 0 -1px -100%;
+}
+.vertical-tabs__menu-item {
+  position: relative;
+}
+.vertical-tabs__menu-item.is-selected {
+  z-index: 1;
+  overflow-x: hidden;
+  width: 100%;
+  border-right: 1px solid #fff; /* LTR */
+  box-shadow: 0 5px 5px -5px hsla(0, 0%, 0%, .3);
+  border-bottom: 1px solid #ccc;
+}
+.vertical-tabs__menu-item.last {
+  border-bottom: none;
+}
+[dir='rtl'] .vertical-tabs__menu-item.is-selected {
+  border-left: 1px solid #fff;
+  border-right: none;
+}
+.vertical-tabs__menu-item:focus,
+.vertical-tabs__menu-item:active {
+  z-index: 2;
+}
+.vertical-tabs__menu-item.is-selected:focus {
+  outline: none;
+}
+.vertical-tabs__menu-item a {
+  display: block;
+  padding: 10px 15px 15px;
+  border-bottom: 1px solid #ccc;
+  background-color: #f2f2f0;
+  text-shadow: 0 1px hsla(0, 0%, 100%, .6);
+  text-decoration: none;
+  color: #0b64a3;
+}
+.vertical-tabs__menu-item.last a {
+  border-bottom: 0;
+}
+.vertical-tabs__menu-item.is-selected a,
+.vertical-tabs__menu-item a:hover,
+.vertical-tabs__menu-item a:focus {
+  background: #fff;
+  text-shadow: none;
+  text-decoration: none;
+}
+.vertical-tabs__menu-item.is-selected a {
+  color: #0b64a3;
+  border-left: 4px solid #0b64a3; /* LTR */
+  padding-left: 11px; /* LTR */
+  border-bottom: none;
+  outline: none;
+  text-decoration: none;
+}
+[dir='rtl'] .vertical-tabs__menu-item.is-selected a {
+  border-left: 0;
+  border-right: 4px solid #0b64a3;
+  padding-left: 15px;
+  padding-right: 11px;
+}
+[data-vertical-tabs-panes] {
+  background-color: #fff;
+}
+.vertical-tabs__panes {
+  margin: 0 0 0 240px; /* LTR */
+  padding: 10px 15px 10px 15px;
+  border-left: 1px solid #ccc; /* LTR */
+}
+[dir='rtl'] .vertical-tabs__panes {
+  margin: 0 240px 0 0;
+  border-left: none;
+  border-right: 1px solid #ccc;
+}
+.vertical-tabs__panes:after {
+  content: '';
+  display: table;
+  clear: both;
+}
+.vertical-tabs__pane {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.vertical-tabs__menu-item-summary {
+  display: block;
+  padding-top: .4em;
+  color: #666;
+  font-size: .86em;
+}
+.vertical-tabs__pane > summary {
+  display: none;
+}

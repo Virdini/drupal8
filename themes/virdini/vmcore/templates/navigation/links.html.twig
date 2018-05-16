@@ -1,0 +1,18 @@
+{% if links -%}
+  {%- if heading -%}
+    <div{{ heading.attributes.addClass('h-' ~ heading.level|default('h2')) }}>{{ heading.text }}</div>
+  {%- endif -%}
+  <ul{{ attributes }}>
+    {%- for item in links -%}
+      <li{{ item.attributes }}>
+        {%- if item.link -%}
+          {{ item.link }}
+        {%- elseif item.text_attributes -%}
+          <span{{ item.text_attributes }}>{{ item.text }}</span>
+        {%- else -%}
+          {{ item.text }}
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+{%- endif %}

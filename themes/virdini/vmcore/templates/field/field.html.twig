@@ -1,0 +1,35 @@
+{%
+  set title_classes = [
+    'f_l',
+    label_display == 'visually_hidden' ? 'visually-hidden',
+  ]
+%}
+{% set attributes = attributes.setAttribute('data-fn', field_name|trim('field_', 'left')).addClass('field') %}
+
+{% if label_hidden %}
+  {% if multiple %}
+    <div{{ attributes.addClass('f_is') }}>
+      {% for item in items %}
+        <div{{ item.attributes.addClass('f_i') }}>{{ item.content }}</div>
+      {% endfor %}
+    </div>
+  {% else %}
+    {% for item in items %}
+      <div{{ attributes.addClass('f_i') }}>{{ item.content }}</div>
+    {% endfor %}
+  {% endif %}
+{% else %}
+  {% set attributes = attributes.setAttribute('data-ld', label_display) %}
+  <div{{ attributes }}>
+    <div{{ title_attributes.addClass(title_classes) }}>{{ label }}</div>
+    {% if multiple %}
+      <div class="f_is">
+    {% endif %}
+    {% for item in items %}
+      <div{{ item.attributes.addClass('f_i') }}>{{ item.content }}</div>
+    {% endfor %}
+    {% if multiple %}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

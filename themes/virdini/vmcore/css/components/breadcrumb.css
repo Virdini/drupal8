@@ -1,0 +1,20 @@
+.crumb {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+[dir="rtl"] .crumb {
+  /* This is required to win over specificity of [dir="rtl"] ol */
+  margin-right: 0;
+}
+.crumb li {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+.crumb li:after {
+  content: ' \BB  ';
+}
+.crumb li:last-child:after {
+  content: none;
+}

@@ -1,0 +1,10 @@
+{{ attach_library('vmcore/messages') }}
+{% block messages %}
+{% for type, messages in message_list %}
+  <div data-t="{{ type|first }}"{{ attributes.addClass('msg')|without('role', 'aria-label') }}>
+    {% for message in messages %}
+      <div>{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endfor %}
+{% endblock messages %}
