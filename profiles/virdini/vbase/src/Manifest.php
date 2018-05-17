@@ -28,7 +28,7 @@ class Manifest {
    */
   public function __construct(ConfigFactoryInterface $config_factory, CacheBackendInterface $cache_backend) {
     $this->cache = $cache_backend;
-    $this->config = $config_factory->get('vbase.settings.antispam');
+    $this->config = $config_factory->get('vbase.settings.manifest');
   }
 
   public function getIcons() {
@@ -70,6 +70,25 @@ class Manifest {
       'square512x512.png',
     ];
     return array_intersect_key($this->getIcons(), array_flip($allowed));
+  }
+
+  public function setAppleIconLinks(array &$attachments) {
+    vbase_add_cacheable_dependency($attachments, $this->config);
+    $icons = $this->getIcons();
+    if (isset($icons['square180x180.png'])) {
+      $attachments['#attached']['html_head_link'][] = [[
+        'rel' => 'apple-touch-icon',
+        'sizes' => '180x180',
+        'href' => file_url_transform_relative(file_create_url($icons['square180x180.png']['uri'])),
+      ]];
+    }
+    if (isset($icons['mask-icon.svg']) && $this->config->get('mask_icon_color')) {
+      $attachments['#attached']['html_head_link'][] = [[
+        'rel' => 'mask-icon',
+        'href' => file_url_transform_relative(file_create_url($icons['mask-icon.svg']['uri'])),
+        'color' => $this->config->get('mask_icon_color'),
+      ]];
+    }
   }
 
 }

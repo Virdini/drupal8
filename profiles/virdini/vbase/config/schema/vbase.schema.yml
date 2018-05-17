@@ -105,6 +105,9 @@ vbase.settings.manifest:
     background_color:
       type: string
       label: 'Background Color'
+    mask_icon_color:
+      type: string
+      label: 'Mask-icon Color'
     display:
       type: string
       label: 'Display'

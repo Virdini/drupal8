@@ -70,7 +70,7 @@ class ManifestSettings extends ConfigFormBase {
     $definition = $this->typedConfigManager->getDefinition(self::CONFIG_NAME);
 
     foreach ($definition['mapping'] as $key => $info) {
-      if ($info['type'] == 'label' || in_array($key, ['theme_color', 'background_color'])) {
+      if ($info['type'] == 'label' || in_array($key, ['theme_color', 'background_color', 'mask_icon_color'])) {
         $form[$key] = [
           '#type' => 'textfield',
           '#title' => $this->t($info['label']),
