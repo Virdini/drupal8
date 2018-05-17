@@ -13,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\FileInterface;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_entity_access().
@@ -219,9 +220,9 @@ function vbase_page_attachments(array &$attachments) {
     $attachments['#attached']['library'][] = 'vbase/ie.'. $ie;
   }
   vbase_add_cacheable_dependency($attachments, $config);
+
   $config = \Drupal::config('vbase.settings.tags');
   vbase_add_cacheable_dependency($attachments, $config);
-  $attachments['#cache']['contexts'] = Cache::mergeContexts($attachments['#cache']['contexts'], ['url.path.is_front']);
   if ($config->get('telephone')) {
     $attachments['#attached']['html_head'][] = [[
       '#type' => 'html_tag',
@@ -252,28 +253,6 @@ function vbase_page_attachments(array &$attachments) {
       ],
     ], 'ie-chrome'];
   }
-  if (\Drupal::service('path.matcher')->isFrontPage()) {
-    $verification = [
-      'google-site-verification' => $config->get('google_verification'),
-      'yandex-verification' => $config->get('yandex_verification'),
-    ];
-    foreach ($verification as $name => $data) {
-      if (!empty($data)) {
-        foreach ($data as $key => $value) {
-          if ($value) {
-            $attachments['#attached']['html_head'][] = [[
-              '#type' => 'html_tag',
-              '#tag' => 'meta',
-              '#attributes' => [
-                'name' => $name,
-                'content' => $value,
-              ],
-            ], $name . $key];
-          }
-        }
-      }
-    }
-  }
 }
 
 /**
@@ -303,12 +282,25 @@ function vbase_page_attachments_alter(array &$attachments) {
   }
   // Hide links
   $keys = ['delete-form', 'edit-form', 'version-history', 'revision'];
+  if (!$config->get('shortlink')) {
+    $keys[] = 'shortlink';
+  }
+  if ($base = $config->get('base')) {
+    $keys[] = 'canonical';
+  }
   if (!empty($keys) && isset($attachments['#attached']['html_head_link'])) {
     foreach ($attachments['#attached']['html_head_link'] as $key => $value) {
       if (isset($value[0]['rel']) && in_array($value[0]['rel'], $keys)) {
         unset($attachments['#attached']['html_head_link'][$key]);
       }
     }
+  }
+  if ($base) {
+    $url = \Drupal::service('path.matcher')->isFrontPage() ? Url::fromRoute('<front>') : Url::fromRouteMatch(\Drupal::routeMatch());
+    $attachments['#attached']['html_head_link'][] = [
+      ['rel' => 'canonical', 'href' => $base . $url->toString()],
+      TRUE,
+    ];
   }
 }
 
@@ -322,12 +314,21 @@ function vbase_entity_view_alter(array &$build) {
     if (!isset($build['#attached']['html_head_link'])) {
       return;
     }
+    $config = \Drupal::config('vbase.settings.tags');
+    vbase_add_cacheable_dependency($build, $config);
     $keys = ['delete-form', 'edit-form', 'version-history', 'revision'];
+    if (!$config->get('shortlink')) {
+      $keys[] = 'shortlink';
+    }
+    if ($config->get('base')) {
+      $keys[] = 'canonical';
+    }
     foreach ($build['#attached']['html_head_link'] as $key => $value) {
       if (isset($value[0]['rel']) && in_array($value[0]['rel'], $keys)) {
         unset($build['#attached']['html_head_link'][$key]);
       }
     }
+
   }
 }
 
@@ -362,7 +363,7 @@ function _vbase_get_title() {
  * Implements hook_module_implements_alter().
  */
 function vbase_module_implements_alter(&$implementations, $hook) {
-  if ($hook === 'page_attachments_alter') {
+  if (in_array($hook, ['entity_view_alter', 'page_attachments_alter'])) {
     $group = $implementations['vbase'];
     unset($implementations['vbase']);
     $implementations['vbase'] = $group;

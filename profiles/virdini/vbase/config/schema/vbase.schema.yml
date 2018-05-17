@@ -14,21 +14,12 @@ vbase.settings.tags:
     telephone:
       type: boolean
       label: 'Telephone detection'
-    ie_chrome:
+    shortlink:
       type: boolean
-      label: 'Show X-UA-Compatible'
-    google_verification:
-      label: 'Google Webmasters Verification'
-      type: sequence
-      sequence:
-        type: string
-        label: 'Code'
-    yandex_verification:
-      label: 'Yandex Webmasters Verification'
-      type: sequence
-      sequence:
-        type: string
-        label: 'Code'
+      label: 'Show shortlink'
+    base:
+      type: string
+      label: 'Canonical Base Url'
 
 vbase.settings.cp:
   type: config_object

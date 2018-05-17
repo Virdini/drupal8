@@ -2,25 +2,40 @@
 
 namespace Drupal\vbase\Form;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Configure site information settings for this site.
+ * Provides a 'TagsSettingsForm'
  */
 class TagsSettingsForm extends ConfigFormBase {
 
   /**
-   * Constructs a TagsSettingsForm object.
+   * Config name
+   */
+  const CONFIG_NAME = 'vbase.settings.tags';
+
+  /**
+   * The typed config manager.
+   *
+   * @var \Drupal\Core\Config\TypedConfigManagerInterface
+   */
+  protected $typedConfigManager;
+
+  /**
+   * Constructs a new TagsSettingsForm.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $typed_config
+   *   The typed configuration manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory) {
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typed_config) {
     parent::__construct($config_factory);
-
+    $this->typedConfigManager = $typed_config;
   }
 
   /**
@@ -28,7 +43,8 @@ class TagsSettingsForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('config.typed')
     );
   }
 
@@ -43,57 +59,29 @@ class TagsSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['vbase.settings.tags'];
+    return [self::CONFIG_NAME];
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $settings = $this->config('vbase.settings.tags');
-    
-    $form['webmasters_verification'] = array(
-      '#title' => t('Webmasters Verification'),
-      '#type' => 'details',
-      '#description' => t('One code per line'),
-    );
-    $form['webmasters_verification']['google_verification'] = array(
-      '#type' => 'textarea',
-      '#title' => t('Google'),
-      '#default_value' => implode("\r\n", $settings->get('google_verification')),
-    );
-    $form['webmasters_verification']['yandex_verification'] = array(
-      '#type' => 'textarea',
-      '#title' => t('Yandex'),
-      '#default_value' => implode("\r\n", $settings->get('yandex_verification')),
-    );
-
-    $form['generator'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show generator metatag'),
-      '#default_value' => $settings->get('generator'),
-    );
-    $form['mobile'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show mobile optimized metatags'),
-      '#default_value' => $settings->get('mobile'),
-    );
-    $form['viewport'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show viewport metatag'),
-      '#default_value' => $settings->get('viewport'),
-    );
-    $form['ie_chrome'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show X-UA-Compatible'),
-      '#default_value' => $settings->get('ie_chrome'),
-    );
-    $form['telephone'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Telephone detection'),
-      '#default_value' => $settings->get('telephone'),
-    );
-
+    $config = $this->config(self::CONFIG_NAME);
+    $definition = $this->typedConfigManager->getDefinition(self::CONFIG_NAME);
+    $form['base'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t($definition['mapping']['base']['label']),
+      '#default_value' => $config->get('base'),
+    ];
+    foreach ($definition['mapping'] as $key => $info) {
+      if ($info['type'] == 'boolean') {
+        $form[$key] = [
+          '#type' => 'checkbox',
+          '#title' => $this->t($info['label']),
+          '#default_value' => $config->get($key),
+        ];
+      }
+    }
     return parent::buildForm($form, $form_state);
   }
 
@@ -102,25 +90,20 @@ class TagsSettingsForm extends ConfigFormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
 
-    parent::validateForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $google_verification = array_filter(explode("\n", str_replace("\r\n", "\n", $form_state->getValue('google_verification'))), 'trim');
-    $yandex_verification = array_filter(explode("\n", str_replace("\r\n", "\n", $form_state->getValue('yandex_verification'))), 'trim');
-    $this->config('vbase.settings.tags')
-      ->set('generator', $form_state->getValue('generator'))
-      ->set('mobile', $form_state->getValue('mobile'))
-      ->set('viewport', $form_state->getValue('viewport'))
-      ->set('ie_chrome', $form_state->getValue('ie_chrome'))
-      ->set('telephone', $form_state->getValue('telephone'))
-      ->set('google_verification', $google_verification)
-      ->set('yandex_verification', $yandex_verification)
-      ->save();
-
+    $config = $this->config(self::CONFIG_NAME);
+    $definition = $this->typedConfigManager->getDefinition(self::CONFIG_NAME);
+    foreach ($form_state->getValues() as $key => $value) {
+      if (isset($definition['mapping'][$key])) {
+        $config->set($key, $value);
+      }
+    }
+    $config->save();
     parent::submitForm($form, $form_state);
   }
 
