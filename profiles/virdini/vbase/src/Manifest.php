@@ -90,10 +90,14 @@ class Manifest {
       ]];
     }
     if (isset($icons['mstile-144x144.png'])) {
-      $attachments['#attached']['html_head_link'][] = [[
-        'rel' => 'msapplication-TileImage',
-        'href' => file_url_transform_relative(file_create_url($icons['mstile-144x144.png']['uri'])),
-      ]];
+      $attachments['#attached']['html_head'][] = [[
+        '#type' => 'html_tag',
+        '#tag' => 'meta',
+        '#attributes' => [
+          'name' => 'msapplication-TileImage',
+          'content' => file_url_transform_relative(file_create_url($icons['mstile-144x144.png']['uri'])),
+        ],
+      ], 'msapplication-TileImage'];
     }
   }
 
