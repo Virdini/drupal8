@@ -95,7 +95,7 @@ class Manifest {
         '#tag' => 'meta',
         '#attributes' => [
           'name' => 'msapplication-TileImage',
-          'content' => file_url_transform_relative(file_create_url($icons['mstile-144x144.png']['uri'])),
+          'content' => file_create_url($icons['mstile-144x144.png']['uri']),
         ],
       ], 'msapplication-TileImage'];
     }
