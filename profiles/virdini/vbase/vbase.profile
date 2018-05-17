@@ -297,8 +297,13 @@ function vbase_page_attachments_alter(array &$attachments) {
   }
   if ($base) {
     $url = \Drupal::service('path.matcher')->isFrontPage() ? Url::fromRoute('<front>') : Url::fromRouteMatch(\Drupal::routeMatch());
+    $canonical = $base . $url->toString();
+    global $pager_page_array;
+    if (is_array($pager_page_array) && !empty($pager_page_array) && ($pager_page_array[0] != 0 || count($pager_page_array) > 1)) {
+      $canonical .= '?page='. implode(',', $pager_page_array);
+    }
     $attachments['#attached']['html_head_link'][] = [
-      ['rel' => 'canonical', 'href' => $base . $url->toString()],
+      ['rel' => 'canonical', 'href' => $canonical],
       FALSE,
     ];
   }
