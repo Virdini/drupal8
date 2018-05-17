@@ -240,7 +240,7 @@ function vbase_page_attachments(array &$attachments) {
         ],
       ], 'application-name'];
     }
-    \Drupal::service('vbase.manifest')->setAppleIconLinks($attachments);
+    \Drupal::service('vbase.manifest')->setIconLinks($attachments);
   }
   if ($config->get('theme_color')) {
     $attachments['#attached']['html_head'][] = [[

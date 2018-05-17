@@ -72,7 +72,7 @@ class Manifest {
     return array_intersect_key($this->getIcons(), array_flip($allowed));
   }
 
-  public function setAppleIconLinks(array &$attachments) {
+  public function setIconLinks(array &$attachments) {
     vbase_add_cacheable_dependency($attachments, $this->config);
     $icons = $this->getIcons();
     if (isset($icons['square180x180.png'])) {
@@ -87,6 +87,12 @@ class Manifest {
         'rel' => 'mask-icon',
         'href' => file_url_transform_relative(file_create_url($icons['mask-icon.svg']['uri'])),
         'color' => $this->config->get('mask_icon_color'),
+      ]];
+    }
+    if (isset($icons['mstile-144x144.png'])) {
+      $attachments['#attached']['html_head_link'][] = [[
+        'rel' => 'msapplication-TileImage',
+        'href' => file_url_transform_relative(file_create_url($icons['mstile-144x144.png']['uri'])),
       ]];
     }
   }
