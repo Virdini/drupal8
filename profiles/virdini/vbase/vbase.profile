@@ -299,7 +299,7 @@ function vbase_page_attachments_alter(array &$attachments) {
     $url = \Drupal::service('path.matcher')->isFrontPage() ? Url::fromRoute('<front>') : Url::fromRouteMatch(\Drupal::routeMatch());
     $attachments['#attached']['html_head_link'][] = [
       ['rel' => 'canonical', 'href' => $base . $url->toString()],
-      TRUE,
+      FALSE,
     ];
   }
 }
