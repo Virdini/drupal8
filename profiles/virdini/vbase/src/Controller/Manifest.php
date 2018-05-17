@@ -16,6 +16,7 @@ class Manifest extends ControllerBase {
      	'dir' => $lang->getDirection(),
       'lang'=> $lang->getId(),
       'start_url' => './?utm_source=web_app_manifest',
+      'icons' => [],
     ];
     $config = $this->config('vbase.settings.manifest');
     foreach ($config->get() as $key => $value) {
@@ -23,6 +24,13 @@ class Manifest extends ControllerBase {
         continue;
       }
       $output[$key] = trim($value);
+    }
+    if (isset($output['short_name']) || isset($output['name'])) {
+      foreach (\Drupal::service('vbase.manifest')->getManifestIcons() as $icon) {
+        $icon['src'] = file_url_transform_relative(file_create_url($icon['uri']));
+        unset($icon['uri']);
+        $output['icons'][] = $icon;
+      }
     }
     $response = new CacheableJsonResponse($output, 200, ['Content-Type' => 'application/manifest+json']);
     return $response->addCacheableDependency($config);

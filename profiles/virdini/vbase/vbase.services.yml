@@ -1,4 +1,7 @@
 services:
+  vbase.manifest:
+    class: Drupal\vbase\Manifest
+    arguments: ['@config.factory', '@cache.default']
   vbase.antispam:
     class: Drupal\vbase\reCAPTCHA
     arguments: ['@config.factory', '@cache.default']
