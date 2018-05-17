@@ -35,6 +35,7 @@ class Manifest {
     if (!isset($this->icons)) {
       $this->icons = [];
       $cache = $this->cache->get('vbase.manifest');
+      $cache = FALSE;
       if (!$cache) {
         $files = file_scan_directory('public://manifest', '/.*/', ['key' => 'name']);
         if (!empty($files)) {
@@ -49,7 +50,7 @@ class Manifest {
             $this->icons[$file->filename] = [
               'uri' => $file->uri,
               'type' => $mimetype->guess($file->uri),
-              'sizes' => $file->name ?: 'any',
+              'sizes' => $sizes ?: 'any',
             ];
           }
         }
