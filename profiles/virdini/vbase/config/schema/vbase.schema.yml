@@ -82,3 +82,33 @@ vbase.settings.browsers:
     ie:
       type: string
       label: 'Internet Explorer'
+
+vbase.settings.manifest:
+  type: config_object
+  label: 'Manifest Settings'
+  mapping:
+    short_name:
+      translatable: true
+      type: label
+      label: 'Short Name'
+    name:
+      translatable: true
+      type: label
+      label: 'Name'
+    description:
+      translatable: true
+      type: label
+      label: 'Description'
+    theme_color:
+      type: string
+      label: 'Theme Color'
+    background_color:
+      type: string
+      label: 'Background Color'
+    display:
+      type: string
+      label: 'Display'
+    orientation:
+      type: string
+      label: 'Orientation'
+    

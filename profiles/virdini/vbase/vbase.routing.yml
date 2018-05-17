@@ -46,6 +46,22 @@ vbase.settings.browsers:
   requirements:
     _permission: 'vbase site settings'
 
+vbase.settings.manifest:
+  path: '/admin/config/system/site-settings/manifest'
+  defaults:
+    _form: 'Drupal\vbase\Form\ManifestSettings'
+    _title: 'Manifest Settings'
+  requirements:
+    _permission: 'vbase site settings'
+
+vbase.manifest:
+  path: '/manifest.json'
+  defaults:
+    _controller: '\Drupal\vbase\Controller\Manifest::build'
+    _title: 'Manifest'
+  requirements:
+    _access: 'TRUE'
+
 vbase.adjustment:
   path: '/virdini-adjustment'
   defaults:

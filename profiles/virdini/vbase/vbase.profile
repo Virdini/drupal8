@@ -215,11 +215,48 @@ function vbase_preprocess_page(array &$variables) {
  * Implements hook_page_attachments().
  */
 function vbase_page_attachments(array &$attachments) {
-  $config = \Drupal::config('vbase.settings.browsers');
-  if ($ie = $config->get('ie')) {
-    $attachments['#attached']['library'][] = 'vbase/ie.'. $ie;
-  }
+  $config = \Drupal::config('vbase.settings.manifest');
   vbase_add_cacheable_dependency($attachments, $config);
+  if (($short = $config->get('short_name')) || $config->get('name')) {
+    $attachments['#attached']['html_head_link'][] = [[
+      'rel' => 'manifest',
+      'href' => Url::fromRoute('vbase.manifest')->setAbsolute()->toString(),
+    ]];
+    if ($short) {
+      $attachments['#attached']['html_head'][] = [[
+        '#type' => 'html_tag',
+        '#tag' => 'meta',
+        '#attributes' => [
+          'name' => 'apple-mobile-web-app-title',
+          'content' => $short,
+        ],
+      ], 'apple-mobile-web-app-title'];
+      $attachments['#attached']['html_head'][] = [[
+        '#type' => 'html_tag',
+        '#tag' => 'meta',
+        '#attributes' => [
+          'name' => 'application-name',
+          'content' => $short,
+        ],
+      ], 'application-name'];
+    }
+  }
+  if ($config->get('theme_color')) {
+    $attachments['#attached']['html_head'][] = [[
+      '#type' => 'html_tag',
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'theme-color',
+        'content' => $config->get('theme_color'),
+      ],
+    ], 'theme-color'];
+  }
+
+  $config = \Drupal::config('vbase.settings.browsers');
+  vbase_add_cacheable_dependency($attachments, $config);
+  if ($config->get('ie')) {
+    $attachments['#attached']['library'][] = 'vbase/ie.'. $config->get('ie');
+  }
 
   $config = \Drupal::config('vbase.settings.tags');
   vbase_add_cacheable_dependency($attachments, $config);

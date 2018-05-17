@@ -34,3 +34,9 @@ vbase.settings.browsers:
   parent: vbase.site_settings
   description: ''
   route_name: vbase.settings.browsers
+
+vbase.settings.manifest:
+  title: 'Manifest Settings'
+  parent: vbase.site_settings
+  description: ''
+  route_name: vbase.settings.manifest
