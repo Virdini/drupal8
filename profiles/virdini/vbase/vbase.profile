@@ -48,8 +48,8 @@ function vbase_entity_access(EntityInterface $entity, $operation, AccountInterfa
  */
 function vbase_node_load($entities) {
   foreach ($entities as $entity) {
-    if ($entity->get('pubdate')->isEmpty()) {
-      $entity->get('pubdate')->setValue(['value' => 0]);
+    if ($entity->get('pubdate')->getString() == 0) {
+      $entity->get('pubdate')->setValue([]);
     }
   }
 }

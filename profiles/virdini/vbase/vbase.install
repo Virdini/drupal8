@@ -99,7 +99,6 @@ function vbase_update_8004() {
   $db->update($table)->fields(['pubdate' => 0])->execute();
   $spec = [
     'type' => 'int',
-    'not null' => TRUE,
     'default' => 0,
   ];
   $keys_new = [
@@ -112,7 +111,6 @@ function vbase_update_8004() {
       ],
       'pubdate' => [
         'type' => 'int',
-        'not null' => TRUE,
         'default' => 0,
       ],
     ],
