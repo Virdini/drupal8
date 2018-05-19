@@ -44,6 +44,17 @@ function vbase_entity_access(EntityInterface $entity, $operation, AccountInterfa
 }
 
 /**
+ * Implements hook_ENTITY_TYPE_load() for node.
+ */
+function vbase_node_load($entities) {
+  foreach ($entities as $entity) {
+    if ($entity->get('pubdate')->isEmpty()) {
+      $entity->get('pubdate')->setValue(['value' => 0]);
+    }
+  }
+}
+
+/**
  * Implements hook_cron().
  */
 function vbase_cron() {
