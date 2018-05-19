@@ -14,6 +14,9 @@ use Drupal\file\FileInterface;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 
 /**
  * Implements hook_entity_access().
@@ -41,11 +44,86 @@ function vbase_entity_access(EntityInterface $entity, $operation, AccountInterfa
 }
 
 /**
- * Implements hook_form_FORM_ID_alter() for install_configure_form().
- *
- * Allows the profile to alter the site configuration form.
+ * Implements hook_ENTITY_TYPE_load() for node.
  */
-function vbase_form_install_configure_form_alter(&$form, FormStateInterface $form_state) {
+function vbase_node_load($entities) {
+  foreach ($entities as $entity) {
+    if ($entity->get('pubdate')->getString() == 0) {
+      $entity->get('pubdate')->setValue([]);
+    }
+  }
+}
+/**
+ * Implements hook_cron().
+ */
+function vbase_cron() {
+  $storage = \Drupal::entityTypeManager()->getStorage('node');
+  $query = $storage->getQuery();
+  $query->condition('status', 0)
+        ->condition('pubdate', 0, '<>')
+        ->condition('pubdate', time(), '<');
+  foreach ($storage->loadMultiple($query->execute()) as $entity) {
+    _vbase_publish_delayed($entity);
+    if ($entity->isTranslatable()) {
+      foreach ($entity->getTranslationLanguages(FALSE) as $lang) {
+        _vbase_publish_delayed($entity->getTranslation($lang->getId()));
+      }
+    }
+  }
+}
+
+function _vbase_publish_delayed(EntityInterface $entity) {
+  if (!$entity->isPublished() && !$entity->get('pubdate')->isEmpty() && $entity->get('pubdate')->getString() <= time()) {
+    $entity->setPublished(TRUE)->save();
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vbase_entity_base_field_info(EntityTypeInterface $entity_type) {
+  if ($entity_type->id() == 'node') {
+    $fields['pubdate'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Published on'))
+      ->setDescription(t('The time that the node was published.'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'vbase_datetime_timestamp',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+    return $fields;
+  }
+}
+
+/**
+ * Implements hook_entity_field_access()
+ */
+function vbase_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account) {
+  if ($operation == 'edit' && $field_definition->getName() == 'pubdate' && $field_definition->getTargetEntityTypeId() == 'node') {
+    if ($account->hasPermission('pubdate field admin') || $account->hasPermission($field_definition->getTargetEntityTypeId() .' pubdate field')) {
+      return AccessResult::allowed()->cachePerPermissions();
+    }
+    return AccessResult::forbidden()->cachePerPermissions();
+  }
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter() for node_form().
+ */
+function vbase_form_node_form_alter(&$form) {
+  if (isset($form['pubdate'])) {
+    $form['pubdate']['#group'] = 'author';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for install_configure_form().
+ */
+function vbase_form_install_configure_form_alter(&$form) {
   $form['site_information']['site_name']['#default_value'] = 'Virdini Drupal 8';
   $form['site_information']['site_mail']['#default_value'] = 'dev@virdini.net';
   $form['admin_account']['account']['name']['#default_value'] = 'admin';
@@ -162,7 +240,7 @@ function vbase_file_validate(FileInterface $file) {
 /**
  * Implements hook_theme().
  */
-function vbase_theme($existing, $type, $theme, $path) {
+function vbase_theme() {
   return [
     'vbase_adjustment_text' => [
       'render element' => '',

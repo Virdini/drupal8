@@ -15,3 +15,7 @@ vbase content protection settings:
 vbase antispam settings:
   title: 'Administer anti spam settings'
   description: ''
+pubdate field admin:
+  title: 'pubdate field admin'
+permission_callbacks:
+  - Drupal\vbase\NodePermissions::nodeTypePermissions
