@@ -44,16 +44,6 @@ function vbase_entity_access(EntityInterface $entity, $operation, AccountInterfa
 }
 
 /**
- * Implements hook_ENTITY_TYPE_load() for node.
- */
-function vbase_node_load($entities) {
-  foreach ($entities as $entity) {
-    if ($entity->get('pubdate')->getString() == 0) {
-      $entity->get('pubdate')->setValue([]);
-    }
-  }
-}
-/**
  * Implements hook_cron().
  */
 function vbase_cron() {
@@ -73,7 +63,7 @@ function vbase_cron() {
 }
 
 function _vbase_publish_delayed(EntityInterface $entity) {
-  if (!$entity->isPublished() && !$entity->get('pubdate')->isEmpty() && $entity->get('pubdate')->getString() <= time()) {
+  if (!$entity->isPublished() && $entity->get('pubdate')->getString() != 0 && $entity->get('pubdate')->getString() <= time()) {
     $entity->setPublished(TRUE)->save();
   }
 }
