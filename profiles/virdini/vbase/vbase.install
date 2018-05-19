@@ -70,7 +70,7 @@ function vbase_final_setup(&$install_state) {
     ->set('status', FALSE)
     ->save(TRUE);
 
-  vbase_update_8003();
+  vbase_update_8004();
 }
 
 /**
@@ -91,19 +91,16 @@ function vbase_update_8001() {
 /**
  * Add base field 'Published on' to nodes
  */
-function vbase_update_8002() {
+function vbase_update_8004() {
   \Drupal::entityDefinitionUpdateManager()->applyUpdates();
-}
-
-/**
- * Add index for published date field
- */
-function vbase_update_8003() {
+  $db = \Drupal::database();
   $entity_type = \Drupal::entityTypeManager()->getDefinition('node');
   $table = $entity_type->getDataTable() ?: $entity_type->getBaseTable();
+  $db->update($table)->fields(['pubdate' => 0])->execute();
   $spec = [
     'type' => 'int',
     'not null' => TRUE,
+    'default' => 0,
   ];
   $keys_new = [
     'fields' => [
@@ -116,11 +113,12 @@ function vbase_update_8003() {
       'pubdate' => [
         'type' => 'int',
         'not null' => TRUE,
+        'default' => 0,
       ],
     ],
     'indexes' => [
       'pubstatus' => ['status', 'pubdate'],
     ],
   ];
-  \Drupal::database()->schema()->changeField($table, 'pubdate', 'pubdate', $spec, $keys_new);
+  $db->schema()->changeField($table, 'pubdate', 'pubdate', $spec, $keys_new);
 }
