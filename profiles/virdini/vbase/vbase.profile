@@ -44,6 +44,15 @@ function vbase_entity_access(EntityInterface $entity, $operation, AccountInterfa
 }
 
 /**
+ * Implements hook_ENTITY_TYPE_presave() for node.
+ */
+function vbase_node_presave(EntityInterface $entity) {
+  if ($entity->get('pubdate')->getString() == 0) {
+    $entity->get('pubdate')->setValue([]);
+  }
+}
+
+/**
  * Implements hook_ENTITY_TYPE_load() for node.
  */
 function vbase_node_load($entities) {

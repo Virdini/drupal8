@@ -96,10 +96,8 @@ function vbase_update_8004() {
   $db = \Drupal::database();
   $entity_type = \Drupal::entityTypeManager()->getDefinition('node');
   $table = $entity_type->getDataTable() ?: $entity_type->getBaseTable();
-  $db->update($table)->fields(['pubdate' => 0])->execute();
   $spec = [
     'type' => 'int',
-    'default' => 0,
   ];
   $keys_new = [
     'fields' => [
@@ -111,7 +109,6 @@ function vbase_update_8004() {
       ],
       'pubdate' => [
         'type' => 'int',
-        'default' => 0,
       ],
     ],
     'indexes' => [
