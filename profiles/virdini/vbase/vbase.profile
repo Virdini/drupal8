@@ -407,7 +407,16 @@ function vbase_page_attachments_alter(array &$attachments) {
     }
   }
   // Hide links
-  $keys = ['delete-form', 'edit-form', 'version-history', 'revision'];
+  $keys = [
+    'delete-form',
+    'edit-form',
+    'version-history',
+    'revision',
+    'drupal:content-translation-overview',
+    'drupal:content-translation-add',
+    'drupal:content-translation-edit',
+    'drupal:content-translation-delete',
+  ];
   if (!$config->get('shortlink')) {
     $keys[] = 'shortlink';
   }
