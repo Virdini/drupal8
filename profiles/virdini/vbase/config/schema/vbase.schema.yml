@@ -114,4 +114,14 @@ vbase.settings.manifest:
     orientation:
       type: string
       label: 'Orientation'
-    
+
+vbase.settings.users:
+  type: config_object
+  label: 'User Management'
+  mapping:
+    login_by_email:
+      type: boolean
+      label: 'Log in by Email'
+    register_by_email:
+      type: boolean
+      label: 'Register by Email'

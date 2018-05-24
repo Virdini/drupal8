@@ -40,3 +40,9 @@ vbase.settings.manifest:
   parent: vbase.site_settings
   description: ''
   route_name: vbase.settings.manifest
+
+vbase.settings.users:
+  title: 'User Management'
+  parent: vbase.site_settings
+  description: ''
+  route_name: vbase.settings.users

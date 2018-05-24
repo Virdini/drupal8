@@ -17,6 +17,8 @@ use Drupal\Core\Url;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Render\Element\Email;
+use Drupal\user\UserInterface;
 
 /**
  * Implements hook_entity_access().
@@ -61,6 +63,35 @@ function vbase_node_load($entities) {
       $entity->get('pubdate')->setValue([]);
     }
   }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for user.
+ */
+function vbase_user_presave(EntityInterface $entity) {
+  $name = $entity->getAccountName();
+  if (!$name || strpos($name, 'vbase_') !== 0 || !$entity->isNew()
+      || !\Drupal::config('vbase.settings.users')->get('register_by_email')) {
+    return;
+  }
+  // Strip illegal characters.
+  $email_name = trim(preg_replace('/[^\x{80}-\x{F7} a-zA-Z0-9@_.\'-]/', '', str_replace('@', '_at_', $entity->getEmail())));
+  // If there's nothing left use a default.
+  if (empty($email_name)) {
+    $email_name = $name;
+  }
+  // Truncate to a reasonable size.
+  if (Unicode::strlen($email_name) > (UserInterface::USERNAME_MAX_LENGTH - 10)) {
+    $email_name = Unicode::substr($email_name, 0, UserInterface::USERNAME_MAX_LENGTH - 11);
+  }
+  $i = 0;
+  $user = FALSE;
+  do {
+    $new_name = !$i ? $email_name : $email_name . '_' . $i;
+    $user = user_load_by_name($new_name);
+    $i++;
+  } while ($user);
+  $entity->setUsername($new_name);
 }
 
 /**
@@ -173,6 +204,26 @@ function vbase_mail_alter(&$message) {
  * Implements hook_form_alter().
  */
 function vbase_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'user_register_form') {
+    $config = \Drupal::config('vbase.settings.users');
+    vbase_add_cacheable_dependency($form, $config);
+    if ($config->get('register_by_email')) {
+      $form['account']['name']['#type'] = 'value';
+      $form['account']['name']['#value'] = 'vbase_' . user_password();
+    }
+  }
+  elseif ($form_id == 'user_login_form') {
+    $config = \Drupal::config('vbase.settings.users');
+    vbase_add_cacheable_dependency($form, $config);
+    if ($config->get('login_by_email')) {
+      $form['name']['#title'] = t('Email address');
+      $form['name']['#type'] = 'email';
+      $form['name']['#maxlength'] = Email::EMAIL_MAX_LENGTH;
+      $form['name']['#element_validate'][] = 'vbase_user_login_by_email';
+      $form['name']['#description'] = t('Enter your email address.');
+      $form['pass']['#description'] = t('Enter the password that accompanies your email address.');
+    }
+  }
   $config = \Drupal::config('vbase.settings.antispam');
   vbase_add_cacheable_dependency($form, $config);
   if ($config->get('site_key') && $config->get('secret_key')
@@ -204,6 +255,29 @@ function vbase_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     }
     else {
       $form['#validate'][] = 'vbase_antispam_form_validate';
+    }
+  }
+}
+
+/**
+ * Set username by mail.
+ */
+function vbase_user_login_by_email(&$element, FormStateInterface $form_state, &$form) {
+  $mail = trim($form_state->getValue('name'));
+  if (!empty($mail)) {
+    if ($user_by_mail = user_load_by_mail($mail)) {
+      $user_by_name = user_load_by_name($mail);
+      if (!$user_by_name || $user_by_mail->id() == $user_by_name->id()) {
+        $form_state->setValue('name', $user_by_mail->getAccountName());
+      }
+      else {
+        $form_state->setError($element, t('Email validation conflict, please notify administrator.'));
+      }
+    }
+    else {
+      $user_input = $form_state->getUserInput();
+      $query = isset($user_input['name']) ? ['name' => $user_input['name']] : [];
+      $form_state->setError($element, t('Unrecognized email address or password. <a href=":password">Forgot your password?</a>', [':password' => Url::fromRoute('user.pass', [], ['query' => $query])->toString()]));
     }
   }
 }

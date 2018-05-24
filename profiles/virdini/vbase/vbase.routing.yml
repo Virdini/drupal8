@@ -54,6 +54,14 @@ vbase.settings.manifest:
   requirements:
     _permission: 'vbase site settings'
 
+vbase.settings.users:
+  path: '/admin/config/system/site-settings/users'
+  defaults:
+    _form: 'Drupal\vbase\Form\UserManagement'
+    _title: 'User Management'
+  requirements:
+    _permission: 'vbase user settings'
+
 vbase.manifest:
   path: '/manifest.json'
   defaults:
