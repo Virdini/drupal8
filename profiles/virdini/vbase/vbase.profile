@@ -242,14 +242,6 @@ function vbase_form_alter(&$form, FormStateInterface $form_state, $form_id) {
       '#markup' => '<div' . new Attribute($attributes) . '></div>',
     ];
     $form['#attached']['library'][] = 'vbase/antispam';
-    $form['#attached']['html_head'][] = [[
-      '#tag' => 'script',
-      '#attributes' => [
-        'src' => 'https://www.google.com/recaptcha/api.js?onload=vBaseAntiSpamLoad&hl='. \Drupal::service('language_manager')->getCurrentLanguage()->getId(),
-        'async' => TRUE,
-        'defer' => TRUE,
-      ],
-    ], 'recaptcha_api'];
     if ($form_id == 'user_login_form') {
       $form['vbase_antispam']['#element_validate'] = ['vbase_antispam_element_validate'];
     }
