@@ -3,7 +3,10 @@ type: profile
 description: 'Install with commonly used features pre-configured by Virdini.'
 core: 8.x
 
-version: 8.x-1.0.15
+'interface translation project': vbase
+'interface translation server pattern': https://s1.virdini.com/projects/virdini/translations/vbase.%language.po
+
+version: 8.x-1.0.16
 
 distribution:
   name: Virdini
@@ -55,6 +58,3 @@ dependencies:
 themes:
   - vadmin
   - vcurrent
-
-interface translation project: vbase
-interface translation server pattern: https://s1.virdini.com/projects/virdini/translations/vbase.%language.po
