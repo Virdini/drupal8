@@ -49,6 +49,10 @@ function vmcore_theme_suggestions_page_alter(array &$suggestions, array $variabl
     case 'entity.node.canonical':
       $suggestions[] = $variables['theme_hook_original'] .'__node__canonical';
       break;
+    case 'vamp.entity.user.canonical':
+    case 'entity.user.canonical':
+      $suggestions[] = $variables['theme_hook_original'] .'__user__canonical';
+      break;
   }
 }
 
