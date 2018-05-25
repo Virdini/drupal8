@@ -79,11 +79,14 @@ class UrlTest extends BrowserTestBase {
       'token' => 'prefix_[current-page:url:path]_suffix',
       'expected1' => 'prefix_/' . $node1_url->getInternalPath() . '_suffix',
       'expected2' => 'prefix_/' . $node2_url->getInternalPath() . '_suffix',
+      // A path can only be generated from a routed path.
+      'expected3' => 'prefix_/_suffix',
     ];
     $tests[] = [
       'token' => 'prefix_[current-page:url]_suffix',
       'expected1' => 'prefix_' . $node1_url->setAbsolute()->toString() . '_suffix',
       'expected2' => 'prefix_' . $node2_url->setAbsolute()->toString() . '_suffix',
+      'expected3' => 'prefix_' . $this->getAbsoluteUrl('does-not-exist') . '_suffix',
     ];
 
     // Place a standard block and use a token in the label.
@@ -95,6 +98,8 @@ class UrlTest extends BrowserTestBase {
     $this->placeBlock('system_powered_by_block', $edit);
     $block = Block::load('token_url_test_block');
 
+    $assert_session = $this->assertSession();
+
     foreach ($tests as $test) {
       // Set the block label.
       $block->getPlugin()->setConfigurationValue('label', $test['token']);
@@ -102,14 +107,18 @@ class UrlTest extends BrowserTestBase {
 
       // Go to the first node page and test that the token is correct.
       $this->drupalGet($node1_url);
-      $this->assertSession()
-        ->elementContains('css', '#block-token-url-test-block', $test['expected1']);
+      $assert_session->elementContains('css', '#block-token-url-test-block', $test['expected1']);
 
       // Go to the second node page and check that the block title has changed.
       $this->drupalGet($node2_url);
-      $this->assertSession()
-        ->elementContains('css', '#block-token-url-test-block', $test['expected2']);
+      $assert_session->elementContains('css', '#block-token-url-test-block', $test['expected2']);
+
+      // Test the current page url on a 404 page.
+      $this->drupalGet('does-not-exist');
+      $assert_session->statusCodeEquals(404);
+      $assert_session->elementContains('css', '#block-token-url-test-block', $test['expected3']);
     }
+
 
     // Can't do this test in the for loop above, it's too different.
     $block->getPlugin()->setConfigurationValue('label', 'prefix_[current-page:query:unicorns]_suffix');
@@ -118,13 +127,11 @@ class UrlTest extends BrowserTestBase {
     // Test the parameter token.
     $this->drupalGet($node1_url->setOption('query', ['unicorns' => 'fluffy']));
     $this->assertCacheContext('url.query_args');
-    $this->assertSession()
-      ->elementContains('css', '#block-token-url-test-block', 'prefix_fluffy_suffix');
+    $assert_session->elementContains('css', '#block-token-url-test-block', 'prefix_fluffy_suffix');
 
     // Change the parameter on the same page.
     $this->drupalGet($node1_url->setOption('query', ['unicorns' => 'dead']));
-    $this->assertSession()
-      ->elementContains('css', '#block-token-url-test-block', 'prefix_dead_suffix');
+    $assert_session->elementContains('css', '#block-token-url-test-block', 'prefix_dead_suffix');
   }
 
 }

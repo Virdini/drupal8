@@ -747,10 +747,15 @@ function token_tokens($type, array $tokens, array $data = [], array $options = [
           break;
         case 'url':
           $bubbleable_metadata->addCacheContexts(['url.path']);
-          $url = Url::createFromRequest($request)
-            ->setOptions($url_options)
-            ->toString();
-          $replacements[$original] = $url;
+          try {
+            $url = Url::createFromRequest($request)->setOptions($url_options);
+          }
+          catch (\Exception $e) {
+            // Url::createFromRequest() can fail, e.g. on 404 pages, fall back
+            // the <current> route.
+            $url = Url::fromUserInput($request->getPathInfo(), $url_options);
+          }
+          $replacements[$original] = $url->toString();
           break;
         case 'page-number':
           if ($page = $request->query->get('page')) {
@@ -790,7 +795,14 @@ function token_tokens($type, array $tokens, array $data = [], array $options = [
 
     // Chained token relationships.
     if ($url_tokens = \Drupal::token()->findWithPrefix($tokens, 'url')) {
-      $url = Url::createFromRequest($request);
+      try {
+        $url = Url::createFromRequest($request)->setOptions($url_options);
+      }
+      catch (\Exception $e) {
+        // Url::createFromRequest() can fail, e.g. on 404 pages, fall back
+        // the <current> route.
+        $url = Url::fromUserInput($request->getPathInfo(), $url_options);
+      }
       // Add cache contexts to ensure this token functions on a per-path basis
       $bubbleable_metadata->addCacheContexts(['url.path']);
       $replacements += \Drupal::token()->generate('url', $url_tokens, ['url' => $url], $options, $bubbleable_metadata);
