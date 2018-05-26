@@ -486,6 +486,7 @@ function vbase_page_attachments_alter(array &$attachments) {
   if (!$config->get('shortlink')) {
     $keys[] = 'shortlink';
   }
+  $base = FALSE;
   $route_match = \Drupal::routeMatch();
   $route = \Drupal::routeMatch()->getRouteObject();
   if (!$route->hasOption('_vamp') && !in_array($route_match->getRouteName(), ['comment.reply'])) {
