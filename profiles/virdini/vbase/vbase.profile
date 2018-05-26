@@ -486,8 +486,12 @@ function vbase_page_attachments_alter(array &$attachments) {
   if (!$config->get('shortlink')) {
     $keys[] = 'shortlink';
   }
-  if ($base = $config->get('base')) {
-    $keys[] = 'canonical';
+  $route_match = \Drupal::routeMatch();
+  $route = \Drupal::routeMatch()->getRouteObject();
+  if (!$route->hasOption('_vamp') && !in_array($route_match->getRouteName(), ['comment.reply'])) {
+    if ($base = $config->get('base')) {
+      $keys[] = 'canonical';
+    }
   }
   if (!empty($keys) && isset($attachments['#attached']['html_head_link'])) {
     foreach ($attachments['#attached']['html_head_link'] as $key => $value) {
@@ -497,7 +501,7 @@ function vbase_page_attachments_alter(array &$attachments) {
     }
   }
   if ($base) {
-    $url = \Drupal::service('path.matcher')->isFrontPage() ? Url::fromRoute('<front>') : Url::fromRouteMatch(\Drupal::routeMatch());
+    $url = \Drupal::service('path.matcher')->isFrontPage() ? Url::fromRoute('<front>') : Url::fromRouteMatch($route_match);
     $canonical = $base . $url->toString();
     global $pager_page_array;
     if (is_array($pager_page_array) && !empty($pager_page_array) && ($pager_page_array[0] != 0 || count($pager_page_array) > 1)) {
@@ -526,8 +530,12 @@ function vbase_entity_view_alter(array &$build) {
     if (!$config->get('shortlink')) {
       $keys[] = 'shortlink';
     }
-    if ($config->get('base')) {
-      $keys[] = 'canonical';
+    $route_match = \Drupal::routeMatch();
+    $route = \Drupal::routeMatch()->getRouteObject();
+    if (!$route->hasOption('_vamp')) {
+      if ($config->get('base')) {
+        $keys[] = 'canonical';
+      }
     }
     foreach ($build['#attached']['html_head_link'] as $key => $value) {
       if (isset($value[0]['rel']) && in_array($value[0]['rel'], $keys)) {
