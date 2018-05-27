@@ -70,6 +70,9 @@ function vmcore_theme_suggestions_responsive_image_alter(array &$suggestions, ar
  */
 function vmcore_library_info_alter(&$libraries, $extension) {
   switch ($extension) {
+    case 'vbase':
+      $libraries['youtube']['css']['component']['css/youtube.css']['vcrit'] = TRUE;
+      break;
     case 'core':
       $libraries['normalize']['css']['base']['assets/vendor/normalize-css/normalize.css']['vcrit'] = TRUE;
       break;

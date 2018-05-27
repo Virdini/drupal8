@@ -324,6 +324,16 @@ function vbase_theme() {
     'developers' => [
       'variables' => [],
     ],
+    'vbase_youtube' => [
+      'variables' => [
+        'attributes' => [],
+        'id' => NULL,
+        'width' => NULL,
+        'height' => NULL,
+        'responsive' => NULL,
+      ],
+      'file' => 'vbase.theme.inc',
+    ],
   ];
 }
 

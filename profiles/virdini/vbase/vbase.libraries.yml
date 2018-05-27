@@ -1,3 +1,8 @@
+youtube:
+  css:
+    component:
+      css/youtube.css: {}
+
 developers.settings:
   css:
     component:
