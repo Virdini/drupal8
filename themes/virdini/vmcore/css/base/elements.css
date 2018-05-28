@@ -35,6 +35,10 @@ figure.align-center,
 figure.align-right {
   text-align: center;
 }
+.vtable {
+  max-width: 100%;
+  overflow-x: auto;
+}
 /**
  * Reusable heading classes are included to help modules change the styling of
  * headings on a page without affecting accessibility.
