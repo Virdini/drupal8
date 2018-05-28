@@ -520,7 +520,7 @@ function vbase_page_attachments_alter(array &$attachments) {
     }
     $attachments['#attached']['html_head_link'][] = [
       ['rel' => 'canonical', 'href' => $canonical],
-      FALSE,
+      TRUE,
     ];
   }
 }
