@@ -21,6 +21,13 @@ use Drupal\Core\Render\Element\Email;
 use Drupal\user\UserInterface;
 
 /**
+ * Implements hook_google_tag_snippets_alter().
+ */
+function vbase_google_tag_snippets_alter(&$snippets) {
+  $snippets['noscript'] = str_replace('<noscript', '<noscript class="visually-hidden"', $snippets['noscript']);
+}
+
+/**
  * Implements hook_entity_access().
  */
 function vbase_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
