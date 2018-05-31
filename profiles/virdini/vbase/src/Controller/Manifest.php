@@ -4,6 +4,7 @@ namespace Drupal\vbase\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Cache\CacheableJsonResponse;
+use Drupal\Core\Url;
 
 /**
  * Provides a 'Manifest'
@@ -15,7 +16,7 @@ class Manifest extends ControllerBase {
     $output = [
      	'dir' => $lang->getDirection(),
       'lang'=> $lang->getId(),
-      'start_url' => './?utm_source=web_app_manifest',
+      'start_url' => './?utm_source=manifest&utm_medium=manifest&utm_campaign=manifest',
       'icons' => [],
     ];
     $config = $this->config('vbase.settings.manifest');
