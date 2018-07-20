@@ -76,7 +76,7 @@ class DefineCanvas extends ImagickOperationBase {
       $success = $canvas->compositeImage($resource, Imagick::COMPOSITE_DEFAULT, $x, $y);
     }
 
-    $resource = $canvas->clone();
+    $resource = clone $canvas;
     return $success;
   }
 
