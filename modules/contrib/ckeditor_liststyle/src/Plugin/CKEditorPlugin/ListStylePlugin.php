@@ -68,7 +68,20 @@ class ListStylePlugin extends PluginBase implements CKEditorPluginInterface, CKE
    * {@inheritdoc}
    */
   public function getFile() {
-    return 'libraries/liststyle/plugin.js';
+    $plugin_paths = [
+      'libraries/liststyle/plugin.js',
+      'libraries/ckeditor/plugins/liststyle/plugin.js',
+    ];
+
+    $plugin = FALSE;
+    foreach ($plugin_paths as $plugin_path) {
+      if (file_exists(DRUPAL_ROOT . '/' . $plugin_path)) {
+        $plugin = $plugin_path;
+        break;
+      }
+    }
+
+    return $plugin;
   }
 
   /**
