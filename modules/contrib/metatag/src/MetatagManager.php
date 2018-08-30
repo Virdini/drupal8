@@ -7,7 +7,6 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\metatag\Entity\MetatagDefaults;
 use Drupal\views\ViewEntityInterface;
 
 /**
@@ -246,7 +245,6 @@ class MetatagManager implements MetatagManagerInterface {
 
     $groups_and_tags = $this->sortedGroupsWithTags();
 
-    $first = TRUE;
     foreach ($groups_and_tags as $group_name => $group) {
       // Only act on groups that have tags and are in the list of included
       // groups (unless that list is null).
@@ -255,8 +253,7 @@ class MetatagManager implements MetatagManagerInterface {
         $element[$group_name]['#type'] = 'details';
         $element[$group_name]['#title'] = $group['label'];
         $element[$group_name]['#description'] = $group['description'];
-        $element[$group_name]['#open'] = $first;
-        $first = FALSE;
+        $element[$group_name]['#open'] = FALSE;
 
         foreach ($group['tags'] as $tag_name => $tag) {
           // Only act on tags in the included tags list, unless that is null.
@@ -267,6 +264,11 @@ class MetatagManager implements MetatagManagerInterface {
             // Set the value to the stored value, if any.
             $tag_value = isset($values[$tag_name]) ? $values[$tag_name] : NULL;
             $tag->setValue($tag_value);
+
+            // Open any groups that have non-empty values.
+            if (!empty($tag_value)) {
+              $element[$group_name]['#open'] = TRUE;
+            }
 
             // Create the bit of form for this tag.
             $element[$group_name][$tag_name] = $tag->form($element);
@@ -313,6 +315,8 @@ class MetatagManager implements MetatagManagerInterface {
    *   The ContentEntityInterface object.
    * @param string $field_name
    *   The name of the field to work on.
+   *
+   * @return array
    */
   protected function getFieldTags(ContentEntityInterface $entity, $field_name) {
     $tags = [];
@@ -466,6 +470,12 @@ class MetatagManager implements MetatagManagerInterface {
    *   Render array with tag elements.
    */
   public function generateRawElements(array $tags, $entity = NULL) {
+    // Ignore the update.php path.
+    $request = \Drupal::request();
+    if ($request->getBaseUrl() == '/update.php') {
+      return [];
+    }
+
     $rawTags = [];
 
     $metatag_tags = $this->tagPluginManager->getDefinitions();
@@ -507,12 +517,7 @@ class MetatagManager implements MetatagManagerInterface {
         $tag->setValue($value);
         $langcode = \Drupal::languageManager()->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
 
-        if ($tag->type() === 'image') {
-          $processed_value = $this->tokenService->replace($tag->value(), $token_replacements, ['langcode' => $langcode]);
-        }
-        else {
-          $processed_value = PlainTextOutput::renderFromHtml(htmlspecialchars_decode($this->tokenService->replace($tag->value(), $token_replacements, ['langcode' => $langcode])));
-        }
+        $processed_value = PlainTextOutput::renderFromHtml(htmlspecialchars_decode($this->tokenService->replace($tag->value(), $token_replacements, ['langcode' => $langcode])));
 
         // Now store the value with processed tokens back into the plugin.
         $tag->setValue($processed_value);
@@ -521,7 +526,12 @@ class MetatagManager implements MetatagManagerInterface {
         $output = $tag->output();
 
         if (!empty($output)) {
-          $rawTags[$tag_name] = $output;
+          $output = $tag->multiple() ? $output : [$output];
+          foreach ($output as $index => $element) {
+            // Add index to tag name as suffix to avoid having same key.
+            $index_tag_name = $tag->multiple() ? $tag_name . '_' . $index : $tag_name;
+            $rawTags[$index_tag_name] = $element;
+          }
         }
       }
     }
