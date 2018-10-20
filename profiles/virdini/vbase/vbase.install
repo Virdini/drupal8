@@ -49,10 +49,6 @@ function vbase_final_setup(&$install_state) {
   $config->getEditable('views.settings')
     ->set('ui.always_live_preview', FALSE)
     ->save(TRUE);
-  // Fix watchdog empty text format
-  $config->getEditable('views.view.watchdog')
-    ->set('display.default.display_options.empty.area.content.format', 'full_html')
-    ->save(TRUE);
   // Disable unnecessary views
   $config->getEditable('views.view.content_recent')
     ->set('status', FALSE)
