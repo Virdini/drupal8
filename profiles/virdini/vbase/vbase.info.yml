@@ -44,7 +44,6 @@ dependencies:
   - editor_advanced_link
   - editor_file
   - google_tag
-  - linkit
   - mailsystem
   - metatag
   - pathauto
