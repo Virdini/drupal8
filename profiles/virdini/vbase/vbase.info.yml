@@ -21,7 +21,6 @@ dependencies:
   - contextual
   - menu_link_content
   - datetime
-  - quickedit
   - editor
   - image
   - menu_ui
