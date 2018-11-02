@@ -4,7 +4,7 @@
     label_display == 'visually_hidden' ? 'visually-hidden',
   ]
 %}
-{% set attributes = attributes.setAttribute('data-fn', field_name|trim('field_', 'left')).addClass('field') %}
+{% set attributes = attributes.setAttribute('data-fn', field_name|replace({'field_': ''})).addClass('field') %}
 
 {% if label_hidden %}
   {% if multiple %}
