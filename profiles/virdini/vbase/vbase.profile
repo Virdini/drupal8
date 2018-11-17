@@ -35,7 +35,7 @@ function vbase_entity_access(EntityInterface $entity, $operation, AccountInterfa
     case 'view':
       if (in_array($entity->getEntityTypeId(), ['node', 'taxonomy_term'])) {
         $config = \Drupal::config('vbase.settings.cp');
-        $bundles = $config->get($entity->getEntityTypeId() == 'node' ? 'node_bundles' : '');
+        $bundles = $config->get($entity->getEntityTypeId() == 'node' ? 'node_bundles' : 'taxonomy_vocabularies');
         return AccessResult::forbiddenIf(!empty($bundles) && in_array($entity->bundle(), $bundles)
                                          && !$account->hasPermission('vbase view protected content'))
                 ->addCacheableDependency($config)
