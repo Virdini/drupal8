@@ -18,10 +18,6 @@ function vbase_install_tasks(&$install_state) {
 
 function vbase_final_setup(&$install_state) {
   $config = \Drupal::configFactory();
-  // Locally cache google analytics tracking code file
-  $config->getEditable('google_analytics.settings')
-    ->set('cache', TRUE)
-    ->save(TRUE);
   // Disable detailed cron logging
   $config->getEditable('system.cron')
     ->set('logging', FALSE)
