@@ -188,17 +188,17 @@ function vbase_mail_alter(&$message) {
   if (isset($message['params']['vbase_attachments'])
       && is_array($message['params']['vbase_attachments'])) {
     $uid = 'vbase-' . md5(uniqid(time(), TRUE));
-    $lines = 'This is a multi-part message in MIME format.'."\r\n";
+    $lines = '';
     $lines .= "--$uid\r\n";
     $lines .= 'Content-Type: '. $message['headers']['Content-Type'] ."\r\n\r\n";
-    $lines .= wordwrap(implode("\r\n\r\n", $message['body'])) . "\r\n\r\n";
+    $lines .= wordwrap(implode("\r\n\r\n", $message['body'])) . "\r\n";
     foreach ($message['params']['vbase_attachments'] as $attachment) {
       if ($attachment['content']) {
-        $lines .= "--$uid\r\n";
+        $lines .= "\r\n--$uid\r\n";
         $lines .= 'Content-Type: '. $attachment['mime'] .'; name="'. $attachment['name'] ."\"\r\n";
-        $lines .= 'Content-Transfer-Encoding: base64'."\r\n";
         $lines .= 'Content-Disposition: attachment; filename="'. $attachment['name'] ."\"\r\n";
-        $lines .= chunk_split(base64_encode($attachment['content'])) ."\r\n\r\n";
+        $lines .= 'Content-Transfer-Encoding: base64'."\r\n\r\n";
+        $lines .= chunk_split(base64_encode($attachment['content']));
       }
     }
     $lines .= "--$uid--";
