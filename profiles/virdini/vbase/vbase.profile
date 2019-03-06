@@ -169,6 +169,21 @@ function vbase_form_node_form_alter(&$form) {
 }
 
 /**
+ * Implements hook_form_BASE_FORM_ID_alter() for the taxonomy_term_form().
+ */
+function vbase_form_taxonomy_term_form_alter(&$form, FormStateInterface &$form_state) {
+  if (!isset($form['advanced'])) {
+    $form['advanced'] = [
+      '#type' => 'vertical_tabs',
+      '#weight' => 99,
+    ];
+  }
+  if (isset($form['relations']['#type']) && $form['relations']['#type'] == 'details') {
+   $form['relations']['#group'] = 'advanced';
+  }
+}
+
+/**
  * Implements hook_form_FORM_ID_alter() for install_configure_form().
  */
 function vbase_form_install_configure_form_alter(&$form) {
