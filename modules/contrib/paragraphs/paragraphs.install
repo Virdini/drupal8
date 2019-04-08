@@ -316,16 +316,26 @@ function paragraphs_update_8018(&$sandbox) {
         'binary' => FALSE,
         'not null' => FALSE,
       ];
-      $database->schema()
-        ->addField('paragraphs_item_revision_field_data', $field_name, $column_schema);
+      // Create fields if they don't already exist.
+      if (!$database->schema()->fieldExists('paragraphs_item_revision_field_data', $field_name)) {
+        $database->schema()
+          ->addField('paragraphs_item_revision_field_data', $field_name, $column_schema);
+      }
     }
 
     // Get all paragraphs to update.
-    $paragraphs = \Drupal::entityQuery('paragraph')
-      ->count()
-      ->execute();
+    $paragraphs = \Drupal::database()->select('paragraphs_item_field_data', 'p')
+      ->countQuery()
+      ->execute()
+      ->fetchField(0);
     $sandbox['total'] = $paragraphs;
     $sandbox['current'] = 0;
+  }
+
+  // Do not continue if no paragraphs are found.
+  if (empty($sandbox['total'])) {
+    $sandbox['#finished'] = 1;
+    return t('No Paragraphs to be processed.');
   }
 
   $paragraphs_per_batch = 50;
