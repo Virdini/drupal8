@@ -5,10 +5,14 @@ dependencies:
     - core.entity_view_mode.node.teaser
   module:
     - node
+    - rest
+    - serialization
     - user
     - views_custom_cache_tag
-id: view_node_type_ab
-label: 'View node type AB'
+_core:
+  default_config_hash: UP6Mfn5ZmnDBrTJRHjT0bFszPG_SofJqAKk78INdqcs
+id: view_node_type_ab_rest
+label: 'View node type AB REST'
 module: views
 description: ''
 tag: ''
@@ -196,21 +200,21 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }
-  page_1:
-    display_plugin: page
-    id: page_1
-    display_title: Page
-    position: 1
+  rest_export_1:
+    display_plugin: rest_export
+    id: rest_export_1
+    display_title: 'REST export'
+    position: 2
     display_options:
       display_extenders: {  }
-      path: custom-cache-tags/%
+      path: rest/custom-cache-tags/%
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
+        - request_format
         - url
-        - url.query_args
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }
