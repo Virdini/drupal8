@@ -59,6 +59,9 @@ function vbase_node_presave(EntityInterface $entity) {
   if ($entity->get('pubdate')->getString() == 0) {
     $entity->get('pubdate')->setValue([]);
   }
+  if ($entity->get('unpubdate')->getString() == 0) {
+    $entity->get('unpubdate')->setValue([]);
+  }
 }
 
 /**
@@ -68,6 +71,9 @@ function vbase_node_load($entities) {
   foreach ($entities as $entity) {
     if ($entity->get('pubdate')->getString() == 0) {
       $entity->get('pubdate')->setValue([]);
+    }
+    if ($entity->get('unpubdate')->getString() == 0) {
+      $entity->get('unpubdate')->setValue([]);
     }
   }
 }
@@ -106,6 +112,7 @@ function vbase_user_presave(EntityInterface $entity) {
  */
 function vbase_cron() {
   $storage = \Drupal::entityTypeManager()->getStorage('node');
+  // Delayed publish
   $query = $storage->getQuery();
   $query->condition('status', 0)
         ->condition('pubdate', 0, '<>')
@@ -118,11 +125,30 @@ function vbase_cron() {
       }
     }
   }
+  // Delayed unpublish
+  $query = $storage->getQuery();
+  $query->condition('status', 0)
+        ->condition('unpubdate', 0, '<>')
+        ->condition('unpubdate', time(), '<');
+  foreach ($storage->loadMultiple($query->execute()) as $entity) {
+    _vbase_unpublish_delayed($entity);
+    if ($entity->isTranslatable()) {
+      foreach ($entity->getTranslationLanguages(FALSE) as $lang) {
+        _vbase_unpublish_delayed($entity->getTranslation($lang->getId()));
+      }
+    }
+  }
 }
 
 function _vbase_publish_delayed(EntityInterface $entity) {
   if (!$entity->isPublished() && $entity->get('pubdate')->getString() != 0 && $entity->get('pubdate')->getString() <= time()) {
     $entity->setPublished(TRUE)->save();
+  }
+}
+
+function _vbase_unpublish_delayed(EntityInterface $entity) {
+  if ($entity->isPublished() && $entity->get('unpubdate')->getString() != 0 && $entity->get('unpubdate')->getString() <= time()) {
+    $entity->setPublished(FALSE)->save();
   }
 }
 
@@ -132,8 +158,19 @@ function _vbase_publish_delayed(EntityInterface $entity) {
 function vbase_entity_base_field_info(EntityTypeInterface $entity_type) {
   if ($entity_type->id() == 'node') {
     $fields['pubdate'] = BaseFieldDefinition::create('timestamp')
-      ->setLabel(t('Published on'))
-      ->setDescription(t('The time that the node was published.'))
+      ->setLabel(t('Published from'))
+      ->setDescription(t('The time that the node must be published.'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'vbase_datetime_timestamp',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+    $fields['unpubdate'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Unpublished from'))
+      ->setDescription(t('The time that the node must be unpublished.'))
       ->setRevisionable(TRUE)
       ->setTranslatable(TRUE)
       ->setDisplayOptions('form', [
@@ -150,7 +187,7 @@ function vbase_entity_base_field_info(EntityTypeInterface $entity_type) {
  * Implements hook_entity_field_access()
  */
 function vbase_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account) {
-  if ($operation == 'edit' && $field_definition->getName() == 'pubdate' && $field_definition->getTargetEntityTypeId() == 'node') {
+  if ($operation == 'edit' && in_array($field_definition->getName(), ['pubdate', 'unpubdate']) && $field_definition->getTargetEntityTypeId() == 'node') {
     if ($account->hasPermission('pubdate field admin') || $account->hasPermission($field_definition->getTargetEntityTypeId() .' pubdate field')) {
       return AccessResult::allowed()->cachePerPermissions();
     }
@@ -165,6 +202,9 @@ function vbase_entity_field_access($operation, FieldDefinitionInterface $field_d
 function vbase_form_node_form_alter(&$form) {
   if (isset($form['pubdate'])) {
     $form['pubdate']['#group'] = 'author';
+  }
+  if (isset($form['unpubdate'])) {
+    $form['unpubdate']['#group'] = 'author';
   }
 }
 

@@ -62,7 +62,8 @@ function vbase_final_setup(&$install_state) {
     ->set('status', FALSE)
     ->save(TRUE);
 
-  vbase_update_8004();
+  // Add indexes
+  _vbase_add_indexes();
 }
 
 /**
@@ -81,31 +82,51 @@ function vbase_update_8001() {
 }
 
 /**
- * Add base field 'Published on' to nodes
+ * Add base fields 'Published from' and 'Unpublished from' to nodes
  */
-function vbase_update_8004() {
-  \Drupal::entityDefinitionUpdateManager()->applyUpdates();
+function vbase_update_8005() {
+  // Install fields
+  $manager = \Drupal::service('entity.definition_update_manager');
+  if ($manager->needsUpdates()) {
+    /**
+     * @see https://www.drupal.org/node/3034742
+     */
+    $fields = $manager->getChangeList();
+    $storage_definitions = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions('node');
+    foreach (['pubdate', 'unpubdate'] as $field) {
+      if (isset($fields['node']['field_storage_definitions'][$field])
+          && isset($storage_definitions[$field])
+          && $fields['node']['field_storage_definitions'][$field] == $manager::DEFINITION_CREATED) {
+        $manager->installFieldStorageDefinition($field, 'node', 'vbase', $storage_definitions[$field]);
+      }
+    }
+  }
+  // Add indexes
+  _vbase_add_indexes();
+}
+
+/**
+ * Add indexes for base fields 'Published from' and 'Unpublished from'
+ */
+function _vbase_add_indexes() {
   $db = \Drupal::database();
   $entity_type = \Drupal::entityTypeManager()->getDefinition('node');
   $table = $entity_type->getDataTable() ?: $entity_type->getBaseTable();
-  $spec = [
-    'type' => 'int',
-  ];
-  $keys_new = [
-    'fields' => [
-      'status' => [
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-        'size' => 'tiny',
-      ],
-      'pubdate' => [
-        'type' => 'int',
-      ],
-    ],
-    'indexes' => [
-      'pubstatus' => ['status', 'pubdate'],
-    ],
-  ];
-  $db->schema()->changeField($table, 'pubdate', 'pubdate', $spec, $keys_new);
+  $schema = $db->schema();
+  foreach (['pubdate' => 'pubstatus', 'unpubdate' => 'unpubstatus'] as $field => $index) {
+    if (!$schema->indexExists($table, $index)) {
+      $spec = [
+        'fields' => [
+          'status' => [
+            'type' => 'int',
+          ],
+          $field => [
+            'type' => 'int',
+          ],
+        ],
+      ];
+      $schema->addIndex($table, $index, ['status', $field], $spec);
+    }
+  }
 }
+
