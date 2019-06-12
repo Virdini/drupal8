@@ -10,3 +10,4 @@ excluded_languages: {  }
 enabled_entity_types:
   - node
   - taxonomy_term
+default_variant: default
