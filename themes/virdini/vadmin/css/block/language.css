@@ -1,0 +1,14 @@
+.language-switcher-language-url ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  text-align: right;
+  text-transform: uppercase;
+}
+.language-switcher-language-url ul li {
+  display: inline;
+  padding: 0 0 0 1em;
+}
+.language-switcher-language-url .is-active a {
+  color: inherit;
+}

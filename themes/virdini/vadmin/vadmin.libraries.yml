@@ -1,0 +1,4 @@
+language.block:
+  css:
+    component:
+      css/block/language.css: {}

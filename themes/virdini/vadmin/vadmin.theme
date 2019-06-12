@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * Implements hook_preprocess_HOOK() for hook: 'links__language_block'.
+ */
+function vadmin_preprocess_links__language_block(&$variables) {
+  foreach ($variables['links'] as $langcode => &$link) {
+    if (isset($link['link'])) {
+      $link['link']['#options']['attributes']['class'] = [$langcode];
+      $link['link']['#options']['set_active_class'] = FALSE;
+      $link['link']['#options']['attributes']['title'] = $link['link']['#title'];
+      $link['link']['#title'] = ['#markup' => $langcode];
+    }
+  }
+  $variables['#attached']['library'][] = 'vadmin/language.block';
+}
