@@ -72,10 +72,10 @@ class ImageCaptchaSettingsForm extends ConfigFormBase {
     // First some error checking.
     $setup_status = _image_captcha_check_setup(FALSE);
     if ($setup_status & IMAGE_CAPTCHA_ERROR_NO_GDLIB) {
-      drupal_set_message($this->t(
+      $this->messenger()->addError($this->t(
         'The Image CAPTCHA module can not generate images because your PHP setup does not support it (no <a href="!gdlib" target="_blank">GD library</a> with JPEG support).',
         ['!gdlib' => 'http://php.net/manual/en/book.image.php']
-      ), 'error');
+      ));
       // It is no use to continue building the rest of the settings form.
       return $form;
     }
@@ -336,7 +336,7 @@ class ImageCaptchaSettingsForm extends ConfigFormBase {
       // Put these fonts with preview image in the list.
       foreach ($fonts as $token => $font) {
 
-        $title = t('Font preview of @font (@file)', [
+        $title = $this->t('Font preview of @font (@file)', [
           '@font' => $font['name'],
           '@file' => $font['uri'],
         ]);
@@ -350,14 +350,14 @@ class ImageCaptchaSettingsForm extends ConfigFormBase {
       }
 
       // Append the PHP built-in font at the end.
-      $title = t('Preview of built-in font');
+      $title = $this->t('Preview of built-in font');
       $attributes = [
         'src' => Url::fromRoute('image_captcha.font_preview', ['token' => 'BUILTIN'])
           ->toString(),
         'alt' => $title,
         'title' => $title,
       ];
-      $available_fonts['BUILTIN'] = (string) t('PHP built-in font: font_preview', [
+      $available_fonts['BUILTIN'] = (string) $this->t('PHP built-in font: font_preview', [
         'font_preview' => '<img' . new Attribute($attributes) . ' />',
       ]);
 

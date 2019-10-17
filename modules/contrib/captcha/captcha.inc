@@ -23,7 +23,7 @@ use Drupal\Core\Render\Element;
  *   and $captcha_type->captcha_type.
  */
 function captcha_set_form_id_setting($form_id, $captcha_type) {
-  /* @var CaptchaPoint $captcha_point */
+  /* @var Drupal\captcha\Entity\CaptchaPoint $captcha_point */
   $captcha_point = CaptchaPoint::load($form_id);
 
   if ($captcha_point) {
@@ -84,12 +84,12 @@ function _captcha_generate_captcha_session($form_id = NULL, $status = CAPTCHA_ST
 
   // Insert an entry and thankfully receive the value
   // of the autoincrement field 'csid'.
-  $captcha_sid = db_insert('captcha_sessions')
+  $captcha_sid = \Drupal::database()->insert('captcha_sessions')
     ->fields([
       'uid' => $user->id(),
       'sid' => session_id(),
-      'ip_address' => Drupal::request()->getClientIp(),
-      'timestamp' => REQUEST_TIME,
+      'ip_address' => \Drupal::request()->getClientIp(),
+      'timestamp' => \Drupal::time()->getRequestTime(),
       'form_id' => $form_id,
       'solution' => $solution,
       'status' => $status,
@@ -108,10 +108,10 @@ function _captcha_generate_captcha_session($form_id = NULL, $status = CAPTCHA_ST
  *   The new solution to associate with the given CAPTCHA session.
  */
 function _captcha_update_captcha_session($captcha_sid, $solution) {
-  db_update('captcha_sessions')
+  \Drupal::database()->update('captcha_sessions')
     ->condition('csid', $captcha_sid)
     ->fields([
-      'timestamp' => REQUEST_TIME,
+      'timestamp' => \Drupal::time()->getRequestTime(),
       'solution' => $solution,
     ])
     ->execute();
@@ -134,7 +134,13 @@ function _captcha_required_for_user($captcha_sid, $form_id) {
   }
 
   // Get the status of the current CAPTCHA session.
-  $captcha_session_status = db_query('SELECT status FROM {captcha_sessions} WHERE csid = :csid', [':csid' => $captcha_sid])->fetchField();
+  $captcha_session_status = \Drupal::database()
+    ->select('captcha_sessions', 'cs')
+    ->fields('cs', ['status'])
+    ->condition('csid', $captcha_sid)
+    ->execute()
+    ->fetchField();
+
   // Second check: if the current session is already
   // solved: omit further CAPTCHAs.
   if ($captcha_session_status == CAPTCHA_STATUS_SOLVED) {
@@ -242,7 +248,7 @@ function _captcha_get_captcha_placement($form_id, $form) {
       if (count($buttons)) {
         // Pick first button.
         // TODO: make this more sofisticated? Use cases needed.
-        $placement = $buttons[0];
+        $placement = (isset($buttons[count($buttons) - 1])) ? $buttons[count($buttons) - 1] : $buttons[0];
       }
       else {
         // Use NULL when no buttons were found.

@@ -4,6 +4,7 @@ namespace Drupal\captcha\Form;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -22,16 +23,26 @@ class CaptchaSettingsForm extends ConfigFormBase {
   protected $cacheBackend;
 
   /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * Constructs a \Drupal\captcha\Form\CaptchaSettingsForm object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
    *   Cache backend instance to use.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
+   *   Module handler.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, CacheBackendInterface $cache_backend) {
+  public function __construct(ConfigFactoryInterface $config_factory, CacheBackendInterface $cache_backend, ModuleHandlerInterface $moduleHandler) {
     parent::__construct($config_factory);
     $this->cacheBackend = $cache_backend;
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -40,7 +51,8 @@ class CaptchaSettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('cache.default')
+      $container->get('cache.default'),
+      $container->get('module_handler')
     );
   }
 
@@ -82,6 +94,13 @@ class CaptchaSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('default_challenge'),
     ];
 
+    // Option for enabling CAPTCHA for all forms.
+    $form['form_protection']['enabled_default'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Default challenge on non-listed forms.'),
+      '#description' => $this->t('Enable CAPTCHA for every form not listed here'),
+      '#default_value' => $config->get('enabled_default'),
+    ];
     // Field for the CAPTCHA administration mode.
     $form['form_protection']['administration_mode'] = [
       '#type' => 'checkbox',
@@ -179,7 +198,7 @@ class CaptchaSettingsForm extends ConfigFormBase {
     ];
 
     // Replace the description with a link if dblog.module is enabled.
-    if (\Drupal::moduleHandler()->moduleExists('dblog')) {
+    if ($this->moduleHandler->moduleExists('dblog')) {
       $form['log_wrong_responses']['#description'] = $this->t('Report information about wrong responses to the <a href=":dblog">log</a>.', [
         ':dblog' => Url::fromRoute('dblog.overview')->toString(),
       ]);
@@ -203,6 +222,7 @@ class CaptchaSettingsForm extends ConfigFormBase {
     $config->set('administration_mode', $form_state->getValue('administration_mode'));
     $config->set('allow_on_admin_pages', $form_state->getValue('allow_on_admin_pages'));
     $config->set('default_challenge', $form_state->getValue('default_challenge'));
+    $config->set('enabled_default', $form_state->getValue('enabled_default'));
 
     // CAPTCHA description stuff.
     $config->set('add_captcha_description', $form_state->getValue('add_captcha_description'));
@@ -214,7 +234,7 @@ class CaptchaSettingsForm extends ConfigFormBase {
     $config->set('enable_stats', $form_state->getValue('enable_stats'));
     $config->set('log_wrong_responses', $form_state->getValue('log_wrong_responses'));
     $config->save();
-    drupal_set_message($this->t('The CAPTCHA settings have been saved.'), 'status');
+    $this->messenger()->addStatus($this->t('The CAPTCHA settings have been saved.'));
 
     parent::submitForm($form, $form_state);
   }
@@ -224,12 +244,12 @@ class CaptchaSettingsForm extends ConfigFormBase {
    *
    * @param array $form
    *   Form structured array.
-   * @param FormStateInterface $form_state
+   * @param Drupal\Core\Form\FormStateInterface $form_state
    *   Form state structured array.
    */
   public function clearCaptchaPlacementCacheSubmit(array $form, FormStateInterface $form_state) {
     $this->cacheBackend->delete('captcha_placement_map_cache');
-    drupal_set_message($this->t('Cleared the CAPTCHA placement cache.'));
+    $this->messenger()->addMessage($this->t('Cleared the CAPTCHA placement cache.'));
   }
 
 }
