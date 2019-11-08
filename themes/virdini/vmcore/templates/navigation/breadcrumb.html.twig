@@ -1,17 +1,17 @@
 {% spaceless %}
 {% if breadcrumb %}
 {{ attach_library('vmcore/breadcrumb') }}
-  {% if breadcrumb|length > 2 %}
+  {% if breadcrumb|length > 1 %}
       <ol itemtype="http://schema.org/BreadcrumbList" itemscope{{ attributes.addClass('crumb')|without('itemtype', 'itemscope') }}>
       {% for key, item in breadcrumb %}
+        <li itemprop="itemListElement" itemtype="http://schema.org/ListItem" itemscope>
         {% if item.url %}
-          <li itemprop="itemListElement" itemtype="http://schema.org/ListItem" itemscope>
-            <a itemprop="item" href="{{ item.url }}"><span itemprop="name">{{ item.text }}</span></a>
-            <meta itemprop="position" content="{{ key + 1 }}">
-          </li>
+          <a itemprop="item" href="{{ item.url }}"><span itemprop="name">{{ item.text }}</span></a>
         {% else %}
-          <li>{{ item.text }}</li>
+          <span itemprop="name">{{ item.text }}</span>
         {% endif %}
+          <meta itemprop="position" content="{{ key + 1 }}">
+        </li>
       {% endfor %}
   {% else %}
     <ol{{ attributes.addClass('crumb')|without('itemprop') }}>
