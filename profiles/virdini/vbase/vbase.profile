@@ -403,6 +403,7 @@ function vbase_theme() {
  * Implements template_preprocess_HOOK().
  */
 function template_preprocess_developers(array &$variables) {
+  $variables['attributes']['href'] = 'https://virdini.com';
   $config = \Drupal::config('vbase.settings.developers');
   vbase_add_cacheable_dependency($variables, $config);
   if (!($variables['logo'] = $config->get('logo'))) {
@@ -427,6 +428,15 @@ function template_preprocess_developers(array &$variables) {
       $variables['title'] = t('Website was developed and maintained by Virdini');
       $variables['label'] = t('Developed and maintained');
       break;
+  }
+  if ($config->get('nofollow')) {
+    $variables['attributes']['rel'] = 'nofollow';
+  }
+  if (!isset($variables['attributes']['title'])) {
+    $variables['attributes']['title'] = $variables['title'];
+  }
+  if (!isset($variables['attributes']['target'])) {
+    $variables['attributes']['target'] = '_blank';
   }
 }
 

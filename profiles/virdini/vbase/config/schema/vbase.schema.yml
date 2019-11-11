@@ -42,6 +42,9 @@ vbase.settings.developers:
   type: config_object
   label: 'Developers Settings'
   mapping:
+    nofollow:
+      type: boolean
+      label: 'Nofollow'
     developed:
       type: boolean
       label: 'Developed'

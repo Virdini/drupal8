@@ -51,7 +51,6 @@ class DevelopersSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('vbase.settings.developers');
-
     $form['#attached']['library'][] = 'vbase/developers.settings';
 
     $logo = $config->get('logo') ?: 'logo.svg';
@@ -80,6 +79,12 @@ class DevelopersSettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Width'),
       '#default_value' => $width,
+    ];
+
+    $form['nofollow'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Nofollow'),
+      '#default_value' => $config->get('nofollow'),
     ];
 
     $form['developed'] = [
@@ -122,6 +127,7 @@ class DevelopersSettingsForm extends ConfigFormBase {
     $this->config('vbase.settings.developers')
       ->set('logo', $form_state->getValue('logo'))
       ->set('width', $width)
+      ->set('nofollow', $form_state->getValue('nofollow'))
       ->set('developed', $form_state->getValue('developed'))
       ->set('maintained', $form_state->getValue('maintained'))
       ->set('label', $form_state->getValue('label'))

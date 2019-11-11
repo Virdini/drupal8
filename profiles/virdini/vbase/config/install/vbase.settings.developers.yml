@@ -1,6 +1,7 @@
 langcode: en
 logo: logo.svg
 width: 70
+nofollow: false
 developed: true
 maintained: false
 label: false
