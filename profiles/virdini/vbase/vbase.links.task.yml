@@ -79,3 +79,8 @@ vbase.adjustment_tab_1_6:
   title: 'Sub Tab 6'
   route_name: vbase.adjustment_tab_1_3
   parent_id: vbase.adjustment_tab
+
+vbase.export_config:
+  route_name: vbase.export_config
+  title: 'Batch Export'
+  parent_id: config.export

@@ -109,3 +109,19 @@ vbase.adjustment_tab_1_3:
     _title: 'Virdini Design Adjustment Page'
   requirements:
     _permission: 'vbase virdini adjustment'
+
+vbase.export_config:
+  path: '/admin/config/development/configuration/full/vbase-batch'
+  defaults:
+    _form: '\Drupal\vbase\Form\ConfigBatchExportForm'
+    _title: 'Batch Export'
+  requirements:
+    _permission: 'export configuration'
+
+vbase.export_config_download:
+  path: '/admin/config/development/configuration/full/vbase-batch-download'
+  defaults:
+    _controller: '\Drupal\vbase\Controller\ConfigBatchExportDownload::download'
+    _title: 'Batch Export Download'
+  requirements:
+    _permission: 'export configuration'
