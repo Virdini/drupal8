@@ -1,29 +1,33 @@
 <?php
-/**
- * @file
- * Contains \Drupal\mailsystem\Tests\MailsystemTestThemeTest.
- */
 
-namespace Drupal\mailsystem\Tests;
+namespace Drupal\Tests\mailsystem\Functional;
 
-use Drupal\simpletest\WebTestBase;
+use Drupal\Core\Test\AssertMailTrait;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests mail theme for formatting emails using a theme template.
  *
  * @group mailsystem
  */
-class MailsystemTestThemeTest extends WebTestBase {
+class MailsystemTestThemeTest extends BrowserTestBase {
+
+  use AssertMailTrait;
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'mailsystem',
     'mailsystem_test',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * The Mailsystem settings config object.
@@ -32,11 +36,12 @@ class MailsystemTestThemeTest extends WebTestBase {
    */
   protected $config;
 
+  /**
+   * {@inheritdoc}
+   */
   public function setUp() {
     parent::setUp();
     $this->config = $this->config('mailsystem.settings');
-
-
   }
 
   /**
@@ -53,23 +58,23 @@ class MailsystemTestThemeTest extends WebTestBase {
 
     // Send an email with the default setting (should NOT use the test theme).
     $this->drupalGet('/mailsystem-test/theme');
-    $mails = $this->drupalGetMails();
+    $mails = $this->getMails();
 
     // Check the configuration and if the correct theme was used in mails.
     $this->assertEqual($this->config->get('theme'), 'current');
     $this->assertTrue(strpos($mails[0]['body'], 'Anonymous (not verified)') !== FALSE);
 
     // Install the test theme and set it as the mail theme.
-    \Drupal::service('theme_handler')->install(array('mailsystem_test_theme'));
+    \Drupal::service('theme_installer')->install(['mailsystem_test_theme']);
     $this->config->set('theme', 'mailsystem_test_theme')->save();
 
     // Send another email (now it should use the test theme).
     $this->drupalGet('/mailsystem-test/theme');
-    $mails = $this->drupalGetMails();
+    $mails = $this->getMails();
 
     // Check the new configuration and ensure that our test theme and its
     // implementation of the username template are used in mails.
-    $this->assertEqual($this->config->get('theme'), 'mailsystem_test_theme');
+    $this->assertEquals('mailsystem_test_theme', $this->config->get('theme'));
     $this->assertTrue(strpos($mails[1]['body'], 'Mailsystem test theme') !== FALSE);
   }
 
