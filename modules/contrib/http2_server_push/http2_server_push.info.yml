@@ -1,11 +1,11 @@
 name: HTTP/2 Server Push
 description: "Pushes CSS & JS files to the client on servers using HTTP/2."
 type: module
-# core: 8.x
+core: 8.x
+core_version_requirement: ^8 || ^9
 package: "Performance and scalability"
 
-# Information added by Drupal.org packaging script on 2017-03-09
-version: '8.x-1.0'
-core: '8.x'
+# Information added by Drupal.org packaging script on 2019-12-30
+version: '8.x-1.1'
 project: 'http2_server_push'
-datestamp: 1489057091
+datestamp: 1577744010

@@ -13,9 +13,12 @@ use Drupal\user\RoleInterface;
 class LinkHeaderTest extends BrowserTestBase {
 
   /**
-   * Modules to install.
-   *
-   * @var array
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
    */
   public static $modules = ['toolbar', 'http2_server_push'];
 
@@ -28,6 +31,15 @@ class LinkHeaderTest extends BrowserTestBase {
     // Grant anonymous users access to the toolbar, so the anonymous user gets
     // some JavaScript.
     $this->grantPermissions(Role::load(RoleInterface::ANONYMOUS_ID), ['access toolbar']);
+  }
+
+  public function testCssJsLinkHeaders() {
+    $session = $this->getSession();
+
+    // No Server Push Link response headers should be present when CSS and JS
+    // aggregation are disabled.
+    $this->drupalGet('<front>');
+    $this->assertNull($session->getResponseHeader('Link'));
 
     // \Drupal\Tests\BrowserTestBase::installDrupal() overrides some of the
     // defaults for easier test debugging. But for a CDN integration test, we do
@@ -36,10 +48,6 @@ class LinkHeaderTest extends BrowserTestBase {
       ->set('css.preprocess', TRUE)
       ->set('js.preprocess', TRUE)
       ->save();
-  }
-
-  public function testCssJsLinkHeaders() {
-    $session = $this->getSession();
 
     $html = $this->drupalGet('<front>');
 

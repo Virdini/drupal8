@@ -49,8 +49,10 @@ class HtmlResponseAttachmentsProcessor implements AttachmentsResponseProcessorIn
 
     $request = $this->requestStack->getCurrentRequest();
     if ($request->attributes->has('http2_server_push_link_headers')) {
-      $link_headers = $request->attributes->get('http2_server_push_link_headers');
-      $response->headers->set('Link', $link_headers, FALSE);
+      $new_link_headers = $request->attributes->get('http2_server_push_link_headers');
+      $existing_link_headers = $response->headers->get('Link', NULL, FALSE);
+      $merged_link_headers = array_unique(array_merge($existing_link_headers, $new_link_headers));
+      $response->headers->set('Link', $merged_link_headers, TRUE);
     }
 
     return $response;

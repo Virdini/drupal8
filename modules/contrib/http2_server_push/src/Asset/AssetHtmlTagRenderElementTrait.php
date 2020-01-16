@@ -13,8 +13,7 @@ trait AssetHtmlTagRenderElementTrait {
    * @return bool
    */
   protected static function isLinkRelStylesheet(array $element) {
-    return
-      (isset($element['#type']) && $element['#type'] === 'html_tag')
+    return (isset($element['#type']) && $element['#type'] === 'html_tag')
       &&
       (isset($element['#tag']) && $element['#tag'] === 'link')
       &&
@@ -30,8 +29,7 @@ trait AssetHtmlTagRenderElementTrait {
    * @return bool
    */
   protected static function isScript(array $element) {
-    return
-      (isset($element['#type']) && $element['#type'] === 'html_tag')
+    return (isset($element['#type']) && $element['#type'] === 'html_tag')
       &&
       (isset($element['#tag']) && $element['#tag'] === 'script');
   }
@@ -42,12 +40,12 @@ trait AssetHtmlTagRenderElementTrait {
    * An unconditional element is not browser-specific, i.e. is not wrapped in a
    * conditional comment via the '#browsers' property.
    *
-   * @see \Drupal\Core\Render\Element\HtmlTag::preRenderConditionalComments
-   *
    * @param array $element
    *   A render element.
    *
    * @return bool
+   *
+   * @see \Drupal\Core\Render\Element\HtmlTag::preRenderConditionalComments
    */
   protected static function isUnconditional(array $element) {
     return empty($element['#browsers']) || ($element['#browsers']['!IE'] === TRUE && $element['#browsers']['IE'] === TRUE);
@@ -58,6 +56,8 @@ trait AssetHtmlTagRenderElementTrait {
    *
    * @param array $element
    *   A render element.
+   * @param string $attribute_name
+   *   The name of an attribute.
    *
    * @return bool
    */

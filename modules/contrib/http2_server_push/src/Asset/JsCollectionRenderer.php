@@ -68,7 +68,9 @@ class JsCollectionRenderer implements AssetCollectionRendererInterface {
         // is that rendering set of asset libraries to HTML that loads CSS/JS,
         // no further attachment bubbling happens. That's a fine assumption, but
         // this module is the first and sole exception.)
-        //$element['#attached']['http_header'][] = ['Link', $link_header_value];
+        /*
+        $element['#attached']['http_header'][] = ['Link', $link_header_value];
+         */
       }
     }
     $request->attributes->set('http2_server_push_link_headers', $link_headers);

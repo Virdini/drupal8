@@ -15,3 +15,12 @@ services:
     class: \Drupal\http2_server_push\Render\HtmlResponseAttachmentsProcessor
     decorates: html_response.attachments_processor
     arguments: ['@html_response.attachments_processor.http2_server_push.inner', '@request_stack']
+
+  http2_server_push.config_subscriber:
+    class: Drupal\http2_server_push\EventSubscriber\ConfigSubscriber
+    arguments:
+      - '@cache_tags.invalidator'
+      - '@kernel'
+      - '@config.installer'
+    tags:
+      - { name: event_subscriber }
