@@ -1,16 +1,11 @@
 <?php
-/**
- * @file
- * Contains \Drupal\views_custom_cache_tag\CustomCacheTagsTest.
- */
 
-namespace Drupal\views_custom_cache_tag\Tests;
+namespace Drupal\Tests\views_custom_cache_tag\Functional;
 
-use Drupal\Component\Utility\SafeMarkup;
-use Drupal\Core\Entity\Entity;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
 use Drupal\views\Entity\View;
 
@@ -19,12 +14,11 @@ use Drupal\views\Entity\View;
  *
  * @group views_custom_cache_tag
  */
-class CustomCacheTagsTest extends WebTestBase {
+class CustomCacheTagsTest extends BrowserTestBase {
 
   use AssertPageCacheContextsAndTagsTrait {
     assertPageCacheContextsAndTags as protected assertPageCacheContextsAndTagsOriginal;
   }
-
 
   /**
    * Modules to enable.
@@ -38,6 +32,11 @@ class CustomCacheTagsTest extends WebTestBase {
     'path',
     'views_custom_cache_tag_demo'
   );
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
  /**
    * Asserts page cache miss, then hit for the given URL; checks cache headers.
@@ -76,7 +75,6 @@ class CustomCacheTagsTest extends WebTestBase {
       $cache_entry = \Drupal::cache('page')->get($cid);
       sort($cache_entry->tags);
       $this->assertEqual($cache_entry->tags, $expected_tags);
-      $this->debugCacheTags($cache_entry->tags, $expected_tags);
     }
   }
 
@@ -243,7 +241,7 @@ class CustomCacheTagsTest extends WebTestBase {
    */
   protected function verifyPageCache(Url $url, $hit_or_miss, $tags = FALSE) {
     $this->drupalGet($url);
-    $message = SafeMarkup::format('Page cache @hit_or_miss for %path.', array('@hit_or_miss' => $hit_or_miss, '%path' => $url->toString()));
+    $message = new FormattableMarkup('Page cache @hit_or_miss for %path.', array('@hit_or_miss' => $hit_or_miss, '%path' => $url->toString()));
     $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), $hit_or_miss, $message);
 
     if ($hit_or_miss === 'HIT' && is_array($tags)) {
