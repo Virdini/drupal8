@@ -1,13 +1,8 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\roleassign\Tests\RoleAssignPermissionTest.
- */
+namespace Drupal\Tests\roleassign\Functional;
 
-namespace Drupal\roleassign\Tests;
-
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 use Drupal\user\Entity\User;
 use Drupal\user\RoleInterface;
 
@@ -16,7 +11,7 @@ use Drupal\user\RoleInterface;
  *
  * @group roleassign
  */
-class RoleAssignPermissionTest extends WebTestBase {
+class RoleAssignPermissionTest extends BrowserTestBase {
 
   /**
    * The user object to test (un)assigning roles to.
@@ -41,6 +36,11 @@ class RoleAssignPermissionTest extends WebTestBase {
   protected $admin_user;
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
+
+  /**
    * Modules to install.
    *
    * @var array
@@ -51,16 +51,16 @@ class RoleAssignPermissionTest extends WebTestBase {
     parent::setUp();
 
     // Add Editor role
-    $this->drupalCreateRole(array(), 'editor', 'Editor');
+    $this->drupalCreateRole([], 'editor', 'Editor');
     // Add Webmaster role
-    $this->drupalCreateRole(array('administer users', 'assign roles'), 'webmaster', 'Webmaster');
+    $this->drupalCreateRole(['administer users', 'assign roles'], 'webmaster', 'Webmaster');
     // Add 'protected' SiteAdmin role
-    $this->drupalCreateRole(array('administer users', 'administer permissions'), 'siteadmin', 'SiteAdmin');
+    $this->drupalCreateRole(['administer users', 'administer permissions'], 'siteadmin', 'SiteAdmin');
 
     // Configure RoleAssign module - only editor & webmaster roles are
     // assignable by restricted users (i.e. webmasters)
     $this->config('roleassign.settings')
-      ->set('roleassign_roles', array('editor' => 'editor', 'webmaster' => 'webmaster'))
+      ->set('roleassign_roles', ['editor' => 'editor', 'webmaster' => 'webmaster'])
       ->save();
 
     // Create a testaccount that we will be trying to assign roles.
@@ -68,12 +68,12 @@ class RoleAssignPermissionTest extends WebTestBase {
 
     // Create a test restricted user without "administer permissions" permission
     // but with "assign roles" permission provided by RoleAssign.
-    $this->restricted_user = $this->drupalCreateUser(array('administer users', 'assign roles'));
+    $this->restricted_user = $this->drupalCreateUser(['administer users', 'assign roles']);
 
     // Create a test admin user with "administer users " &
     // "administer permissions" permissions, where RoleAssign will have no
     // effect on.
-    $this->admin_user = $this->drupalCreateUser(array('administer users', 'administer permissions'));
+    $this->admin_user = $this->drupalCreateUser(['administer users', 'administer permissions']);
   }
 
   /**
@@ -81,7 +81,7 @@ class RoleAssignPermissionTest extends WebTestBase {
    */
   function testRoleAssignSettings()  {
     $assignable_roles = array_filter(\Drupal::config('roleassign.settings')->get('roleassign_roles'));
-    $this->assertIdentical(array('editor' => 'editor', 'webmaster' => 'webmaster'), $assignable_roles);
+    $this->assertIdentical(['editor' => 'editor', 'webmaster' => 'webmaster'], $assignable_roles);
   }
 
   /**
@@ -101,7 +101,7 @@ class RoleAssignPermissionTest extends WebTestBase {
     $this->assertNoField('edit-roles-siteadmin');
 
     // Assign the role "editor" to the account.
-    $this->drupalPostForm('user/' . $this->testaccount->id() . '/edit', array("roles[editor]" => "editor"), t('Save'));
+    $this->drupalPostForm('user/' . $this->testaccount->id() . '/edit', ["roles[editor]" => "editor"], t('Save'));
     $this->assertText(t('The changes have been saved.'));
     $this->assertFieldChecked('edit-roles-editor', 'Role editor is assigned.');
     $this->assertNoFieldChecked('edit-roles-webmaster');
@@ -110,7 +110,7 @@ class RoleAssignPermissionTest extends WebTestBase {
     $this->userLoadAndCheckRoleAssigned($this->testaccount, RoleInterface::AUTHENTICATED_ID);
 
     // Remove the role "editor" from the account.
-    $this->drupalPostForm('user/' . $this->testaccount->id() . '/edit', array("roles[editor]" => FALSE), t('Save'));
+    $this->drupalPostForm('user/' . $this->testaccount->id() . '/edit', ["roles[editor]" => FALSE], t('Save'));
     $this->assertText(t('The changes have been saved.'));
     $this->assertNoFieldChecked('edit-roles-editor', 'Role editor is removed.');
     $this->assertNoFieldChecked('edit-roles-webmaster');
@@ -119,10 +119,10 @@ class RoleAssignPermissionTest extends WebTestBase {
     $this->userLoadAndCheckRoleAssigned($this->testaccount, RoleInterface::AUTHENTICATED_ID);
 
     // Try to assign a restricted role programmatically to a new user.
-    $values = array(
+    $values = [
       'name' => $this->randomString(),
-      'roles' => array('editor', 'siteadmin'),
-    );
+      'roles' => ['editor', 'siteadmin'],
+    ];
     $code_account = User::create($values);
     $code_account->save();
 
@@ -148,7 +148,7 @@ class RoleAssignPermissionTest extends WebTestBase {
     $this->assertNoFieldChecked('edit-roles-siteadmin');
 
     // Assign the role "SiteAdmin" to the account.
-    $this->drupalPostForm('user/' . $this->testaccount->id() . '/edit', array("roles[siteadmin]" => "siteadmin"), t('Save'));
+    $this->drupalPostForm('user/' . $this->testaccount->id() . '/edit', ["roles[siteadmin]" => "siteadmin"], t('Save'));
     $this->assertText(t('The changes have been saved.'));
     $this->assertFieldChecked('edit-roles-siteadmin', 'Role siteadmin is assigned.');
     $this->userLoadAndCheckRoleAssigned($this->testaccount, 'siteadmin');
@@ -159,7 +159,7 @@ class RoleAssignPermissionTest extends WebTestBase {
 
     // Assign the role "editor" to the account, and test that the assigned
     // "siteadmin" role doesn't get lost.
-    $this->drupalPostForm('user/' . $this->testaccount->id() . '/edit', array("roles[editor]" => "editor"), t('Save'));
+    $this->drupalPostForm('user/' . $this->testaccount->id() . '/edit', ["roles[editor]" => "editor"], t('Save'));
     $this->assertText(t('The changes have been saved.'));
     $this->assertFieldChecked('edit-roles-editor', 'Role editor is assigned.');
     $this->assertNoField('edit-roles-siteadmin');
@@ -180,8 +180,8 @@ class RoleAssignPermissionTest extends WebTestBase {
    *   Defaults to TRUE.
    */
   private function userLoadAndCheckRoleAssigned($account, $rid, $is_assigned = TRUE) {
-    $user_storage = $this->container->get('entity.manager')->getStorage('user');
-    $user_storage->resetCache(array($account->id()));
+    $user_storage = \Drupal::entityTypeManager()->getStorage('user');
+    $user_storage->resetCache([$account->id()]);
     $account = $user_storage->load($account->id());
     if ($is_assigned) {
       $this->assertFalse(array_search($rid, $account->getRoles()) === FALSE, 'The role is present in the user object.');
