@@ -35,16 +35,26 @@ class Convert extends ImagickOperationBase {
   /**
    * {@inheritdoc}
    */
+  protected function validateArguments(array $arguments) {
+    if (!in_array($arguments['format'], $this->getToolkit()->getSupportedExtensions())) {
+      throw new \InvalidArgumentException("Invalid extension ({$arguments['format']}) specified for the image 'convert' operation");
+    }
+    return $arguments;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function execute(array $arguments = []) {
-    /* @var $resource \Imagick */
+    /* @var $resource Imagick */
     $resource = $this->getToolkit()->getResource();
 
-    $format = $arguments['format'];
+    $format = strtoupper($arguments['format']);
     $quality = $arguments['quality'];
 
     // Set a white background color when converting to JPG because this file
     // format does not support transparency
-    if (in_array($format, ['JPG', 'JPEG'])) {
+    if (in_array($format, ['JPEG', 'JPG', 'JPE'])) {
       $background = new Imagick();
       $background->newImage($resource->getImageWidth(), $resource->getImageHeight(), 'white');
 

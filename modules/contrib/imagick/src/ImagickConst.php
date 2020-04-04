@@ -96,4 +96,12 @@ class ImagickConst {
       Imagick::CHANNEL_ALL => 'All',
     ];
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getSupportedExtensions() {
+    return array_map('strtolower', Imagick::queryFormats());
+  }
+
 }

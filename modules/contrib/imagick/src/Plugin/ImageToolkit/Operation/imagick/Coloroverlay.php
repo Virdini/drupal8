@@ -37,7 +37,13 @@ class Coloroverlay extends ImagickOperationBase {
   protected function process(Imagick $resource, array $arguments) {
     $color = new Imagick();
     $color->newImage($resource->getImageWidth(), $resource->getImageHeight(), $arguments['HEX']);
-    $color->setImageOpacity($arguments['alpha'] / 100);
+
+    $alpha = $arguments['alpha'] / 100;
+    if (method_exists($color, 'setImageOpacity')) {
+      $color->setImageOpacity($alpha);
+    } else {
+      $color->setImageAlpha($alpha);
+    }
 
     return $resource->compositeImage($color, Imagick::COMPOSITE_DEFAULT, 0, 0);
   }

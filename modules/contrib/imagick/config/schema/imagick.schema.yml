@@ -1,5 +1,5 @@
 imagick.config:
-  type: mapping
+  type: config_object
   label: 'Imagick image settings'
   mapping:
     jpeg_quality:

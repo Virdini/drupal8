@@ -36,7 +36,7 @@ class Colorshift extends ImagickOperationBase {
     $color = $arguments['HEX'];
     $color = empty($color) ? 'none' : $color;
 
-    return $resource->colorizeImage(new ImagickPixel($color), 1);
+    return $resource->colorizeImage(new ImagickPixel($color), 1, true);
   }
 
 }

@@ -2,6 +2,7 @@
 
 namespace Drupal\imagick\Plugin\ImageToolkit\Operation\imagick;
 
+use Drupal\imagick\Plugin\ImageToolkit\ImagickToolkit;
 use Drupal\system\Plugin\ImageToolkit\Operation\gd\Resize as GdResize;
 use Imagick;
 
@@ -31,8 +32,8 @@ class Resize extends GdResize {
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    $filter = \Drupal::config('imagick.config')
-      ->get('resize_filter');
+    $filter = \Drupal::config(ImagickToolkit::CONFIG)
+      ->get(ImagickToolkit::CONFIG_RESIZE_FILTER);
 
     if ($filter == -1) {
       return $resource->scaleImage($arguments['width'], $arguments['height']);

@@ -38,8 +38,10 @@ class CompositeImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function getSummary() {
+    $path = $this->configuration['path'];
+
     $summary = [
-      '#markup' => $this->configuration['path'],
+      '#markup' => '- ' . (file_exists($path) ? $path : t('Invalid file path')),
       '#effect' => [
         'id' => $this->pluginDefinition['id'],
         'label' => $this->label(),
@@ -72,6 +74,7 @@ class CompositeImageEffect extends ConfigurableImageEffectBase {
       '#title' => $this->t('Path'),
       '#description' => $this->t('Path to the composite image. In- or external URL\'s are possible'),
       '#default_value' => $this->configuration['path'],
+      '#element_validate' => [[$this, 'elementValidateFilePath']],
     ];
     $form['composite'] = [
       '#type' => 'select',
@@ -116,6 +119,16 @@ class CompositeImageEffect extends ConfigurableImageEffectBase {
     $this->configuration['x'] = $form_state->getValue('x');
     $this->configuration['y'] = $form_state->getValue('y');
     $this->configuration['channel'] = $form_state->getValue('channel');
+  }
+
+  /**
+   * @param $element
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   */
+  public static function elementValidateFilePath($element, FormStateInterface &$form_state) {
+    if (!file_exists($element['#value'])) {
+      $form_state->setError($element, t('File does not exist.'));
+    }
   }
 
 }

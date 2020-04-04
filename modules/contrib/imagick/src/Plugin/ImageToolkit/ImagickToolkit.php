@@ -2,12 +2,20 @@
 
 namespace Drupal\imagick\Plugin\ImageToolkit;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\ImageToolkit\ImageToolkitBase;
+use Drupal\Core\ImageToolkit\ImageToolkitOperationManagerInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\image\Entity\ImageStyle;
-use Drupal\imagick\ImagickException;
-use Drupal\system\Plugin\ImageToolkit\GDToolkit;
+use Drupal\imagick\ImagickConst;
+use Drupal\Core\File\FileSystem;
 use Imagick;
+use ImagickPixel;
+use ImagickException;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines the Imagick toolkit for image manipulation within Drupal.
@@ -17,7 +25,41 @@ use Imagick;
  *   title = @Translation("Imagick image manipulation toolkit")
  * )
  */
-class ImagickToolkit extends GDToolkit {
+class ImagickToolkit extends ImageToolkitBase {
+
+  const TEMP_DIR = 'temporary://';
+  const TEMP_PREFIX = 'imagick_';
+
+  const CONFIG = 'imagick.config';
+  const CONFIG_JPEG_QUALITY = 'jpeg_quality';
+  const CONFIG_OPTIMIZE = 'optimize';
+  const CONFIG_RESIZE_FILTER = 'resize_filter';
+  const CONFIG_STRIP_METADATA = 'strip_metadata';
+
+  /**
+   * @var resource|null
+   */
+  protected $resource = NULL;
+
+  /**
+   * @var string
+   */
+  protected $mimeType;
+
+  /**
+   * @var array|null
+   */
+  protected $preLoadInfo = NULL;
+
+  /**
+   * @var \Drupal\Core\File\FileSystem
+   */
+  private $fileSystem;
+
+  /**
+   * @var \Drupal\Core\StreamWrapper\StreamWrapperManager
+   */
+  private $streamWrapperManager;
 
   /**
    * Destructs a Imagick object.
@@ -29,7 +71,45 @@ class ImagickToolkit extends GDToolkit {
   }
 
   /**
+   * ImagickToolkit constructor.
+   *
+   * @param array $configuration
+   * @param $plugin_id
+   * @param array $plugin_definition
+   * @param \Drupal\Core\ImageToolkit\ImageToolkitOperationManagerInterface $operation_manager
+   * @param \Drupal\imagick\Plugin\ImageToolkit\LoggerInterface $logger
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   * @param \Drupal\Core\File\FileSystem $fileSystem
+   * @param \Drupal\Core\StreamWrapper\StreamWrapperManager $streamWrapperManager
+   */
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ImageToolkitOperationManagerInterface $operation_manager, LoggerInterface $logger, ConfigFactoryInterface $config_factory, FileSystem $fileSystem, StreamWrapperManager $streamWrapperManager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $operation_manager, $logger, $config_factory);
+
+    $this->fileSystem = $fileSystem;
+    $this->streamWrapperManager = $streamWrapperManager;
+  }
+
+  /**
    * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('image.toolkit.operation.manager'),
+      $container->get('logger.channel.image'),
+      $container->get('config.factory'),
+      $container->get('file_system'),
+      $container->get('stream_wrapper_manager')
+    );
+  }
+
+  /**
+   * Loads an image from a file.
+   *
+   * @return bool
+   *   TRUE or FALSE, based on success.
    */
   protected function load() {
     // Return immediately if the image file is not valid.
@@ -37,23 +117,22 @@ class ImagickToolkit extends GDToolkit {
       return FALSE;
     }
 
-    // Get path and remote boolean
-    list($path, $isRemoteUri) = $this->getPath();
-
-    if (!$path) {
+    if (!$path = $this->getPath()) {
       return FALSE;
     }
 
     $success = FALSE;
     try {
-      $resource = new Imagick($path);
+      $resource = new Imagick();
+      $resource->setBackgroundColor(new ImagickPixel('transparent'));
+      $resource->readImage($path);
       $this->setResource($resource);
 
       $success = TRUE;
     } catch (ImagickException $e) {}
 
     // cleanup local file if the original was remote
-    if ($isRemoteUri) {
+    if ($this->isRemoteUri($path)) {
       file_unmanaged_delete($path);
     }
 
@@ -78,7 +157,7 @@ class ImagickToolkit extends GDToolkit {
 
   /** Retrieves the Imagick image resource.
    *
-   * @return \Imagick|resource|null
+   * @return Imagick|resource|null
    *   The Imagick image resource, or NULL if not available.
    */
   public function getResource() {
@@ -92,22 +171,25 @@ class ImagickToolkit extends GDToolkit {
   /**
    * {@inheritdoc}
    */
+  public function isValid() {
+    return ((bool) $this->preLoadInfo || (bool) $this->resource);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save($destination) {
     $resource = $this->getResource();
 
-    $scheme = file_uri_scheme($destination);
-    // Work around lack of stream wrapper support in imagejpeg() and imagepng().
-    if ($scheme && \Drupal::service('file_system')->validScheme($scheme)) {
+    if ($this->isValidUri($destination)) {
       // If destination is not local, save image to temporary local file.
-      $local_wrappers = \Drupal::service('stream_wrapper_manager')
-        ->getWrappers(StreamWrapperInterface::LOCAL);
-      if (!isset($local_wrappers[$scheme])) {
+      if ($this->isRemoteUri($destination)) {
         $permanent_destination = $destination;
-        $destination = \Drupal::service('file_system')
-          ->tempnam('temporary://', 'imagick_');
+        $destination = $this->fileSystem->tempnam(self::TEMP_DIR, self::TEMP_PREFIX);
       }
+
       // Convert stream wrapper URI to normal path.
-      $destination = \Drupal::service('file_system')->realpath($destination);
+      $destination = $this->fileSystem->realpath($destination);
     }
 
     // If preferred format is set, use it as prefix for writeImage
@@ -118,14 +200,14 @@ class ImagickToolkit extends GDToolkit {
     } catch (ImagickException $e) {}
 
     // Only compress JPEG files because other filetypes will increase in filesize
-    if (isset($image_format) && in_array($image_format, ['JPG', 'JPEG'])) {
+    if (isset($image_format) && in_array($image_format, ['JPEG', 'JPG', 'JPE'])) {
       // Get image quality from effect or global setting
-      $quality = $resource->getImageProperty('quality') ?: $this->configFactory->get('imagick.config')->get('jpeg_quality');
+      $quality = $resource->getImageProperty('quality') ?: $this->configFactory->get(self::CONFIG)->get(self::CONFIG_JPEG_QUALITY);
       // Set image compression quality
       $resource->setImageCompressionQuality($quality);
 
       // Optimize images
-      if ($this->configFactory->get('imagick.config')->get('optimize')) {
+      if ($this->configFactory->get(self::CONFIG)->get(self::CONFIG_OPTIMIZE)) {
         // Using recommendations from Google's Page Speed docs: https://developers.google.com/speed/docs/insights/OptimizeImages
         $resource->setSamplingFactors(['2x2', '1x1', '1x1']);
         $resource->setColorspace(Imagick::COLORSPACE_RGB);
@@ -134,7 +216,7 @@ class ImagickToolkit extends GDToolkit {
     }
 
     // Strip metadata
-    if ($this->configFactory->get('imagick.config')->get('strip_metadata')) {
+    if ($this->configFactory->get(self::CONFIG)->get(self::CONFIG_STRIP_METADATA)) {
       $resource->stripImage();
     }
 
@@ -163,7 +245,7 @@ class ImagickToolkit extends GDToolkit {
    */
   public function getWidth() {
     if ($this->preLoadInfo) {
-      return $this->preLoadInfo[0];
+      return $this->preLoadInfo['geometry']['width'];
     }
     elseif ($resource = $this->getResource()) {
       $data = $resource->getImageGeometry();
@@ -180,7 +262,7 @@ class ImagickToolkit extends GDToolkit {
    */
   public function getHeight() {
     if ($this->preLoadInfo) {
-      return $this->preLoadInfo[1];
+      return $this->preLoadInfo['geometry']['height'];
     }
     elseif ($resource = $this->getResource()) {
       $data = $resource->getImageGeometry();
@@ -193,70 +275,76 @@ class ImagickToolkit extends GDToolkit {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getMimeType() {
+    return $this->mimeType;
+  }
+
+  /**
    * ensure that we have a local filepath since Imagick does not support remote stream wrappers
    *
    * @return string
    */
   protected function getPath() {
     $source = $this->getSource();
-    $isRemoteUri = $this->isRemoteUri($source);
-    $path = ($isRemoteUri ? $this->copyRemoteFileToLocalTemp($source) : \Drupal::service('file_system')->realpath($source));
 
-    return [$path, $isRemoteUri];
+    return ($this->isRemoteUri($source) ?
+      $this->copyRemoteFileToLocalTemp($source) :
+      $this->fileSystem->realpath($source));
   }
 
   /**
    * {@inheritdoc}
    */
   public function parseFile() {
-    $valid = FALSE;
+    $path = $this->getPath();
 
-    // Get path and remote boolean
-    list($path, $isRemoteUri) = $this->getPath();
+    try {
+      $image = new Imagick($path);
 
-    $data = @getimagesize($path);
-    if ($data && in_array($data[2], static::supportedTypes())) {
-      $this->setType($data[2]);
-      $this->preLoadInfo = $data;
-      $valid = TRUE;
+      // Get image data
+      $this->mimeType = $image->getImageMimeType();
+      $this->preLoadInfo = $image->identifyImage();
+
+      if ($this->isRemoteUri($path)) {
+        file_unmanaged_delete($path);
+      }
+
+      return TRUE;
     }
-
-    if ($isRemoteUri) {
-      file_unmanaged_delete($path);
+    catch (ImagickException $e) {
+      return FALSE;
     }
-
-    return $valid;
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['jpeg'] = array(
+    $form['jpeg'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('JPEG specific settings'),
       '#description' => $this->t('<strong>Tip: </strong>Generated images can be converted to the JPEG format using the Convert effect.'),
-    );
-    $form['jpeg']['image_jpeg_quality'] = [
+    ];
+    $form['jpeg'][self::CONFIG_JPEG_QUALITY] = [
       '#type' => 'number',
       '#title' => $this->t('Quality'),
       '#description' => $this->t('Higher values mean better image quality but bigger files. Quality level below 80% is not advisable when using ImageMagick.'),
       '#min' => 0,
       '#max' => 100,
-      '#default_value' => $this->configFactory->get('imagick.config')
-        ->get('jpeg_quality'),
+      '#default_value' => $this->configFactory->get(self::CONFIG)->get(self::CONFIG_JPEG_QUALITY),
       '#field_suffix' => $this->t('%'),
     ];
 
-    $form['jpeg']['image_optimize'] = [
+    $form['jpeg'][self::CONFIG_OPTIMIZE] = [
       '#type' => 'checkbox',
       '#title' => t('Use Google Pagespeed Insights image optimization.'),
       '#description' => t('See the <a href=":url" target="_blank">guidelines</a> for further information.', [':url' => 'https://developers.google.com/speed/docs/insights/OptimizeImages']),
-      '#default_value' => $this->configFactory->get('imagick.config')
-        ->get('optimize'),
+      '#default_value' => $this->configFactory->get(self::CONFIG)->get(self::CONFIG_OPTIMIZE),
     ];
 
-    $form['image_resize_filter'] = [
+    $form[self::CONFIG_RESIZE_FILTER] = [
       '#type' => 'select',
       '#title' => t('Imagic resize filter'),
       '#description' => t('Define the resize filter for image manipulations. If you\'re not sure what you should enter here, leave the default settings.'),
@@ -279,16 +367,14 @@ class ImagickToolkit extends GDToolkit {
         imagick::FILTER_BESSEL => 'FILTER_BESSEL',
         imagick::FILTER_SINC => 'FILTER_SINC',
       ],
-      '#default_value' => $this->configFactory->get('imagick.config')
-        ->get('resize_filter'),
+      '#default_value' => $this->configFactory->get(self::CONFIG)->get(self::CONFIG_RESIZE_FILTER),
     ];
 
-    $form['image_strip_metadata'] = [
+    $form[self::CONFIG_STRIP_METADATA] = [
       '#type' => 'checkbox',
       '#title' => t('Strip images of all metadata.'),
       '#description' => t('Eg. profiles, comments, ...'),
-      '#default_value' => $this->configFactory->get('imagick.config')
-        ->get('strip_metadata'),
+      '#default_value' => $this->configFactory->get(self::CONFIG)->get(self::CONFIG_STRIP_METADATA),
     ];
 
     return $form;
@@ -300,19 +386,16 @@ class ImagickToolkit extends GDToolkit {
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $form_state->cleanValues();
 
-    // Flush image styles
-    $styles = ImageStyle::loadMultiple();
-
     /** @var ImageStyle $style */
-    foreach ($styles as $style) {
+    foreach (ImageStyle::loadMultiple() as $style) {
       $style->flush();
     }
 
-    $this->configFactory->getEditable('imagick.config')
-      ->set('jpeg_quality', $form_state->getValue(['imagick', 'jpeg', 'image_jpeg_quality']))
-      ->set('optimize', $form_state->getValue(['imagick', 'jpeg', 'image_optimize']))
-      ->set('resize_filter', $form_state->getValue(['imagick', 'image_resize_filter']))
-      ->set('strip_metadata', $form_state->getValue(['imagick', 'image_strip_metadata']))
+    $this->configFactory->getEditable(self::CONFIG)
+      ->set(self::CONFIG_JPEG_QUALITY, $form_state->getValue(['imagick', 'jpeg', self::CONFIG_JPEG_QUALITY]))
+      ->set(self::CONFIG_OPTIMIZE, $form_state->getValue(['imagick', 'jpeg', self::CONFIG_OPTIMIZE]))
+      ->set(self::CONFIG_RESIZE_FILTER, $form_state->getValue(['imagick', self::CONFIG_RESIZE_FILTER]))
+      ->set(self::CONFIG_STRIP_METADATA, $form_state->getValue(['imagick', self::CONFIG_STRIP_METADATA]))
       ->save();
   }
 
@@ -324,21 +407,30 @@ class ImagickToolkit extends GDToolkit {
   }
 
   /**
+   * @param $uri
+   *
+   * @return bool
+   */
+  private function isValidUri($uri) {
+    $scheme = $this->fileSystem->uriScheme($uri);
+    return ($scheme && $this->fileSystem->validScheme($scheme));
+  }
+
+  /**
    * Returns TRUE if the $uri points to a remote location, FALSE otherwise.
    *
    * @param $uri
    * @return bool
    */
   private function isRemoteUri($uri) {
-    $scheme = \Drupal::service('file_system')->uriScheme($uri);
-    if (!$scheme || !\Drupal::service('file_system')->validScheme($scheme)) {
+    if (!$this->isValidUri($uri)) {
       return FALSE;
     }
 
-    $local_wrappers = \Drupal::service('stream_wrapper_manager')
+    $local_wrappers = $this->streamWrapperManager
       ->getWrappers(StreamWrapperInterface::LOCAL);
 
-    return !isset($local_wrappers[$scheme]);
+    return !in_array($this->fileSystem->uriScheme($uri), array_keys($local_wrappers));
   }
 
   /**
@@ -348,19 +440,22 @@ class ImagickToolkit extends GDToolkit {
    * @return bool
    */
   private function copyRemoteFileToLocalTemp($source) {
-    // use FILE_EXISTS_REPLACE otherwise file_unmanaged_copy will create a
-    // duplicate file
-    $tmp_file = file_unmanaged_copy(
+    if (!$tmp_file = file_unmanaged_copy(
       $source,
-      \Drupal::service('file_system')->tempnam('temporary://', 'imagick_'),
+      $this->fileSystem->tempnam(self::TEMP_DIR, self::TEMP_PREFIX),
       FILE_EXISTS_REPLACE
-    );
-
-    if (!$tmp_file) {
+    )) {
       return FALSE;
     }
 
-    return \Drupal::service('file_system')->realpath($tmp_file);
+    return $this->fileSystem->realpath($tmp_file);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getSupportedExtensions() {
+    return ImagickConst::getSupportedExtensions();
   }
 
 }

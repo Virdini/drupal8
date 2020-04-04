@@ -52,6 +52,10 @@ class Composite extends ImagickOperationBase {
       $path = drupal_realpath($path);
     }
 
+    if (!file_exists($path)) {
+      return FALSE;
+    }
+
     // Get the composite image
     $composite = new Imagick($path);
 

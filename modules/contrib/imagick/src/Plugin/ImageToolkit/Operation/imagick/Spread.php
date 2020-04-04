@@ -12,7 +12,7 @@ use Imagick;
  *   toolkit = "imagick",
  *   operation = "spread",
  *   label = @Translation("Spread"),
- *   description = @Translation("Adds spread to an image.")
+ *   description = @Translation("Randomly displaces each pixel in a block defined by the radius parameter.")
  * )
  */
 class Spread extends ImagickOperationBase {
@@ -23,7 +23,7 @@ class Spread extends ImagickOperationBase {
   protected function arguments() {
     return [
       'radius' => [
-        'description' => 'The color of the shadow.',
+        'description' => 'The spread radius, in pixels.',
       ],
     ];
   }

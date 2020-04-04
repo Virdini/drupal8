@@ -2,7 +2,6 @@
 
 namespace Drupal\imagick\Plugin\ImageToolkit\Operation\imagick;
 
-use Drupal\imagick\ImagickException;
 use Imagick;
 
 /**

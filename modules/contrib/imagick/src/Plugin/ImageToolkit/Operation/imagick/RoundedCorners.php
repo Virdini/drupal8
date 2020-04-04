@@ -3,6 +3,8 @@
 namespace Drupal\imagick\Plugin\ImageToolkit\Operation\imagick;
 
 use Imagick;
+use ImagickPixel;
+use ImagickDraw;
 
 /**
  * Defines imagick rounded corners operation.
@@ -44,7 +46,30 @@ class RoundedCorners extends ImagickOperationBase {
    * {@inheritdoc}
    */
   protected function process(Imagick $resource, array $arguments) {
-    return $resource->roundCorners($arguments['x_rounding'], $arguments['y_rounding'], $arguments['stroke_width'], $arguments['displace'], $arguments['size_correction']);
+    if (method_exists($resource, 'roundCorners')) {
+      return $resource->roundCorners(
+        $arguments['x_rounding'],
+        $arguments['y_rounding'],
+        $arguments['stroke_width'],
+        $arguments['displace'],
+        $arguments['size_correction']
+      );
+    } else {
+      $dimensions = $resource->getImageGeometry();
+
+      // Create the rounded rectangle
+      $shape = new ImagickDraw();
+      $shape->setFillColor(new ImagickPixel('black'));
+      $shape->roundRectangle(0, 0, $dimensions['width'], $dimensions['height'], $arguments['x_rounding'], $arguments['y_rounding']);
+
+      // Draw the rectangle
+      $mask = new Imagick();
+      $mask->newImage($dimensions['width'], $dimensions['height'], new ImagickPixel('transparent'), 'png');
+      $mask->drawImage($shape);
+
+      // Apply mask
+      return $resource->compositeImage($mask, Imagick::COMPOSITE_DSTIN, 0, 0);
+    }
   }
 
 }

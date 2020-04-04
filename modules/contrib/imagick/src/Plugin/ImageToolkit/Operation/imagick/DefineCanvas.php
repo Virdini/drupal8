@@ -52,7 +52,7 @@ class DefineCanvas extends ImagickOperationBase {
     $relative = $arguments['relative'];
 
     $canvas = new Imagick();
-    $canvas->setFormat('JPG');
+    $canvas->setFormat($resource->getImageFormat());
 
     $color = empty($color) ? 'none' : $color;
     if ($exact_size) {
@@ -71,13 +71,15 @@ class DefineCanvas extends ImagickOperationBase {
       $y = $relative['topdiff'];
     }
 
-    $success = $canvas->newImage($width, $height, new ImagickPixel($color));
-    if ($under) {
-      $success = $canvas->compositeImage($resource, Imagick::COMPOSITE_DEFAULT, $x, $y);
+    if (!$canvas->newImage($width, $height, new ImagickPixel($color))) {
+      return FALSE;
+    }
+    if ($under && !$canvas->compositeImage($resource, Imagick::COMPOSITE_DEFAULT, $x, $y)) {
+      return FALSE;
     }
 
     $resource = clone $canvas;
-    return $success;
+    return TRUE;
   }
 
   /**

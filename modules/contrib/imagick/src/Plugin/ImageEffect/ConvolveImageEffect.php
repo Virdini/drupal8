@@ -47,10 +47,7 @@ class ConvolveImageEffect extends ConfigurableImageEffectBase {
    */
   public function defaultConfiguration() {
     return [
-      'radius' => '0',
-      'sigma' => '1',
-      'amount' => '1.0',
-      'threshold' => '0.05',
+      'matrix' => ['entries' => array_fill(0, 3, array_fill(0, 3, 1))],
     ];
   }
 
@@ -114,6 +111,16 @@ class ConvolveImageEffect extends ConfigurableImageEffectBase {
 
     $this->configuration['matrix'] = $form_state->getValue('matrix');
     $this->configuration['label'] = $form_state->getValue('label');
+  }
+
+  /**
+   * @param $element
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   */
+  public static function elementValidateNumber($element, FormStateInterface &$form_state) {
+    if (!is_numeric($element['#value'])) {
+      $form_state->setError($element, t('Matrix should only contains numeric values.'));
+    }
   }
 
 }

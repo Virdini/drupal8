@@ -49,11 +49,12 @@ class Autorotate extends ImagickOperationBase {
     }
 
     // Flop image if required
-    if (in_array($orientation, array(
+    if (in_array($orientation, [
       Imagick::ORIENTATION_TOPRIGHT,
       Imagick::ORIENTATION_BOTTOMLEFT,
       Imagick::ORIENTATION_LEFTTOP,
-      Imagick::ORIENTATION_RIGHTBOTTOM))) {
+      Imagick::ORIENTATION_RIGHTBOTTOM
+    ])) {
       $resource->flopImage();
     }
 

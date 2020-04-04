@@ -5,7 +5,9 @@ namespace Drupal\imagick\Plugin\ImageEffect;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Image\ImageInterface;
 use Drupal\image\ConfigurableImageEffectBase;
+use Drupal\imagick\Plugin\ImageToolkit\ImagickToolkit;
 use Imagick;
+use Drupal\imagick\ImagickConst;
 
 /**
  * Blurs an image resource.
@@ -39,7 +41,7 @@ class ConvertImageEffect extends ConfigurableImageEffectBase {
   public function defaultConfiguration() {
     return [
       'format' => 'JPG',
-      'quality' => \Drupal::config('imagick.config')->get('jpeg_quality'),
+      'quality' => \Drupal::config(ImagickToolkit::CONFIG)->get(ImagickToolkit::CONFIG_JPEG_QUALITY),
     ];
   }
 
@@ -48,7 +50,7 @@ class ConvertImageEffect extends ConfigurableImageEffectBase {
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     // Load all available formats
-    $formats = Imagick::queryFormats();
+    $formats = ImagickConst::getSupportedExtensions();;
 
     $form['format'] = [
       '#title' => $this->t("File format"),
@@ -83,7 +85,7 @@ class ConvertImageEffect extends ConfigurableImageEffectBase {
    * {@inheritdoc}
    */
   public function getDerivativeExtension($extension) {
-    return strtolower($this->configuration['format']);
+    return $this->configuration['format'];
   }
 
 }
