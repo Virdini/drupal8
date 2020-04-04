@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Flood\FloodInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 class FloodUnblockManager {
@@ -35,16 +36,24 @@ class FloodUnblockManager {
   protected $config;
 
   /**
+   * The messenger.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * FloodUnblockAdminForm constructor.
    *
    * @param \Drupal\Core\Database\Connection $database
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    */
-  public function __construct(Connection $database, FloodInterface $flood, ConfigFactoryInterface $configFactory, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(Connection $database, FloodInterface $flood, ConfigFactoryInterface $configFactory, EntityTypeManagerInterface $entityTypeManager, MessengerInterface $messenger) {
     $this->database = $database;
     $this->flood = $flood;
     $this->entityTypeManager = $entityTypeManager;
     $this->config = $configFactory->get('user.flood');
+    $this->messenger = $messenger;
   }
 
   /**
@@ -56,7 +65,7 @@ class FloodUnblockManager {
   public function get_blocked_ip_entries() {
     $entries = [];
 
-    if (db_table_exists('flood')) {
+    if ($this->database->schema()->tableExists('flood')) {
       $query = $this->database->select('flood', 'f');
       $query->addField('f', 'identifier');
       $query->addField('f', 'identifier', 'ip');
@@ -98,7 +107,7 @@ class FloodUnblockManager {
   public function get_blocked_user_entries() {
     $entries = [];
 
-    if (db_table_exists('flood')) {
+    if ($this->database->schema()->tableExists('flood')) {
       $query = $this->database->select('flood', 'f');
       $query->addField('f', 'identifier');
       $query->addExpression('count(*)', 'count');
@@ -109,8 +118,8 @@ class FloodUnblockManager {
       foreach ($results as $result) {
         $parts = explode('-', $result->identifier);
         $result->uid = $parts[0];
-        $result->ip = $parts[1];
-        if (function_exists('smart_ip_get_location')) {
+        $result->ip = $parts[1] ?? NULL;
+        if (function_exists('smart_ip_get_location') && $result->ip) {
           $location = smart_ip_get_location($result->ip);
           $location_string = sprintf(" (%s %s %s)", $location['city'], $location['region'], $location['country_code']);
         }
@@ -125,7 +134,7 @@ class FloodUnblockManager {
           ->load($result->uid);
 
         if (isset($user)) {
-          $user_link = $user->toLink($user->getUsername());
+          $user_link = $user->toLink($user->getAccountName());
         } else {
           $user_link = $this->t('Deleted user: @user', ['@user' => $result->uid]);
         }
@@ -158,14 +167,14 @@ class FloodUnblockManager {
       }
       $success = $query->execute();
       if ($success) {
-        drupal_set_message($this->t('Flood entries cleared.'), 'status', FALSE);
+        \Drupal::messenger()->addMessage($this->t('Flood entries cleared.'), 'status', FALSE);
       }
     } catch (\Exception $e) {
       // Something went wrong somewhere, so roll back now.
       $txn->rollback();
       // Log the exception to watchdog.
       watchdog_exception('type', $e);
-      drupal_set_message($this->t('Error: @error', ['@error' => (string) $e]), 'error');
+      \Drupal::messenger()->addMessage($this->t('Error: @error', ['@error' => (string) $e]), 'error');
     }
   }
 }

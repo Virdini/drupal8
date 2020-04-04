@@ -4,10 +4,9 @@ description: "Interface for unblocking ip's that are blocked by the flood table"
 package: user
 configure: flood_unblock.form
 # version: VERSION
-# core: 8.x
+core: 8.x
 
-# Information added by Drupal.org packaging script on 2018-03-19
-version: '8.x-1.5'
-core: '8.x'
+# Information added by Drupal.org packaging script on 2020-03-19
+version: '8.x-2.0'
 project: 'flood_unblock'
-datestamp: 1521447192
+datestamp: 1584604317
