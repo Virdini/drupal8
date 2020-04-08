@@ -50,7 +50,7 @@ class Manifest {
             $this->icons[$file->filename] = [
               'uri' => $file->uri,
               'type' => $mimetype->guess($file->uri),
-              'sizes' => $sizes ?: '512x512',
+              'sizes' => $sizes ?: 'any',
             ];
           }
         }
@@ -65,7 +65,6 @@ class Manifest {
 
   public function getManifestIcons() {
     $allowed = [
-      'square.svg',
       'square192x192.png',
       'square512x512.png',
     ];
