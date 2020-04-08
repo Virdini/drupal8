@@ -50,7 +50,7 @@ class Manifest {
             $this->icons[$file->filename] = [
               'uri' => $file->uri,
               'type' => $mimetype->guess($file->uri),
-              'sizes' => $sizes ?: 'any',
+              'sizes' => $sizes ?: '512x512',
             ];
           }
         }
