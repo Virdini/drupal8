@@ -3,6 +3,7 @@
 namespace Drupal\imagick\Plugin\ImageToolkit;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\ImageToolkit\ImageToolkitBase;
 use Drupal\Core\ImageToolkit\ImageToolkitOperationManagerInterface;
@@ -40,16 +41,6 @@ class ImagickToolkit extends ImageToolkitBase {
    * @var resource|null
    */
   protected $resource = NULL;
-
-  /**
-   * @var string
-   */
-  protected $mimeType;
-
-  /**
-   * @var array|null
-   */
-  protected $preLoadInfo = NULL;
 
   /**
    * @var \Drupal\Core\File\FileSystem
@@ -106,40 +97,6 @@ class ImagickToolkit extends ImageToolkitBase {
   }
 
   /**
-   * Loads an image from a file.
-   *
-   * @return bool
-   *   TRUE or FALSE, based on success.
-   */
-  protected function load() {
-    // Return immediately if the image file is not valid.
-    if (!$this->isValid()) {
-      return FALSE;
-    }
-
-    if (!$path = $this->getPath()) {
-      return FALSE;
-    }
-
-    $success = FALSE;
-    try {
-      $resource = new Imagick();
-      $resource->setBackgroundColor(new ImagickPixel('transparent'));
-      $resource->readImage($path);
-      $this->setResource($resource);
-
-      $success = TRUE;
-    } catch (ImagickException $e) {}
-
-    // cleanup local file if the original was remote
-    if ($this->isRemoteUri($path)) {
-      file_unmanaged_delete($path);
-    }
-
-    return $success;
-  }
-
-  /**
    * Sets the Imagick image resource.
    *
    * @param Imagick $resource
@@ -148,7 +105,6 @@ class ImagickToolkit extends ImageToolkitBase {
    * @return $this
    */
   public function setResource($resource) {
-    $this->preLoadInfo = NULL;
     $this->resource = $resource;
 
     return $this;
@@ -161,10 +117,6 @@ class ImagickToolkit extends ImageToolkitBase {
    *   The Imagick image resource, or NULL if not available.
    */
   public function getResource() {
-    if (!is_object($this->resource)) {
-      $this->load();
-    }
-
     return $this->resource;
   }
 
@@ -172,7 +124,7 @@ class ImagickToolkit extends ImageToolkitBase {
    * {@inheritdoc}
    */
   public function isValid() {
-    return ((bool) $this->preLoadInfo || (bool) $this->resource);
+    return (bool) $this->getPath();
   }
 
   /**
@@ -234,7 +186,7 @@ class ImagickToolkit extends ImageToolkitBase {
 
     // Move temporary local file to remote destination.
     if (isset($permanent_destination)) {
-      return (bool) file_unmanaged_move($destination, $permanent_destination, FILE_EXISTS_REPLACE);
+      return (bool) $this->fileSystem->move($destination, $permanent_destination, FileSystemInterface::EXISTS_REPLACE);
     }
 
     return TRUE;
@@ -244,41 +196,21 @@ class ImagickToolkit extends ImageToolkitBase {
    * {@inheritdoc}
    */
   public function getWidth() {
-    if ($this->preLoadInfo) {
-      return $this->preLoadInfo['geometry']['width'];
-    }
-    elseif ($resource = $this->getResource()) {
-      $data = $resource->getImageGeometry();
-
-      return $data['width'];
-    }
-    else {
-      return NULL;
-    }
+    return $this->getResource()->getImageGeometry()['width'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function getHeight() {
-    if ($this->preLoadInfo) {
-      return $this->preLoadInfo['geometry']['height'];
-    }
-    elseif ($resource = $this->getResource()) {
-      $data = $resource->getImageGeometry();
-
-      return $data['height'];
-    }
-    else {
-      return NULL;
-    }
+    return $this->getResource()->getImageGeometry()['height'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function getMimeType() {
-    return $this->mimeType;
+    return $this->resource->getImageMimeType();
   }
 
   /**
@@ -298,24 +230,22 @@ class ImagickToolkit extends ImageToolkitBase {
    * {@inheritdoc}
    */
   public function parseFile() {
-    $path = $this->getPath();
-
+    $success = FALSE;
     try {
-      $image = new Imagick($path);
+      $resource = new Imagick();
+      $resource->setBackgroundColor(new ImagickPixel('transparent'));
+      $resource->readImage($this->getPath());
+      $this->setResource($resource);
 
-      // Get image data
-      $this->mimeType = $image->getImageMimeType();
-      $this->preLoadInfo = $image->identifyImage();
+      $success = TRUE;
+    } catch (ImagickException $e) {}
 
-      if ($this->isRemoteUri($path)) {
-        file_unmanaged_delete($path);
-      }
-
-      return TRUE;
+    // cleanup local file if the original was remote
+    if ($this->isRemoteUri($this->getPath())) {
+      $this->fileSystem->delete($this->getPath());
     }
-    catch (ImagickException $e) {
-      return FALSE;
-    }
+
+    return $success;
   }
 
   /**
@@ -440,10 +370,10 @@ class ImagickToolkit extends ImageToolkitBase {
    * @return bool
    */
   private function copyRemoteFileToLocalTemp($source) {
-    if (!$tmp_file = file_unmanaged_copy(
+    if (!$tmp_file = $this->fileSystem->copy(
       $source,
       $this->fileSystem->tempnam(self::TEMP_DIR, self::TEMP_PREFIX),
-      FILE_EXISTS_REPLACE
+      FileSystemInterface::EXISTS_REPLACE
     )) {
       return FALSE;
     }

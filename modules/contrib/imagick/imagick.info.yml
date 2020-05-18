@@ -3,12 +3,12 @@ type: module
 description: 'Imagick toolkit for image manipulation within Drupal'
 package: Imagick
 # version: VERSION
-core: 8.x
+core_version_requirement: ^8.8 || ^9
 configure: system.image_toolkit_settings
 dependencies:
  - drupal:image
 
-# Information added by Drupal.org packaging script on 2020-03-23
-version: '8.x-1.3'
+# Information added by Drupal.org packaging script on 2020-04-28
+version: '8.x-1.4'
 project: 'imagick'
-datestamp: 1584984488
+datestamp: 1588086747

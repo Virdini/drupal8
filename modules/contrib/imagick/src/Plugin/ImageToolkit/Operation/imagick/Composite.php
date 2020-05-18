@@ -49,7 +49,7 @@ class Composite extends ImagickOperationBase {
     // Get the correct path
     $path = $arguments['path'];
     if (!UrlHelper::isExternal($path)) {
-      $path = drupal_realpath($path);
+      $path = \Drupal::service('file_system')->realpath($path);
     }
 
     if (!file_exists($path)) {
