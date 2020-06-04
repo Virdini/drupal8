@@ -56,8 +56,8 @@ class ImagickToolkit extends ImageToolkitBase {
    * Destructs a Imagick object.
    */
   public function __destruct() {
-    if (is_object($this->resource)) {
-      $this->resource->clear();
+    if (is_object($this->getResource())) {
+      $this->getResource()->clear();
     }
   }
 
@@ -196,6 +196,10 @@ class ImagickToolkit extends ImageToolkitBase {
    * {@inheritdoc}
    */
   public function getWidth() {
+    if (!$this->getResource()) {
+      return NULL;
+    }
+
     return $this->getResource()->getImageGeometry()['width'];
   }
 
@@ -203,6 +207,10 @@ class ImagickToolkit extends ImageToolkitBase {
    * {@inheritdoc}
    */
   public function getHeight() {
+    if (!$this->getResource()) {
+      return NULL;
+    }
+
     return $this->getResource()->getImageGeometry()['height'];
   }
 
@@ -210,7 +218,11 @@ class ImagickToolkit extends ImageToolkitBase {
    * {@inheritdoc}
    */
   public function getMimeType() {
-    return $this->resource->getImageMimeType();
+    if (!$this->getResource()) {
+      return NULL;
+    }
+
+    return $this->getResource()->getImageMimeType();
   }
 
   /**
@@ -342,8 +354,8 @@ class ImagickToolkit extends ImageToolkitBase {
    * @return bool
    */
   private function isValidUri($uri) {
-    $scheme = $this->fileSystem->uriScheme($uri);
-    return ($scheme && $this->fileSystem->validScheme($scheme));
+    $scheme = $this->streamWrapperManager->getScheme($uri);
+    return ($scheme && $this->streamWrapperManager->isValidScheme($scheme));
   }
 
   /**
@@ -360,7 +372,7 @@ class ImagickToolkit extends ImageToolkitBase {
     $local_wrappers = $this->streamWrapperManager
       ->getWrappers(StreamWrapperInterface::LOCAL);
 
-    return !in_array($this->fileSystem->uriScheme($uri), array_keys($local_wrappers));
+    return !in_array($this->streamWrapperManager->getScheme($uri), array_keys($local_wrappers));
   }
 
   /**
