@@ -2,28 +2,26 @@
 
 namespace Drupal\advagg\Form;
 
+use Drupal\advagg\AdvaggSettersTrait;
 use Drupal\Component\Utility\Xss;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\StringTranslation\Translator\TranslatorInterface;
-use Drupal\Core\Theme\Registry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\Core\Messenger\MessengerInterface;
 
 /**
  * View AdvAgg information for this site.
  */
 class InfoForm extends ConfigFormBase {
+
+  use AdvaggSettersTrait;
+
   /**
    * The theme registry service.
    *
    * @var \Drupal\Core\Theme\Registry
    */
   protected $themeRegistry;
+
   /**
    * The request stack.
    *
@@ -60,47 +58,20 @@ class InfoForm extends ConfigFormBase {
   protected $messenger;
 
   /**
-   * Constructs a SettingsForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\Theme\Registry $theme_registry
-   *   The theme registry service.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
-   *   The request stack.
-   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
-   *   The Date formatter service.
-   * @param \Drupal\Core\StringTranslation\Translator\TranslatorInterface $string_translation
-   *   The string translation service.
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
-   *   The AdvAgg cache.
-   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   The messenger service.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, Registry $theme_registry, RequestStack $request_stack, DateFormatterInterface $date_formatter, TranslatorInterface $string_translation, CacheBackendInterface $cache, MessengerInterface $messenger) {
-    parent::__construct($config_factory);
-
-    $this->themeRegistry = $theme_registry;
-    $this->requestStack = $request_stack;
-    $this->dateFormatter = $date_formatter;
-    $this->translation = $string_translation;
-    $this->cache = $cache;
-    $this->messenger = $messenger;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('theme.registry'),
-      $container->get('request_stack'),
-      $container->get('date.formatter'),
-      $container->get('string_translation'),
-      $container->get('cache.advagg'),
-      $container->get('messenger')
-    );
+    /**
+     * @var \Drupal\advagg\Form\InfoForm
+     */
+    $instance = parent::create($container);
+    $instance->setThemeRegistry($container->get('theme.registry'));
+    $instance->setRequestStack($container->get('request_stack'));
+    $instance->setDateFomatter($container->get('date.formatter'));
+    $instance->setStringTranslation($container->get('string_translation'));
+    $instance->setCache($container->get('cache.advagg'));
+
+    return $instance;
   }
 
   /**
@@ -226,7 +197,7 @@ class InfoForm extends ConfigFormBase {
    *   The current state of the form.
    */
   public function getFileInfoSubmit(array &$form, FormStateInterface $form_state) {
-    $this->messenger->addMessage($this->getFileInfo($form_state->getValue('filename')));
+    $this->messenger()->addMessage($this->getFileInfo($form_state->getValue('filename')));
   }
 
   /**

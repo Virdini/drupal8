@@ -2,9 +2,8 @@
 
 namespace Drupal\advagg_cdn\Form;
 
-use Drupal\Core\Asset\AssetCollectionOptimizerInterface;
+use Drupal\advagg\AdvaggSettersTrait;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -15,46 +14,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class SettingsForm extends ConfigFormBase {
 
-  /**
-   * The CSS asset collection optimizer service.
-   *
-   * @var \Drupal\Core\Asset\AssetCollectionOptimizerInterface
-   */
-  protected $cssCollectionOptimizer;
-
-  /**
-   * The JavaScript asset collection optimizer service.
-   *
-   * @var \Drupal\Core\Asset\AssetCollectionOptimizerInterface
-   */
-  protected $jsCollectionOptimizer;
-
-  /**
-   * {@inheritdoc}
-   *
-   * @param Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   Defines the configuration object factory.
-   * @param \Drupal\Core\Asset\AssetCollectionOptimizerInterface $css_collection_optimizer
-   *   The CSS asset collection optimizer service.
-   * @param \Drupal\Core\Asset\AssetCollectionOptimizerInterface $js_collection_optimizer
-   *   The JavaScript asset collection optimizer service.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, AssetCollectionOptimizerInterface $css_collection_optimizer, AssetCollectionOptimizerInterface $js_collection_optimizer) {
-    parent::__construct($config_factory);
-
-    $this->cssCollectionOptimizer = $css_collection_optimizer;
-    $this->jsCollectionOptimizer = $js_collection_optimizer;
-  }
+  use AdvaggSettersTrait;
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('asset.css.collection_optimizer'),
-      $container->get('asset.js.collection_optimizer')
-    );
+    /**
+     * @var \Drupal\advagg_cdn\Form\SettingsForm
+     */
+    $instance = parent::create($container);
+    $instance->setCssCollectionOptimizer($container->get('asset.css.collection_optimizer'));
+    $instance->setJsCollectionOptimizer($container->get('asset.js.collection_optimizer'));
+
+    return $instance;
   }
 
   /**

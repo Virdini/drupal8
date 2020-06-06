@@ -2,17 +2,18 @@
 
 namespace Drupal\advagg_old_ie_compatibility\Form;
 
+use Drupal\advagg\AdvaggSettersTrait;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Configure advagg_mod settings for this site.
+ * Configure advagg ie compatibility for this site.
  */
 class SettingsForm extends ConfigFormBase {
+
+  use AdvaggSettersTrait;
 
   /**
    * The Advagg cache.
@@ -36,27 +37,16 @@ class SettingsForm extends ConfigFormBase {
   protected $languageManager;
 
   /**
-   * Constructs a SettingsForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
-   *   The JavaScript asset collection optimizer service.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, CacheBackendInterface $cache) {
-    parent::__construct($config_factory);
-
-    $this->cache = $cache;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('cache.advagg')
-    );
+    /**
+     * @var \Drupal\advagg_old_ie_compatibility\Form\SettingsForm
+     */
+    $instance = parent::create($container);
+    $instance->setCache($container->get('cache.advagg'));
+
+    return $instance;
   }
 
   /**

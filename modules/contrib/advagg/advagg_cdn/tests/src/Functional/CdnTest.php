@@ -37,7 +37,8 @@ class CdnTest extends AdvaggFunctionalTestBase {
       'jquery_ui_css' => TRUE,
       'minified' => FALSE,
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save configuration'));
+
+    $this->drupalPostForm(NULL, $edit, $this->t('Save configuration'));
     $session = $this->assertSession();
     $session->responseNotContains('jquery.min.js');
     $this->assertTrue($this->config('advagg_cdn.settings')->get('jquery_ui_css'));

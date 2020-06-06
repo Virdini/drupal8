@@ -2,107 +2,35 @@
 
 namespace Drupal\advagg\Form;
 
+use Drupal\advagg\AdvaggSettersTrait;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Datetime\DateFormatterInterface;
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\PrivateKey;
 use Drupal\Component\Utility\Crypt;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Component\Datetime\Time;
-use Drupal\Core\Messenger\MessengerInterface;
 
 /**
  * Configure advagg settings for this site.
  */
 class OperationsForm extends ConfigFormBase {
 
-  /**
-   * The private key service.
-   *
-   * @var \Drupal\Core\PrivateKey
-   */
-  protected $privateKey;
-
-  /**
-   * The date formatter service.
-   *
-   * @var \Drupal\Core\Datetime\DateFormatterInterface
-   */
-  protected $dateFormatter;
-
-  /**
-   * Obtaining system time.
-   *
-   * @var \Drupal\Component\Datetime\Time
-   */
-  protected $time;
-
-  /**
-   * The AdvAgg cache.
-   *
-   * @var \Drupal\Core\Cache\CacheBackendInterface
-   */
-  protected $cache;
-
-  /**
-   * The File System service.
-   *
-   * @var \Drupal\Core\File\FileSystemInterface
-   */
-  protected $fileSystem;
-
-  /**
-   * The Messenger service.
-   *
-   * @var \Drupal\Core\Messenger\MessengerInterface
-   */
-  protected $messenger;
-
-  /**
-   * Constructs the OperationsForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\PrivateKey $private_key
-   *   The private key service.
-   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
-   *   The Date formatter service.
-   * @param \Drupal\Core\Datetime\Time $time
-   *   Obtaining system time.
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
-   *   The AdvAgg cache.
-   * @param \Drupal\Core\File\FileSystemInterface $file_system
-   *   The File System service.
-   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   The messenger service.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, PrivateKey $private_key, DateFormatterInterface $date_formatter, Time $time, CacheBackendInterface $cache, FileSystemInterface $file_system, MessengerInterface $messenger) {
-    parent::__construct($config_factory);
-    $this->privateKey = $private_key;
-    $this->dateFormatter = $date_formatter;
-    $this->time = $time;
-    $this->cache = $cache;
-    $this->fileSystem = $file_system;
-    $this->messenger = $messenger;
-  }
+  use AdvaggSettersTrait;
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('private_key'),
-      $container->get('date.formatter'),
-      $container->get('datetime.time'),
-      $container->get('cache.advagg'),
-      $container->get('file_system'),
-      $container->get('messenger')
-    );
+    /**
+     * @var \Drupal\advagg\Form\OperationsForm
+     */
+    $instance = parent::create($container);
+    $instance->setPrivateKey($container->get('private_key'));
+    $instance->setDateFomatter($container->get('date.formatter'));
+    $instance->setTime($container->get('datetime.time'));
+    $instance->setCache($container->get('cache.advagg'));
+    $instance->setFileSystem($container->get('file_system'));
+
+    return $instance;
   }
 
   /**
@@ -261,12 +189,12 @@ class OperationsForm extends ConfigFormBase {
     $js_count = count(glob($pub . '/js/optimized/*.js'));
     foreach (['public://js/optimized', 'public://css/optimized'] as $path) {
       if (file_exists($path)) {
-        file_unmanaged_delete_recursive($path);
+        $this->fileSystem->deleteRecursive($path);
       }
     }
 
     // Report back the results.
-    $this->messenger->addMessage($this->t('All AdvAgg optimized files have been deleted. %css_count CSS files and %js_count JS files have been removed.', [
+    $this->messenger()->addMessage($this->t('All AdvAgg optimized files have been deleted. %css_count CSS files and %js_count JS files have been removed.', [
       '%css_count' => $css_count,
       '%js_count' => $js_count,
     ]));
@@ -280,13 +208,13 @@ class OperationsForm extends ConfigFormBase {
 
     // Report back the results.
     if (!empty($counts['css']) || !empty($counts['js'])) {
-      $this->messenger->addMessage($this->t('All stale aggregates have been deleted. %css_count CSS files and %js_count JS files have been removed.', [
+      $this->messenger()->addMessage($this->t('All stale aggregates have been deleted. %css_count CSS files and %js_count JS files have been removed.', [
         '%css_count' => count($counts['css']),
         '%js_count' => count($counts['js']),
       ]));
     }
     else {
-      $this->messenger->addMessage($this->t('No stale aggregates found. Nothing was deleted.'));
+      $this->messenger()->addMessage($this->t('No stale aggregates found. Nothing was deleted.'));
     }
   }
 
@@ -302,7 +230,7 @@ class OperationsForm extends ConfigFormBase {
     $this->config('advagg.settings')
       ->set('global_counter', $new_value)
       ->save();
-    $this->messenger->addMessage($this->t('Global counter is now set to %new_value', [
+    $this->messenger()->addMessage($this->t('Global counter is now set to %new_value', [
       '%new_value' => $new_value,
     ]));
   }
@@ -349,13 +277,13 @@ class OperationsForm extends ConfigFormBase {
     if (!empty($_COOKIE[$cookie_name]) && $_COOKIE[$cookie_name] == $key) {
       setcookie($cookie_name, '', -1, $GLOBALS['base_path'], '.' . $_SERVER['HTTP_HOST']);
       unset($_COOKIE[$cookie_name]);
-      $this->messenger->addMessage($this->t('AdvAgg Bypass Cookie Removed.'));
+      $this->messenger()->addMessage($this->t('AdvAgg Bypass Cookie Removed.'));
     }
     // If the cookie does not exist then set it.
     else {
       setcookie($cookie_name, $key, $this->time->getRequestTime() + $form_state->getValue('timespan'), $GLOBALS['base_path'], '.' . $_SERVER['HTTP_HOST']);
       $_COOKIE[$cookie_name] = $key;
-      $this->messenger->addMessage($this->t('AdvAgg Bypass Cookie Set for %time.', [
+      $this->messenger()->addMessage($this->t('AdvAgg Bypass Cookie Set for %time.', [
         '%time' => $this->dateFormatter->formatInterval($form_state->getValue('timespan')),
       ]));
     }

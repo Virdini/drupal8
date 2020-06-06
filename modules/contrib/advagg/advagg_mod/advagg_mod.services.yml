@@ -16,4 +16,4 @@ services:
     class: Drupal\advagg_mod\EventSubscriber\InitSubscriber
     tags:
       - { name: event_subscriber }
-    arguments: [ '@config.factory', '@advagg_mod.translate_css', '@advagg_mod.defer_css', '@advagg_mod.async_js', '@advagg_mod.defer_js', '@advagg_mod.remove_console_log']
+    arguments: [ '@config.factory', '@advagg_mod.translate_css', '@advagg_mod.defer_css', '@advagg_mod.async_js', '@advagg_mod.defer_js', '@advagg_mod.remove_console_log', '@file_system']

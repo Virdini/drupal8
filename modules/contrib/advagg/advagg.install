@@ -98,20 +98,26 @@ function advagg_requirements($phase) {
     }
   }
 
-  $description = '';
+  $advaggMessages = [];
 
   if (!$config->get('enabled')) {
-    $description .= ' ' . $t('Advanced CSS/JS aggregation is disabled. Go to the Advanced CSS/JS aggregation <a href="@settings">settings page</a> and enable it.', ['@settings' => Url::fromRoute('advagg.settings')->toString()]);
+    $advaggMessages[] = $t('Advanced CSS/JS aggregation is disabled. Go to the Advanced CSS/JS aggregation <a href="@settings">settings page</a> and enable it.', ['@settings' => Url::fromRoute('advagg.settings')->toString()]);
   }
   if ($config->get('cache_level') === 0) {
-    $description .= ' ' . $t('Currently running in development mode.');
+    $advaggMessages[] = $t('Currently running in development mode.');
   }
 
   $requirements['advagg_ok'] = [
     'title' => $t('Adv CSS/JS Agg'),
     'severity' => REQUIREMENT_OK,
-    'value' => $t('OK'),
-    'description' => $t('Advanced CSS/JS Aggregator should be working correctly.') . ' ' . $description,
+    'value' => $t('Advanced CSS/JS Aggregator should be working correctly.'),
+    'description' => [
+      '#theme' => 'item_list',
+      '#items' => $advaggMessages,
+      '#title' => '',
+      '#list_type' => 'ul',
+      '#attributes' => [],
+    ],
   ];
 
   return $requirements;

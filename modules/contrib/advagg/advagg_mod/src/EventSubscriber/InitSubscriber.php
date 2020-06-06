@@ -9,6 +9,7 @@ use Drupal\advagg_mod\Asset\DeferJs;
 use Drupal\advagg_mod\Asset\RemoveConsoleLog;
 use Drupal\advagg_mod\Asset\TranslateCss;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Render\HtmlResponse;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -69,6 +70,13 @@ class InitSubscriber implements EventSubscriberInterface {
   protected $consoleLogRemover;
 
   /**
+   * The file system.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
    * Constructs the Subscriber object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -83,8 +91,10 @@ class InitSubscriber implements EventSubscriberInterface {
    *   The JS deferer.
    * @param \Drupal\Advagg_mod\Asset\RemoveConsoleLog $js_console_log
    *   The class to remove console.log() calls.
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
+   *   The file system.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, TranslateCss $translator, DeferCss $deferer, AsyncJs $js_asyncer, DeferJs $js_deferer, RemoveConsoleLog $js_console_log) {
+  public function __construct(ConfigFactoryInterface $config_factory, TranslateCss $translator, DeferCss $deferer, AsyncJs $js_asyncer, DeferJs $js_deferer, RemoveConsoleLog $js_console_log, FileSystemInterface $file_system) {
     $this->config = $config_factory->getEditable('advagg_mod.settings');
     $this->advaggConfig = $config_factory->getEditable('advagg.settings');
     $this->translator = $translator;
@@ -92,6 +102,7 @@ class InitSubscriber implements EventSubscriberInterface {
     $this->jsAsyncer = $js_asyncer;
     $this->jsDeferer = $js_deferer;
     $this->consoleLogRemover = $js_console_log;
+    $this->fileSystem = $file_system;
   }
 
   /**
@@ -124,7 +135,7 @@ class InitSubscriber implements EventSubscriberInterface {
     $counter_filename = $dir . '/_global_counter';
     $local_counter = $this->advaggConfig->get('global_counter');
     if (!file_exists($counter_filename)) {
-      file_unmanaged_save_data($local_counter, $counter_filename, FILE_EXISTS_REPLACE);
+      $this->fileSystem->saveData($local_counter, $counter_filename, FileSystemInterface::EXISTS_REPLACE);
     }
     else {
       $shared_counter = (int) file_get_contents($counter_filename);
@@ -135,7 +146,7 @@ class InitSubscriber implements EventSubscriberInterface {
       }
       elseif ($shared_counter < $local_counter) {
         // Local counter is higher, update saved file and return.
-        file_unmanaged_save_data($local_counter, $counter_filename, FILE_EXISTS_REPLACE);
+        $this->fileSystem->saveData($local_counter, $counter_filename, FileSystemInterface::EXISTS_REPLACE);
         return;
       }
       elseif ($shared_counter > $local_counter) {

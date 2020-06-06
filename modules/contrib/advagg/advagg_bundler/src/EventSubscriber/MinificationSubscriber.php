@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\advagg_js_minify\EventSubscriber;
+namespace Drupal\advagg_bundler\EventSubscriber;
 
 use Drupal\advagg\Asset\AssetOptimizationEvent;
 use Drupal\advagg\Asset\SingleAssetOptimizerBase;

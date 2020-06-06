@@ -4,11 +4,32 @@ namespace Drupal\advagg_validator\Form;
 
 use Drupal\advagg\Form\AdvaggFormBase;
 use Drupal\Component\Render\HtmlEscapedText;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base form for all advagg validator options.
  */
 abstract class BaseValidatorForm extends AdvaggFormBase {
+
+  /**
+   * The StreamWrapper manage.
+   *
+   * @var \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface
+   */
+  protected $streamWrapperManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    /**
+     * @var \Drupal\advagg_validator\Form\BaseValidatorForm
+     */
+    $instance = parent::create($container);
+    $instance->streamWrapperManager = $container->get('stream_wrapper_manager');
+
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -50,13 +71,13 @@ abstract class BaseValidatorForm extends AdvaggFormBase {
           $point = [
             '#type' => 'details',
             '#title' => $value,
-            '#description' => '<strong>' . t('Directory:') . ' </strong>' . implode('/', $built),
+            '#description' => '<strong>' . $this->t('Directory:') . ' </strong>' . implode('/', $built),
             '#weight' => 100,
           ];
           if (!isset($point['check_all_levels']) && $value !== '{ROOT}' && count($levels) != $key + 1) {
             $point['check_all_levels'] = [
               '#type' => 'submit',
-              '#value' => t('Check directory and all subdirectories'),
+              '#value' => $this->t('Check directory and all subdirectories'),
               '#name' => implode('/', $built),
             ];
             if (!$run_client_side) {
@@ -93,7 +114,7 @@ abstract class BaseValidatorForm extends AdvaggFormBase {
           if (!isset($point['check_this_level'])) {
             $point['check_this_level'] = [
               '#type' => 'submit',
-              '#value' => t('Check directory'),
+              '#value' => $this->t('Check directory'),
             ];
             if (!$run_client_side) {
               $point['check_this_level'] += [
@@ -115,12 +136,12 @@ abstract class BaseValidatorForm extends AdvaggFormBase {
           }
           if (!isset($point['start'])) {
             $point['start'] = [
-              '#markup' => '<br /><strong>' . t('File:') . ' </strong><div class="filenames">',
+              '#markup' => '<br /><strong>' . $this->t('File:') . ' </strong><div class="filenames">',
             ];
           }
           else {
             $point['start'] = [
-              '#markup' => '<br /><strong>' . t('Files:') . ' </strong><div class="filenames">',
+              '#markup' => '<br /><strong>' . $this->t('Files:') . ' </strong><div class="filenames">',
             ];
           }
           $point[$form_api_filename] = [
@@ -161,14 +182,14 @@ abstract class BaseValidatorForm extends AdvaggFormBase {
       foreach ($validators as $v_name => $v_data) {
         $output[$filename][$v_name] = ['#prefix' => '<em>' . $filename . ':</em> '];
         if (!empty($v_data['validity'])) {
-          $output[$filename][$v_name]['#markup'] = t('valid');
+          $output[$filename][$v_name]['#markup'] = $this->t('valid');
         }
         elseif (isset($v_data['error'])) {
           $output[$filename][$v_name]['error'] = $v_data['error'];
         }
         else {
           $output[$filename][$v_name]['options'] = [
-            '#markup' => '<em>' . t('Options:') . '</em><br/>',
+            '#markup' => '<em>' . $this->t('Options:') . '</em><br/>',
           ];
           foreach ($v_data['options'] as $option => $value) {
             $output[$filename][$v_name]['options'][] = [
@@ -178,7 +199,7 @@ abstract class BaseValidatorForm extends AdvaggFormBase {
           }
           if (isset($v_data['errors'])) {
             $output[$filename][$v_name]['errors'] = [
-              '#markup' => '<em>' . t('Errors:') . '</em>',
+              '#markup' => '<em>' . $this->t('Errors:') . '</em>',
             ];
             foreach ($v_data['errors'] as $error) {
               $output[$filename][$v_name]['errors'][] = [
@@ -190,7 +211,7 @@ abstract class BaseValidatorForm extends AdvaggFormBase {
           }
           if (isset($v_data['warnings'])) {
             $output[$filename][$v_name]['warnings'] = [
-              '#markup' => '<em>' . t('Warnings:') . '</em>',
+              '#markup' => '<em>' . $this->t('Warnings:') . '</em>',
             ];
             foreach ($v_data['warnings'] as $warning) {
               $output[$filename][$v_name]['warnings'][] = [
@@ -286,7 +307,7 @@ abstract class BaseValidatorForm extends AdvaggFormBase {
           }
 
           $uri = "$dir/$filename";
-          $uri = file_stream_wrapper_uri_normalize($uri);
+          $uri = $this->streamWrapperManager->normalizeUri($uri);
           if (is_dir($uri) && $options['recurse'] && !preg_match($options['nodirmask'], $uri)) {
             // Give priority to files in this folder by merging them in after
             // any subdirectory files.

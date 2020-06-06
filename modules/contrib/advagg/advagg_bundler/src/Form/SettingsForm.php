@@ -2,9 +2,8 @@
 
 namespace Drupal\advagg_bundler\Form;
 
+use Drupal\advagg\AdvaggSettersTrait;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -14,34 +13,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class SettingsForm extends ConfigFormBase {
 
-  /**
-   * The AdvAgg cache.
-   *
-   * @var \Drupal\Core\Cache\CacheBackendInterface
-   */
-  protected $cache;
-
-  /**
-   * Constructs a SettingsForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
-   *   The AdvAgg cache service.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, CacheBackendInterface $cache) {
-    parent::__construct($config_factory);
-    $this->cache = $cache;
-  }
+  use AdvaggSettersTrait;
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('cache.advagg')
-    );
+    /**
+     * @var \Drupal\advagg_bundler\Form\SettingsForm
+     */
+    $instance = parent::create($container);
+    $instance->setCache($container->get('cache.advagg'));
+
+    return $instance;
   }
 
   /**

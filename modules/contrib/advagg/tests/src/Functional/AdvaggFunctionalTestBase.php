@@ -3,6 +3,7 @@
 namespace Drupal\Tests\advagg\functional;
 
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * @defgroup advagg_tests Test Suit
@@ -18,6 +19,8 @@ use Drupal\Tests\BrowserTestBase;
  */
 abstract class AdvaggFunctionalTestBase extends BrowserTestBase {
 
+  use StringTranslationTrait;
+
   /**
    * Modules to enable.
    *
@@ -31,6 +34,11 @@ abstract class AdvaggFunctionalTestBase extends BrowserTestBase {
    * @var \Drupal\user\UserInterface
    */
   protected $user;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}

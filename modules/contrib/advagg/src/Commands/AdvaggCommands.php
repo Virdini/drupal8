@@ -116,7 +116,7 @@ class AdvaggCommands extends DrushCommands {
     $js_count = count(glob($pub . '/js/optimized/*.js'));
     foreach (['public://js/optimized', 'public://css/optimized'] as $path) {
       if (file_exists($path)) {
-        file_unmanaged_delete_recursive($path);
+        $this->fileSystem->deleteRecursive($path);
       }
     }
 

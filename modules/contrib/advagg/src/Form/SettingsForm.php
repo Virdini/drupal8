@@ -2,96 +2,36 @@
 
 namespace Drupal\advagg\Form;
 
+use Drupal\advagg\AdvaggSettersTrait;
 use Drupal\advagg\Asset\AssetOptimizer;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Datetime\DateFormatterInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Component\Datetime\TimeInterface;
 
 /**
  * Configure advagg settings for this site.
  */
 class SettingsForm extends ConfigFormBase {
 
-  /**
-   * The date formatter service.
-   *
-   * @var \Drupal\Core\Datetime\DateFormatterInterface
-   */
-  protected $dateFormatter;
-
-  /**
-   * The state service.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
-  /**
-   * Module handler service.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
-   * The advagg cache.
-   *
-   * @var \Drupal\Core\Cache\Cache
-   */
-  protected $cache;
-
-  /**
-   * Obtaining system time.
-   *
-   * @var \Drupal\Component\Datetime\TimeInterface
-   */
-  protected $time;
-
-  /**
-   * Constructs a SettingsForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
-   *   The Date formatter service.
-   * @param \Drupal\Core\State\StateInterface $state
-   *   The state service.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler service.
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
-   *   The advagg cache.
-   * @param \Drupal\Component\Datetime\TimeInterface $time
-   *   Obtaining system time.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, DateFormatterInterface $date_formatter, StateInterface $state, ModuleHandlerInterface $module_handler, CacheBackendInterface $cache, TimeInterface $time) {
-    parent::__construct($config_factory);
-    $this->dateFormatter = $date_formatter;
-    $this->state = $state;
-    $this->moduleHandler = $module_handler;
-    $this->cache = $cache;
-    $this->time = $time;
-  }
+  use AdvaggSettersTrait;
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('date.formatter'),
-      $container->get('state'),
-      $container->get('module_handler'),
-      $container->get('cache.advagg'),
-      $container->get('datetime.time')
-    );
+    /**
+     * @var \Drupal\advagg\Form\SettingsForm
+     */
+    $instance = parent::create($container);
+    $instance->setDateFomatter($container->get('date.formatter'));
+    $instance->setState($container->get('state'));
+    $instance->setModuleHandler($container->get('module_handler'));
+    $instance->setCache($container->get('cache.advagg'));
+    $instance->setTime($container->get('datetime.time'));
+
+    return $instance;
   }
 
   /**
@@ -106,6 +46,65 @@ class SettingsForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return ['advagg.settings', 'system.performance'];
+  }
+
+  /**
+   * The getter options for cache level.
+   *
+   * @return array
+   *   Return a array with options.
+   */
+  public function getCacheLevelOptions() :array {
+    return [
+      0 => $this->t('Development'),
+      1 => $this->t('Low'),
+      2 => $this->t('Normal'),
+      3 => $this->t('High'),
+    ];
+  }
+
+  /**
+   * Getter for short times.
+   *
+   * @return array
+   *   Return array with short times.
+   */
+  public function getShortTimes() :array {
+    return [
+      900 => $this->t('15 minutes'),
+      1800 => $this->t('30 minutes'),
+      2700 => $this->t('45 minutes'),
+      3600 => $this->t('1 hour'),
+      7200 => $this->t('2 hours'),
+      14400 => $this->t('4 hours'),
+      21600 => $this->t('6 hours'),
+      43200 => $this->t('12 hours'),
+      64800 => $this->t('18 hours'),
+      86400 => $this->t('1 day'),
+      172800 => $this->t('2 days'),
+    ];
+  }
+
+  /**
+   * Getter for long times.
+   *
+   * @return array
+   *   Return array with long times.
+   */
+  public function getLongTimes() :array {
+    return [
+      172800 => $this->t('2 days'),
+      259200 => $this->t('3 days'),
+      345600 => $this->t('4 days'),
+      432000 => $this->t('5 days'),
+      518400 => $this->t('6 days'),
+      604800 => $this->t('1 week'),
+      1209600 => $this->t('2 week'),
+      1814400 => $this->t('3 week'),
+      2592000 => $this->t('1 month'),
+      3628800 => $this->t('6 weeks'),
+      4838400 => $this->t('2 months'),
+    ];
   }
 
   /**
@@ -165,18 +164,11 @@ class SettingsForm extends ConfigFormBase {
       ];
     }
 
-    $options = [
-      0 => $this->t('Development'),
-      1 => $this->t('Low'),
-      2 => $this->t('Normal'),
-      3 => $this->t('High'),
-    ];
-
     $form['global']['cache_level'] = [
       '#type' => 'radios',
       '#title' => $this->t('AdvAgg Cache Settings'),
       '#default_value' => $config->get('cache_level'),
-      '#options' => $options,
+      '#options' => $this->getCacheLevelOptions(),
       '#description' => $this->t("No performance data yet but most use cases will probably want to use the Normal cache mode.", [
         '@information' => Url::fromRoute('advagg.info')->toString(),
       ]),
@@ -293,33 +285,6 @@ class SettingsForm extends ConfigFormBase {
       '#description' => $this->t('Unless you have a good reason to adjust these values you should leave them alone.'),
     ];
 
-    $short_times = [
-      900 => $this->t('15 minutes'),
-      1800 => $this->t('30 minutes'),
-      2700 => $this->t('45 minutes'),
-      3600 => $this->t('1 hour'),
-      7200 => $this->t('2 hours'),
-      14400 => $this->t('4 hours'),
-      21600 => $this->t('6 hours'),
-      43200 => $this->t('12 hours'),
-      64800 => $this->t('18 hours'),
-      86400 => $this->t('1 day'),
-      172800 => $this->t('2 days'),
-    ];
-
-    $long_times = [
-      172800 => $this->t('2 days'),
-      259200 => $this->t('3 days'),
-      345600 => $this->t('4 days'),
-      432000 => $this->t('5 days'),
-      518400 => $this->t('6 days'),
-      604800 => $this->t('1 week'),
-      1209600 => $this->t('2 week'),
-      1814400 => $this->t('3 week'),
-      2592000 => $this->t('1 month'),
-      3628800 => $this->t('6 weeks'),
-      4838400 => $this->t('2 months'),
-    ];
     $last_ran = $this->state->get('advagg.cron_timestamp', NULL);
     if ($last_ran) {
       $last_ran = $this->t('@time ago', ['@time' => $this->dateFormatter->formatInterval($this->time->getRequestTime() - $last_ran)]);
@@ -329,7 +294,7 @@ class SettingsForm extends ConfigFormBase {
     }
     $form['cron']['cron_frequency'] = [
       '#type' => 'select',
-      '#options' => $short_times,
+      '#options' => $this->getShortTimes(),
       '#title' => 'Minimum amount of time between advagg_cron() runs.',
       '#default_value' => $config->get('cron_frequency'),
       '#description' => $this->t('The default value for this is %value. The last time advagg_cron was ran is %time.', [
@@ -340,7 +305,7 @@ class SettingsForm extends ConfigFormBase {
 
     $form['cron']['stale_file_threshold'] = [
       '#type' => 'select',
-      '#options' => $long_times,
+      '#options' => $this->getLongTimes(),
       '#title' => 'Delete aggregates modified more than a set time ago.',
       '#default_value' => $this->config('system.performance')->get('stale_file_threshold'),
       '#description' => $this->t('The default value for this is %value.', [

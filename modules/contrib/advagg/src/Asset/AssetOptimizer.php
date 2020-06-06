@@ -6,11 +6,26 @@ use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Component\Utility\Crypt;
+use Drupal\Core\File\FileSystemInterface;
 
 /**
  * Defines the base AdvAgg optimizer.
  */
 abstract class AssetOptimizer {
+
+  /**
+   * The base path.
+   *
+   * @var false|string
+   */
+  protected $basePath;
+
+  /**
+   * The base path length.
+   *
+   * @var int
+   */
+  protected $basePathLen;
 
   /**
    * Checks for and if found fixes incorrectly set asset types.
@@ -63,6 +78,13 @@ abstract class AssetOptimizer {
   protected $cacheTime;
 
   /**
+   * The file system.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
    * Config to control fixing the asset type (file, external).
    *
    * @var bool
@@ -107,6 +129,8 @@ abstract class AssetOptimizer {
 
     $this->dnsPrefetch = [];
     $this->cacheLevel = $this->config->get('cache_level');
+
+    $this->fileSystem = \Drupal::service('file_system');
 
     $this->fixType = $this->config->get("{$this->extension}.fix_type");
     if ($this->fixType) {
@@ -262,9 +286,9 @@ abstract class AssetOptimizer {
     $uri = "{$path}/{$this->extension}_{$cid}.{$version}.{$this->extension}";
 
     // Create the CSS or JS file.
-    file_prepare_directory($path, FILE_CREATE_DIRECTORY);
+    $this->fileSystem->prepareDirectory($path, FileSystemInterface::CREATE_DIRECTORY);
     if (!file_exists($uri)) {
-      if (!file_unmanaged_save_data($data, $uri, FILE_EXISTS_REPLACE)) {
+      if (!$this->fileSystem->saveData($data, $uri, FileSystemInterface::EXISTS_REPLACE)) {
         return FALSE;
       }
     }
@@ -273,13 +297,13 @@ abstract class AssetOptimizer {
     // then create a gzipped version of this file. This file is served
     // conditionally to browsers that accept gzip using .htaccess rules.
     if ($this->gZip && !file_exists($uri . '.gz')) {
-      file_unmanaged_save_data(gzencode($data, 9, FORCE_GZIP), $uri . '.gz', FILE_EXISTS_REPLACE);
+      $this->fileSystem->saveData(gzencode($data, 9, FORCE_GZIP), $uri . '.gz', FileSystemInterface::EXISTS_REPLACE);
     }
 
     // If brotli compression is enabled and available, create br compressed
     // files and serve conditionally via .htaccess rules.
     if ($this->brotli && !file_exists($uri . '.br')) {
-      file_unmanaged_save_data(brotli_compress($data, 11, BROTLI_TEXT), $uri . '.br', FILE_EXISTS_REPLACE);
+      $this->fileSystem->saveData(brotli_compress($data, 11, BROTLI_TEXT), $uri . '.br', FileSystemInterface::EXISTS_REPLACE);
     }
     return $uri;
   }
@@ -452,6 +476,7 @@ abstract class AssetOptimizer {
    *   Whether to regenerate if the file already exists.
    */
   public static function generateHtaccess($extension, $regenerate = FALSE) {
+    $fileSystem = \Drupal::service('file_system');
     $path = "public://{$extension}/optimized";
     $file = $path . '/.htaccess';
     if (!$regenerate && file_exists($file)) {
@@ -465,7 +490,7 @@ abstract class AssetOptimizer {
     else {
       $type = 'text/css';
     }
-    file_prepare_directory($path, FILE_CREATE_DIRECTORY);
+    $fileSystem->prepareDirectory($path, FileSystemInterface::CREATE_DIRECTORY);
     $immutable = ($config->get('immutable')) ? ', immutable' : '';
     $options = '';
     if ($config->get('symlinks')) {
@@ -544,7 +569,7 @@ abstract class AssetOptimizer {
         ForceType {$type}
       </FilesMatch>
 EOT;
-    file_unmanaged_save_data($htaccess, $file, FILE_EXISTS_REPLACE);
+    $fileSystem->saveData($htaccess, $file, FileSystemInterface::EXISTS_REPLACE);
   }
 
 }

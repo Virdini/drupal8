@@ -125,7 +125,7 @@ abstract class SingleAssetOptimizerBase {
     }
     $before = strlen($original);
     $after = strlen($minified);
-    $ratio = ($before - $after) / $before;
+    $ratio = !empty($before) ? (($before - $after) / $before) : 0;
     if ($ratio > $this->config->get('ratio_max') || $ratio < $this->config->get('ratio_min')) {
       return FALSE;
     }

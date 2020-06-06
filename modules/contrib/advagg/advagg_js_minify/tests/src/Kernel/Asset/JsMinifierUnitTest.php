@@ -141,7 +141,7 @@ class JsMinifierUnitTest extends KernelTestBase {
   public function testMinifyJsmin(array $js_asset, $contents) {
     // Requires the JSMin PHP extension; if it isn't available skip the test.
     if (!function_exists('jsmin')) {
-      return;
+      $this->markTestSkipped('The function jsmin doesn\'t exist, requires the JSMin PHP extension.');
     }
     $this->config('advagg_js_minify.settings')->set('minifier', 3)->save();
     $expected = file_get_contents($js_asset['data'] . '.jsmin.js');

@@ -2,13 +2,10 @@
 
 namespace Drupal\advagg_mod\Form;
 
+use Drupal\advagg\AdvaggSettersTrait;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -18,57 +15,21 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class SettingsForm extends ConfigFormBase {
 
-  /**
-   * The Advagg cache.
-   *
-   * @var \Drupal\Core\Cache\CacheBackendInterface
-   */
-  protected $cache;
-
-  /**
-   * The module handler service.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
-   * The core language manager service.
-   *
-   * @var \Drupal\Core\Language\LanguageManagerInterface
-   */
-  protected $languageManager;
-
-  /**
-   * Constructs a SettingsForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
-   *   The JavaScript asset collection optimizer service.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler service.
-   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
-   *   The language manager service.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, CacheBackendInterface $cache, ModuleHandlerInterface $module_handler, LanguageManagerInterface $language_manager) {
-    parent::__construct($config_factory);
-
-    $this->cache = $cache;
-    $this->moduleHandler = $module_handler;
-    $this->languageManager = $language_manager;
-  }
+  use AdvaggSettersTrait;
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('cache.advagg'),
-      $container->get('module_handler'),
-      $container->get('language_manager')
-    );
+    /**
+     * @var \Drupal\advagg_mod\Form\SettingsForm
+     */
+    $instance = parent::create($container);
+    $instance->setCache($container->get('cache.advagg'));
+    $instance->setLanguageManager($container->get('language_manager'));
+    $instance->setModuleHandler($container->get('module_handler'));
+
+    return $instance;
   }
 
   /**
@@ -186,7 +147,7 @@ class SettingsForm extends ConfigFormBase {
     // Only test the translate option if
     // the locale function is defined OR
     // the locale_custom_strings variable is not empty.
-    $lang = isset($this->languageManager->getCurrentLanguage()->language) ? $this->languageManager->getCurrentLanguage->language : 'en';
+    $lang = isset($this->languageManager->getCurrentLanguage()->language) ? $this->languageManager->getCurrentLanguage()->language : 'en';
     $locale_custom_strings = Settings::get('locale_custom_strings_' . $lang, []);
     if (function_exists('locale') || !empty($locale_custom_strings)) {
       $form['css']['css_translate'] = [

@@ -3,18 +3,17 @@
 namespace Drupal\advagg_validator\Form;
 
 use DOMDocument;
-use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\advagg\AdvaggSettersTrait;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\RendererInterface;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Configure form for W3C validation of CSS files.
  */
 class CssW3Form extends BaseValidatorForm {
+
+  use AdvaggSettersTrait;
 
   /**
    * The Guzzle HTTP Client.
@@ -32,33 +31,17 @@ class CssW3Form extends BaseValidatorForm {
 
   /**
    * {@inheritdoc}
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The configuration object factory.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
-   *   Request stack that controls the lifecycle of requests.
-   * @param \GuzzleHttp\Client $http_client
-   *   The Guzzle HTTP Client.
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The Drupal renderer.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, RequestStack $request_stack, Client $http_client, RendererInterface $renderer) {
-    parent::__construct($config_factory, $request_stack);
-    $this->requestStack = $request_stack;
-    $this->httpClient = $http_client;
-    $this->renderer = $renderer;
-  }
-
-  /**
-   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('request_stack'),
-      $container->get('http_client'),
-      $container->get('renderer')
-    );
+    /**
+     * @var \Drupal\advagg_validator\Form\CssW3Form
+     */
+    $instance = parent::create($container);
+    $instance->setRequestStack($container->get('request_stack'));
+    $instance->setHttpClient($container->get('http_client'));
+    $instance->setRenderer($container->get('renderer'));
+
+    return $instance;
   }
 
   /**

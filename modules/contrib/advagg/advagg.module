@@ -46,6 +46,7 @@ function advagg_module_implements_alter(&$implementations, $hook) {
 function advagg_cron($bypass = FALSE) {
   $time = \Drupal::time()->getRequestTime();
   $state = \Drupal::state();
+  $file_system = \Drupal::service('file_system');
 
   // Ensure the htaccess files exist.
   AssetOptimizer::generateHtaccess('css');
@@ -71,8 +72,8 @@ function advagg_cron($bypass = FALSE) {
         $filename = str_replace(['css_', 'js_'], '', pathinfo($file, PATHINFO_FILENAME));
         $cid = substr($filename, 0, strpos($filename, '.'));
         if (!$cache->get($cid)) {
-          @file_unmanaged_delete($file);
-          @file_unmanaged_delete("{$file}.gz");
+          @$file_system->delete($file);
+          @$file_system->delete("{$file}.gz");
           $outdated[$type][] = "{$filename}.{$type}";
         }
       }

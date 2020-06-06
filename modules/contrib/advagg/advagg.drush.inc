@@ -96,7 +96,7 @@ function drush_advagg_disable() {
   /** @var \Drupal\Core\Config\Config $config */
   $config = \Drupal::service('config.factory')->getEditable('advagg.settings');
   $config->set('enabled', 0)->save();
-  drush_log(dt('All Advagg functionality is disabled.'), 'ok');
+  \Drupal::logger(dt('All Advagg functionality is disabled.'), 'ok');
 }
 
 /**
@@ -106,7 +106,7 @@ function drush_advagg_enable() {
   /** @var \Drupal\Core\Config\Config $config */
   $config = \Drupal::service('config.factory')->getEditable('advagg.settings');
   $config->set('enabled', 1)->save();
-  drush_log(dt('All Advagg functionality is enabled.'), 'ok');
+  \Drupal::logger(dt('All Advagg functionality is enabled.'), 'ok');
 }
 
 /**
@@ -121,7 +121,7 @@ function drush_advagg_force_new_aggregates() {
   $config = \Drupal::service('config.factory')->getEditable('advagg.settings');
   $new_value = $config->get('global_counter') + 1;
   $config->set('global_counter', $new_value)->save();
-  drush_log(dt('Global counter is now set to @new_value', ['@new_value' => $new_value]), 'ok');
+  \Drupal::logger(dt('Global counter is now set to @new_value', ['@new_value' => $new_value]), 'ok');
   _drupal_flush_css_js();
 }
 
@@ -129,20 +129,21 @@ function drush_advagg_force_new_aggregates() {
  * Callback function for drush advagg-clear-all-files.
  */
 function drush_advagg_clear_all_files() {
+  $file_system = \Drupal::service('file_system');
   // Clear out the cache.
   Cache::invalidateTags(['library_info']);
   \Drupal::cache('advagg')->invalidateAll();
-  $pub = \Drupal::service('file_system')->realpath('public://');
+  $pub = $file_system->realpath('public://');
   $css_count = count(glob($pub . '/css/optimized/*.css'));
   $js_count = count(glob($pub . '/js/optimized/*.js'));
   foreach (['public://js/optimized', 'public://css/optimized'] as $path) {
     if (file_exists($path)) {
-      file_unmanaged_delete_recursive($path);
+      $file_system->deleteRecursive($path);
     }
   }
 
   // Report back the results.
-  drush_log(dt('All AdvAgg optimized files have been deleted. %css_count CSS files and %js_count JS files have been removed.', [
+  \Drupal::logger(dt('All AdvAgg optimized files have been deleted. %css_count CSS files and %js_count JS files have been removed.', [
     '%css_count' => $css_count,
     '%js_count' => $js_count,
   ]));
@@ -156,13 +157,13 @@ function drush_advagg_cron() {
   $output = advagg_cron(TRUE);
 
   if (!empty($output['css']) || !empty($output['js'])) {
-    drush_log(dt('All stale aggregates have been deleted. %css_count CSS files and %js_count JS files have been removed.', [
+    \Drupal::logger(dt('All stale aggregates have been deleted. %css_count CSS files and %js_count JS files have been removed.', [
       '%css_count' => count($output['css']),
       '%js_count' => count($output['js']),
     ]), 'ok');
   }
   else {
-    drush_log(dt('No stale aggregates found. Nothing was deleted.'), 'ok');
+    \Drupal::logger(dt('No stale aggregates found. Nothing was deleted.'), 'ok');
   }
 }
 

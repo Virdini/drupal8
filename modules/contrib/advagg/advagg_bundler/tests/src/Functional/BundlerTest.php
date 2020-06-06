@@ -48,7 +48,7 @@ class BundlerTest extends AdvaggFunctionalTestBase {
       'max_js' => 9,
       'js_logic' => 0,
     ];
-    $this->drupalPostForm(NULL, $edit, t('Save configuration'));
+    $this->drupalPostForm(NULL, $edit, $this->t('Save configuration'));
     $session = $this->assertSession();
     $session->statusCodeEquals(200);
 
@@ -62,7 +62,7 @@ class BundlerTest extends AdvaggFunctionalTestBase {
     // *exactly* match the selected maximum. See advagg_bundler_test.module.
     $edit['max_js'] = 1;
     $edit['max_css'] = 1;
-    $this->drupalPostForm(NULL, $edit, t('Save configuration'));
+    $this->drupalPostForm(NULL, $edit, $this->t('Save configuration'));
 
     $this->drupalGet(Url::fromRoute('system.admin'));
     $session = $this->assertSession();
