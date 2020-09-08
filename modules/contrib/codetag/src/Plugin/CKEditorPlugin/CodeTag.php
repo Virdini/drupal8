@@ -14,30 +14,31 @@ use Drupal\editor\Entity\Editor;
  * )
  */
 class CodeTag extends CKEditorPluginBase {
+
   /**
    * {@inheritdoc}
    */
   public function getFile() {
-    return 'libraries/codeTag/plugin.js';
+    return 'libraries/codetag/plugin.js';
   }
 
   /**
    * {@inheritdoc}
    */
   public function getConfig(Editor $editor) {
-    return array();
+    return [];
   }
 
   /**
    * {@inheritdoc}
    */
   public function getButtons() {
-    return array(
-      'Code' => array(
+    return [
+      'Code' => [
         'label' => $this->t('CodeTag'),
-        'image' => 'libraries/codeTag/icons/code.png',
-      ),
-    );
+        'image' => 'libraries/codetag/icons/code.png',
+      ],
+    ];
   }
 
 }
