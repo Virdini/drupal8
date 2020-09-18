@@ -127,7 +127,7 @@ function vbase_cron() {
   }
   // Delayed unpublish
   $query = $storage->getQuery();
-  $query->condition('status', 0)
+  $query->condition('status', 1)
         ->condition('unpubdate', 0, '<>')
         ->condition('unpubdate', time(), '<');
   foreach ($storage->loadMultiple($query->execute()) as $entity) {
