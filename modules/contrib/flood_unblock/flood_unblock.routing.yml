@@ -2,7 +2,7 @@ flood_unblock.form:
   path: '/admin/people/flood-unblock'
   defaults:
     _form: '\Drupal\flood_unblock\Form\FloodUnblockAdminForm'
-    _title: 'Flood Unblock Users'
+    _title: 'Flood Unblock'
   requirements:
     _permission: 'access flood unblock'
 

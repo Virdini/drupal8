@@ -9,28 +9,37 @@ use Drupal\Core\Flood\FloodInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
-class FloodUnblockManager {
+/**
+ * Class FloodUnblockManager.
+ */
+class FloodUnblockManager implements FloodUnblockManagerInterface {
 
   use StringTranslationTrait;
 
   /**
-   * The Database Connection
+   * The Database Connection.
    *
    * @var \Drupal\Core\Database\Connection
    */
   protected $database;
 
   /**
+   * The Entity Type Manager Interface.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
+   * The Flood Interface.
+   *
    * @var \Drupal\Core\Flood\FloodInterface
    */
   protected $flood;
 
   /**
+   * The Immutable Config.
+   *
    * @var \Drupal\Core\Config\ImmutableConfig
    */
   protected $config;
@@ -46,7 +55,15 @@ class FloodUnblockManager {
    * FloodUnblockAdminForm constructor.
    *
    * @param \Drupal\Core\Database\Connection $database
+   *   The database connection.
+   * @param \Drupal\Core\Flood\FloodInterface $flood
+   *   The flood interface.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The Config Factory Interface.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The Entity Type Manager Interface.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The Messenger Interface.
    */
   public function __construct(Connection $database, FloodInterface $flood, ConfigFactoryInterface $configFactory, EntityTypeManagerInterface $entityTypeManager, MessengerInterface $messenger) {
     $this->database = $database;
@@ -57,124 +74,99 @@ class FloodUnblockManager {
   }
 
   /**
-   * Generate rows from the entries in the flood table.
-   *
-   * @return array
-   *   Ip blocked entries in the flood table.
+   * {@inheritdoc}
    */
-  public function get_blocked_ip_entries() {
-    $entries = [];
+  public function fetchIdentifiers($results) {
+    $identifiers = [];
 
-    if ($this->database->schema()->tableExists('flood')) {
-      $query = $this->database->select('flood', 'f');
-      $query->addField('f', 'identifier');
-      $query->addField('f', 'identifier', 'ip');
-      $query->addExpression('count(*)', 'count');
-      $query->condition('f.event', '%failed_login_ip', 'LIKE');
-      $query->groupBy('identifier');
-      $results = $query->execute();
+    foreach ($results as $result) {
 
-      foreach ($results as $result) {
-        if (function_exists('smart_ip_get_location')) {
-          $location = smart_ip_get_location($result->ip);
-          $location_string = sprintf(" (%s %s %s)", $location['city'], $location['region'], $location['country_code']);
-        }
-        else {
-          $location_string = '';
-        }
+      // Sets ip as default value and adds to identifiers array.
+      $identifiers[$result] = $result;
 
-        $blocked = !$this->flood->isAllowed('user.failed_login_ip', $this->config->get('ip_limit'), $this->config->get('ip_window'), $result->ip);
-
-        $entries[$result->identifier] = [
-          'type' => 'ip',
-          'ip' => $result->ip,
-          'count' => $result->count,
-          'location' => $location_string,
-          'blocked' => $blocked,
-        ];
+      // Sets location as value and adds to identifiers array.
+      if (function_exists('smart_ip_get_location')) {
+        $location = smart_ip_get_location($result);
+        $location_string = sprintf(" (%s %s %s)", $location['city'], $location['region'], $location['country_code']);
+        $identifiers[$result] = "$location_string ($result)";
       }
-    }
 
-    return $entries;
-  }
-
-  /**
-   * Generate rows from the entries in the flood table.
-   *
-   * @return array
-   *   User blocked entries in the flood table.
-   */
-  public function get_blocked_user_entries() {
-    $entries = [];
-
-    if ($this->database->schema()->tableExists('flood')) {
-      $query = $this->database->select('flood', 'f');
-      $query->addField('f', 'identifier');
-      $query->addExpression('count(*)', 'count');
-      $query->condition('f.event', '%failed_login_user', 'LIKE');
-      $query->groupBy('identifier');
-      $results = $query->execute();
-
-      foreach ($results as $result) {
-        $parts = explode('-', $result->identifier);
-        $result->uid = $parts[0];
-        $result->ip = $parts[1] ?? NULL;
-        if (function_exists('smart_ip_get_location') && $result->ip) {
-          $location = smart_ip_get_location($result->ip);
-          $location_string = sprintf(" (%s %s %s)", $location['city'], $location['region'], $location['country_code']);
-        }
-        else {
-          $location_string = '';
-        }
-
-        $blocked = !$this->flood->isAllowed('user.failed_login_user', $this->config->get('user_limit'), $this->config->get('user_window'), $result->identifier);
+      // Sets link to user as value and adds to identifiers array.
+      $parts = explode('-', $result);
+      if (isset($parts[0]) && isset($parts[1])) {
+        $uid = $parts[0];
 
         /** @var \Drupal\user\Entity\User $user */
         $user = $this->entityTypeManager->getStorage('user')
-          ->load($result->uid);
-
+          ->load($uid);
         if (isset($user)) {
           $user_link = $user->toLink($user->getAccountName());
-        } else {
-          $user_link = $this->t('Deleted user: @user', ['@user' => $result->uid]);
         }
-
-        $entries[$result->identifier] = [
-          'type' => 'user',
-          'uid' => $result->uid,
-          'ip' => $result->ip,
-          'username' => $user_link,
-          'count' => $result->count,
-          'location' => $location_string,
-          'blocked' => $blocked,
-        ];
+        else {
+          $user_link = $this->t('Deleted user: @user', ['@user' => $uid]);
+        }
+        $identifiers[$result] = $user_link;
       }
-    }
 
-    return $entries;
+    }
+    return $identifiers;
   }
 
   /**
-   * The function that clear the flood.
+   * {@inheritdoc}
    */
-  public function flood_unblock_clear_event($type, $identifier) {
+  public function floodUnblockClearEvent($fid) {
     $txn = $this->database->startTransaction('flood_unblock_clear');
     try {
       $query = $this->database->delete('flood')
-        ->condition('event', '%' . $type, 'LIKE');
-      if (isset($identifier)) {
-        $query->condition('identifier', $identifier);
-      }
+        ->condition('fid', $fid);
       $success = $query->execute();
       if ($success) {
-        \Drupal::messenger()->addMessage($this->t('Flood entries cleared.'), 'status', FALSE);
+        $this->messenger->addMessage($this->t('Flood entries cleared.'), 'status', FALSE);
       }
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       // Something went wrong somewhere, so roll back now.
       $txn->rollback();
       // Log the exception to watchdog.
       watchdog_exception('type', $e);
-      \Drupal::messenger()->addMessage($this->t('Error: @error', ['@error' => (string) $e]), 'error');
+      $this->messenger->addMessage($this->t('Error: @error', ['@error' => (string) $e]), 'error');
     }
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEvents() {
+    return [
+      'user.failed_login_ip' => [
+        'type' => 'user',
+        'label' => $this->t('User failed login IP'),
+      ],
+      'user.failed_login_user' => [
+        'type' => 'user',
+        'label' => $this->t('User failed login user'),
+      ],
+      'user.http_login' => [
+        'type' => 'user',
+        'label' => $this->t('User failed http login'),
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isBlocked($identifier, $event) {
+    $type = $this->getEvents()[$event]['type'];
+    switch ($type) {
+      case 'user':
+        return !$this->flood->isAllowed($event, $this->config->get('user_limit'), $this->config->get('user_window'), $identifier);
+
+      case 'ip':
+        return !$this->flood->isAllowed($event, $this->config->get('ip_limit'), $this->config->get('ip_window'), $identifier);
+    }
+    return FALSE;
+  }
+
 }

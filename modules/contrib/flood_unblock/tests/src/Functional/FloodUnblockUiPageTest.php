@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\flood_unblock\Functional;
 
-
 use Drupal\Tests\BrowserTestBase;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -22,19 +21,26 @@ class FloodUnblockUiPageTest extends BrowserTestBase {
 
   /**
    * The admin user that can access the admin page.
+   *
+   * @var string
    */
-  private $admin_user;
+  private $adminUser;
 
   /**
    * A simple user that cannot access the admin page.
+   *
+   * @var string
    */
-  private $simple_user;
+  private $simpleUser;
 
+  /**
+   * Create required user and other objects in order to run tests.
+   */
   public function setUp() {
     parent::setUp();
 
-    $this->admin_user = $this->drupalCreateUser(['access flood unblock']);
-    $this->simple_user = $this->drupalCreateUser();
+    $this->adminUser = $this->drupalCreateUser(['access flood unblock']);
+    $this->simpleUser = $this->drupalCreateUser();
 
     // Flood backends need a request object. Create a dummy one and insert it
     // to the container.
@@ -42,8 +48,11 @@ class FloodUnblockUiPageTest extends BrowserTestBase {
     $this->container->get('request_stack')->push($request);
   }
 
+  /**
+   * Test flood unblock with admin user.
+   */
   public function testFloodUnblockUiPageAdminUser() {
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
 
     $this->drupalGet('admin/config/system/flood-unblock');
     $this->assertSession()->statusCodeEquals(200, 'Status code is equal to 200');
@@ -53,8 +62,11 @@ class FloodUnblockUiPageTest extends BrowserTestBase {
       ->pageTextContains('There are no failed logins at this time.');
   }
 
+  /**
+   * Test flood unblock with simple user.
+   */
   public function testFloodUnblockUiPageSimpleUser() {
-    $this->drupalLogin($this->simple_user);
+    $this->drupalLogin($this->simpleUser);
 
     $this->drupalGet('admin/config/system/flood-unblock');
     $this->assertSession()->statusCodeEquals(403, 'Status code is equal to 403');
