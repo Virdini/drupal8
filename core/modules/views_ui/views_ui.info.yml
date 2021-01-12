@@ -1,6 +1,6 @@
 name: 'Views UI'
 type: module
-description: 'Provides a user interface for creating and managing views.'
+description: 'Administrative interface for Views.'
 package: Core
 # version: VERSION
 core: 8.x
@@ -8,7 +8,7 @@ configure: entity.view.collection
 dependencies:
   - drupal:views
 
-# Information added by Drupal.org packaging script on 2020-12-03
-version: '8.9.11'
+# Information added by Drupal.org packaging script on 2020-11-26
+version: '8.8.12'
 project: 'drupal'
-datestamp: 1607030142
+datestamp: 1606360921
