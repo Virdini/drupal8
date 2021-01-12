@@ -1,0 +1,10 @@
+name: 'Contrib database driver test'
+type: module
+description: 'Support database contrib driver testing.'
+package: Testing
+# version: VERSION
+
+# Information added by Drupal.org packaging script on 2021-01-06
+version: '8.9.12'
+project: 'drupal'
+datestamp: 1609977066
